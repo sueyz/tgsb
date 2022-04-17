@@ -11,14 +11,14 @@ import {toAbsoluteUrl} from '../../../../_metronic/helpers'
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
-    .email('Wrong email format')
-    .min(3, 'Minimum 3 symbols')
-    .max(50, 'Maximum 50 symbols')
-    .required('Email is required'),
+    .email('Wrong email format!')
+    .min(3, 'Email is too short!')
+    .max(50, 'Email is too long!')
+    .required('Email is required!'),
   password: Yup.string()
-    .min(3, 'Minimum 3 symbols')
-    .max(50, 'Maximum 50 symbols')
-    .required('Password is required'),
+    .min(3, 'Password is too short!')
+    .max(50, 'Password is too long!')
+    .required('Password is required!'),
 })
 
 const initialValues = {
@@ -70,18 +70,20 @@ export function Login() {
           {...formik.getFieldProps('email')}
           className={clsx(
             'form-control form-control-lg form-control-solid',
-            {'is-invalid': formik.touched.email && formik.errors.email},
-            {
-              'is-valid': formik.touched.email && !formik.errors.email,
-            }
+            {'is-invalid': formik.touched.email && formik.errors.email}
+            // {
+            //   'is-valid': formik.touched.email && !formik.errors.email,
+            // }
           )}
           type='email'
           name='email'
           autoComplete='off'
         />
         {formik.touched.email && formik.errors.email && (
-          <div className='fv-plugins-message-container'>
-            <span role='alert'>{formik.errors.email}</span>
+          <div className='mt-2 fv-plugins-message-container'>
+            <span role='alert' style={{color: '#f1416c'}}>
+              {formik.errors.email}
+            </span>
           </div>
         )}
       </div>
@@ -113,16 +115,18 @@ export function Login() {
             'form-control form-control-lg form-control-solid',
             {
               'is-invalid': formik.touched.password && formik.errors.password,
-            },
-            {
-              'is-valid': formik.touched.password && !formik.errors.password,
             }
+            // {
+            //   'is-valid': formik.touched.password && !formik.errors.password,
+            // }
           )}
         />
         {formik.touched.password && formik.errors.password && (
-          <div className='fv-plugins-message-container'>
+          <div className='mt-2 fv-plugins-message-container'>
             <div className='fv-help-block'>
-              <span role='alert'>{formik.errors.password}</span>
+              <span role='alert' style={{color: '#f1416c'}}>
+                {formik.errors.password}
+              </span>
             </div>
           </div>
         )}
