@@ -1,9 +1,14 @@
 const asyncHandler = require('express-async-handler')
+const { globalAgent } = require('http')
+
+const Company = require('../model/companyModel')
 
 // @ desc Get something
 // @rout GET /api/dashboard
 const getSomething = asyncHandler (async (req, res) => {
-    res.status(200).json({message: 'Get something'})
+    const companies = await Company.find()
+
+    res.status(200).json(companies)
 })
 
 // @ desc SET something
@@ -14,21 +19,43 @@ const setSomething = asyncHandler (async (req, res) => {
         throw new Error('Please add a text field')
     }
 
-    res.status(200).json({message: 'Set something'})
+    const company = await Company.create({
+        text: req.body.text
+    })
+
+    res.status(200).json(company)
 
 })
 
 // @ desc Update something
 // @rout PUT /api/dashboard/:id
 const updateSomething = asyncHandler (async (req, res) => {
-    res.status(200).json({message: `Update something ${req.params.id}`})
+    const company = await Company.findById(req.params.id)
+
+    if(!company){
+        res.status(400)
+        throw new Error('Company not found')
+    }
+
+    const updatedCompany = await Company.findByIdAndUpdate(req.params.id, req.body, {new: true})
+
+    res.status(200).json(updatedCompany)
 
 })
 
 // @ desc Delete something
 // @rout DELETE /api/dashboard
 const deleteSomething = asyncHandler (async (req, res) => {
-    res.status(200).json({message: `Delete something ${req.params.id}`})
+    const company = await Company.findById(req.params.id)
+
+    if(!company){
+        res.status(400)
+        throw new Error('Company not found')
+    }
+
+    await company.remove()
+
+    res.status(200).json({id: req.params.id})
 
 })
 
