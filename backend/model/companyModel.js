@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
 
-const companySchema = mongoose.Schema({
-    text: {
+const userSchema = mongoose.Schema({
+    name: {
         type: String,
-        required: [true, 'PLease add a text value']
+        required: [true, 'Please add a name']
     }
-}, {
+},{
     timestamps: true
 })
 
-module.exports = mongoose.model('Company', companySchema)
+module.exports = mongoose.model('Company', userSchema)
