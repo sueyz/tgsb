@@ -2,11 +2,12 @@ const asyncHandler = require('express-async-handler')
 const { globalAgent } = require('http')
 
 const Project = require('../model/projectModel')
+const User = require('../model/userModel')
 
 // @ desc Get something
 // @rout GET /api/project
 const getProject = asyncHandler (async (req, res) => {
-    const projects = await Project.find()
+    const projects = await Project.find({ user : req.user.id })
 
     res.status(200).json(projects)
 })
@@ -20,7 +21,8 @@ const setProject = asyncHandler (async (req, res) => {
     }
 
     const project = await Project.create({
-        text: req.body.text
+        text: req.body.text,
+        user: req.user.id
     })
 
     res.status(200).json(project)
@@ -37,6 +39,20 @@ const updateProject = asyncHandler (async (req, res) => {
         throw new Error('Project not found')
     }
 
+    const user = await User.findById(req.user.id)
+
+    //Chekc for user
+    if(!user){
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    // make sure logged in user matches the project user
+    if(project.user.toString() !== user.id){
+        res.status(401)
+        throw new Error('User not auhtorized')
+    }
+
     const updatedProject = await Project.findByIdAndUpdate(req.params.id, req.body, {new: true})
 
     res.status(200).json(updatedProject)
@@ -51,6 +67,20 @@ const deleteProject = asyncHandler (async (req, res) => {
     if(!project){
         res.status(400)
         throw new Error('Project not found')
+    }
+
+    const user = await User.findById(req.user.id)
+
+     //Chekc for user
+     if(!user){
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    // make sure logged in user matches the project user
+    if(project.user.toString() !== user.id){
+        res.status(401)
+        throw new Error('User not auhtorized')
     }
 
     await project.remove()
