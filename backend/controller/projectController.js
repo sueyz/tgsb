@@ -15,10 +15,10 @@ const getProject = asyncHandler (async (req, res) => {
 // @ desc SET something
 // @rout POST /api/company/:id/project
 const setProject = asyncHandler (async (req, res) => {
-    const {type, name, invoiceNo, currency, quotation} = req.body
+    const {type, name, invoiceNo} = req.body
 
 
-    if(!type || !name || !invoiceNo || !currency || !quotation ){
+    if(!type || !name || !invoiceNo ){
         res.status(400)
         throw new Error('Please add all required fields')
     }
@@ -28,14 +28,17 @@ const setProject = asyncHandler (async (req, res) => {
         type: req.body.type,
         name: req.body.name,
         invoiceNo: req.body.invoiceNo,
-        currency: req.body.currency,
-        quotation: req.body.quotation,
+        quotationReg: req.body.quotationReg,
+        quotationSub: req.body.quotationSub,
         balancePaid: req.body.balancePaid,
         balanceDue: req.body.balanceDue,
-        nextPaymentDay: req.body.nextPaymentDay,
-        totalPaymentDays: req.body.totalPaymentDays,
+        nextPaymentDate: req.body.nextPaymentDate,
+        finalPaymentDate: req.body.finalPaymentDate,
+        bankName: req.body.bankName,
+        bankAccount: req.body.bankAccount,
         paymentTerm: req.body.paymentTerm,
-        remark: req.body.remark
+        projectSchedule: req.body.projectSchedule,
+        note: req.body.note
     })
 
     res.status(200).json(project)

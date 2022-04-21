@@ -18,13 +18,14 @@ const projectSchema = mongoose.Schema({
         type: String,
         required: [true, 'PLease add an invoice number']
     },
-    currency: {
-        type: String,
-        required: [true, 'PLease add a currency']
+    quotationReg: {
+        type: Array,
+        default : [{desc: 'ex', amount: 0}],
+        required: false
     },
-    quotation: {
-        type: String,
-        required: [true, 'PLease add a quotation price']
+    quotationSub: {
+        type: Number,
+        required: false
     },
     //get time updated from timestamps updated everytime change balance paid only
     balancePaid: {
@@ -35,19 +36,34 @@ const projectSchema = mongoose.Schema({
         type: String,
         required: false
     },
-    nextPaymentDay: {
-        type: Number,
+    nextPaymentDate: {
+        type: Date,
         required: false
     },
-    totalPaymentDays: {
-        type: Number,
+    finalPaymentDate: {
+        type: Date,
         required: false
     },
-    paymentTerm: {
+    bankName:{
         type: String,
         required: false
     },
-    remark: {
+    bankAccount:{
+        type: String,
+        required: false
+    },
+    //ex: 40,40,20 
+    paymentTerm: {
+        type: Array,
+        default : [{percentage: 0, desc: 0}],
+        required: false
+    },
+    projectSchedule: {
+        type: Array,
+        default : [{desc: 'ex', week: 0, remark: 'ex'}],
+        required: false
+    },
+    note: {
         type: String,
         required: false
     }
