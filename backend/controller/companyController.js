@@ -5,7 +5,7 @@ const Company = require('../model/companyModel')
 // @rout Post /api/registerCompany
 // @access Public
 const registerCompany = asyncHandler( async (req, res) => {
-    const {name, address, email, phone, poc } = req.body
+    const {accountNo, name, address, email, phone, poc } = req.body
 
     if(!name || !email || !email){
         res.status(400)
@@ -14,6 +14,7 @@ const registerCompany = asyncHandler( async (req, res) => {
 
     //Create Company
     const company = await Company.create({
+        accountNo,
         name,
         address,
         email,
@@ -24,6 +25,7 @@ const registerCompany = asyncHandler( async (req, res) => {
     if(company){
         res.status(201).json({
             _id: company.id,
+            accountNo: company.accountNo,
             name: company.name,
             address:company.address,
             email:company.email,

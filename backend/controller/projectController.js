@@ -15,14 +15,27 @@ const getProject = asyncHandler (async (req, res) => {
 // @ desc SET something
 // @rout POST /api/company/:id/project
 const setProject = asyncHandler (async (req, res) => {
-    if(!req.body.text){
+    const {type, name, invoiceNo, currency, quotation} = req.body
+
+
+    if(!type || !name || !invoiceNo || !currency || !quotation ){
         res.status(400)
-        throw new Error('Please add a text field')
+        throw new Error('Please add all required fields')
     }
 
     const project = await Project.create({
         company: req.params.id,
-        text: req.body.text
+        type: req.body.type,
+        name: req.body.name,
+        invoiceNo: req.body.invoiceNo,
+        currency: req.body.currency,
+        quotation: req.body.quotation,
+        balancePaid: req.body.balancePaid,
+        balanceDue: req.body.balanceDue,
+        nextPaymentDay: req.body.nextPaymentDay,
+        totalPaymentDays: req.body.totalPaymentDays,
+        paymentTerm: req.body.paymentTerm,
+        remark: req.body.remark
     })
 
     res.status(200).json(project)
@@ -41,7 +54,7 @@ const updateProject = asyncHandler (async (req, res) => {
 
     const company = await Company.findById(req.params.id)
 
-    //Chekc for user
+    //Check for company
     if(!company){
         res.status(401)
         throw new Error('Company not found')
@@ -71,7 +84,6 @@ const deleteProject = asyncHandler (async (req, res) => {
 
     const company = await Company.findById(req.params.id)
 
- //Chekc for user
     if(!company){
         res.status(401)
         throw new Error('Company not found')

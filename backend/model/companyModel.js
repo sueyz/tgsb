@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 
 const companySchema = mongoose.Schema({
+    accountNo: {
+        type: String,
+        required: [true, 'Please add an account number']
+    },
     name: {
         type: String,
         required: [true, 'Please add a name']
