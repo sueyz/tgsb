@@ -45,6 +45,9 @@ const getCompany = asyncHandler (async (req, res) => {
     res.status(200).json(company)
 })
 
+
+
+
 module.exports = {
     registerCompany,
     getCompany
