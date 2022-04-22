@@ -16,7 +16,6 @@ const initialValues = {
   email: '',
   password: '',
   changepassword: '',
-  acceptTerms: false,
 }
 
 const registrationSchema = Yup.object().shape({
@@ -43,7 +42,6 @@ const registrationSchema = Yup.object().shape({
       is: (val: string) => (val && val.length > 0 ? true : false),
       then: Yup.string().oneOf([Yup.ref('password')], "Password and Confirm Password didn't match"),
     }),
-  acceptTerms: Yup.bool().required('You must accept the terms and conditions'),
 })
 
 export function Registration() {
@@ -91,34 +89,8 @@ export function Registration() {
         {/* begin::Title */}
         <h1 className='text-dark mb-3'>Create an Account</h1>
         {/* end::Title */}
-
-        {/* begin::Link */}
-        <div className='text-gray-400 fw-bold fs-4'>
-          Already have an account?
-          <Link to='/auth/login' className='link-primary fw-bolder' style={{marginLeft: '5px'}}>
-            Forgot Password ?
-          </Link>
-        </div>
-        {/* end::Link */}
       </div>
       {/* end::Heading */}
-
-      {/* begin::Action */}
-      <button type='button' className='btn btn-light-primary fw-bolder w-100 mb-10'>
-        <img
-          alt='Logo'
-          src={toAbsoluteUrl('/media/svg/brand-logos/google-icon.svg')}
-          className='h-20px me-3'
-        />
-        Sign in with Google
-      </button>
-      {/* end::Action */}
-
-      <div className='d-flex align-items-center mb-10'>
-        <div className='border-bottom border-gray-300 mw-50 w-100'></div>
-        <span className='fw-bold text-gray-400 fs-7 mx-2'>OR</span>
-        <div className='border-bottom border-gray-300 mw-50 w-100'></div>
-      </div>
 
       {formik.status && (
         <div className='mb-lg-15 alert alert-danger'>
@@ -129,7 +101,7 @@ export function Registration() {
       {/* begin::Form group Firstname */}
       <div className='row fv-row mb-7'>
         <div className='col-xl-6'>
-          <label className='class="form-label fw-bolder text-dark fs-6'>First name</label>
+          <label className='form-label fw-bolder text-dark fs-6'>First name</label>
           <input
             placeholder='First name'
             type='text'
@@ -147,8 +119,10 @@ export function Registration() {
           />
           {formik.touched.firstname && formik.errors.firstname && (
             <div className='fv-plugins-message-container'>
-              <div className='fv-help-block'>
-                <span role='alert'>{formik.errors.firstname}</span>
+              <div className='mt-2 fv-help-block'>
+                <span role='alert' style={{color: '#f1416c'}}>
+                  {formik.errors.firstname}
+                </span>
               </div>
             </div>
           )}
@@ -174,8 +148,10 @@ export function Registration() {
             />
             {formik.touched.lastname && formik.errors.lastname && (
               <div className='fv-plugins-message-container'>
-                <div className='fv-help-block'>
-                  <span role='alert'>{formik.errors.lastname}</span>
+                <div className='mt-2 fv-help-block'>
+                  <span role='alert' style={{color: '#f1416c'}}>
+                    {formik.errors.lastname}
+                  </span>
                 </div>
               </div>
             )}
@@ -203,8 +179,10 @@ export function Registration() {
         />
         {formik.touched.email && formik.errors.email && (
           <div className='fv-plugins-message-container'>
-            <div className='fv-help-block'>
-              <span role='alert'>{formik.errors.email}</span>
+            <div className='mt-2 fv-help-block'>
+              <span role='alert' style={{color: '#f1416c'}}>
+                {formik.errors.email}
+              </span>
             </div>
           </div>
         )}
@@ -233,8 +211,10 @@ export function Registration() {
             />
             {formik.touched.password && formik.errors.password && (
               <div className='fv-plugins-message-container'>
-                <div className='fv-help-block'>
-                  <span role='alert'>{formik.errors.password}</span>
+                <div className='mt-2 fv-help-block'>
+                  <span role='alert' style={{color: '#f1416c'}}>
+                    {formik.errors.password}
+                  </span>
                 </div>
               </div>
             )}
@@ -277,41 +257,13 @@ export function Registration() {
         />
         {formik.touched.changepassword && formik.errors.changepassword && (
           <div className='fv-plugins-message-container'>
-            <div className='fv-help-block'>
-              <span role='alert'>{formik.errors.changepassword}</span>
+            <div className='mt-2 fv-help-block'>
+              <span role='alert' style={{color: '#f1416c'}}>
+                {formik.errors.changepassword}
+              </span>
             </div>
           </div>
         )}
-      </div>
-      {/* end::Form group */}
-
-      {/* begin::Form group */}
-      <div className='fv-row mb-10'>
-        <div className='form-check form-check-custom form-check-solid'>
-          <input
-            className='form-check-input'
-            type='checkbox'
-            id='kt_login_toc_agree'
-            {...formik.getFieldProps('acceptTerms')}
-          />
-          <label
-            className='form-check-label fw-bold text-gray-700 fs-6'
-            htmlFor='kt_login_toc_agree'
-          >
-            I Agree the{' '}
-            <Link to='/auth/terms' className='ms-1 link-primary'>
-              terms and conditions
-            </Link>
-            .
-          </label>
-          {formik.touched.acceptTerms && formik.errors.acceptTerms && (
-            <div className='fv-plugins-message-container'>
-              <div className='fv-help-block'>
-                <span role='alert'>{formik.errors.acceptTerms}</span>
-              </div>
-            </div>
-          )}
-        </div>
       </div>
       {/* end::Form group */}
 
@@ -321,7 +273,7 @@ export function Registration() {
           type='submit'
           id='kt_sign_up_submit'
           className='btn btn-lg btn-primary w-100 mb-5'
-          disabled={formik.isSubmitting || !formik.isValid || !formik.values.acceptTerms}
+          disabled={formik.isSubmitting || !formik.isValid}
         >
           {!loading && <span className='indicator-label'>Submit</span>}
           {loading && (
