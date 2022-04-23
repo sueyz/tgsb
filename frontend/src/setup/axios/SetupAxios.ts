@@ -1,3 +1,5 @@
+import * as auth from '../../app/modules/auth/redux/AuthRedux'
+
 export default function setupAxios(axios: any, store: any) {
   axios.defaults.headers.Accept = 'application/json'
   axios.interceptors.request.use(
@@ -5,8 +7,6 @@ export default function setupAxios(axios: any, store: any) {
       const {
         auth: {accessToken},
       } = store.getState()
-
-      console.log(accessToken)
 
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`
@@ -25,7 +25,7 @@ export default function setupAxios(axios: any, store: any) {
       const originalConfig = err.config
 
       if (err.response) {
-        // access token expired
+        // access token expired, will hit error but auto renew token and make user not lose contact with current page
         if (err.response.status === 401 && !originalConfig._retry) {
           // handle infinite loop
           originalConfig._retry = true
@@ -50,7 +50,10 @@ export default function setupAxios(axios: any, store: any) {
 
             originalConfig.headers.Authorization = `Bearer ${accessToken}`
 
-            console.log('updateNewAccessToken', accessToken)
+            // update new access token to persist
+            store.dispatch(auth.actions.login(accessToken, refreshToken))
+
+            console.log('updated New AccessToken')
 
             return originalConfig
           } catch (_error: any) {

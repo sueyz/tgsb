@@ -90,7 +90,6 @@ const verifyToken = asyncHandler(async (req, res) => {
             
         }
         catch(e){
-            // console.log(e)
             //if an error occured return request unauthorized error
             res.status(401)
             throw new Error('Not authorized, no token or expired')
