@@ -53,13 +53,7 @@ export function Registration() {
     onSubmit: (values, {setStatus, setSubmitting}) => {
       setLoading(true)
       setTimeout(() => {
-        register(
-          values.email,
-          values.firstname,
-          values.lastname,
-          values.password,
-          values.changepassword
-        )
+        register(values.email, values.firstname, values.lastname, values.password)
           .then(({data: {api_token}}) => {
             setLoading(false)
             dispatch(auth.actions.register(api_token))
@@ -165,7 +159,7 @@ export function Registration() {
       <div className='fv-row mb-7'>
         <label className='form-label fw-bolder text-dark fs-6'>Email</label>
         <input
-          placeholder='Email'
+          placeholder='Email address'
           type='email'
           autoComplete='off'
           {...formik.getFieldProps('email')}

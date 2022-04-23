@@ -22,8 +22,8 @@ const loginSchema = Yup.object().shape({
 })
 
 const initialValues = {
-  email: 'admin@demo.com',
-  password: 'demo',
+  email: 'sueazmin@gmail.com',
+  password: '12345678',
 }
 
 /*
@@ -42,9 +42,9 @@ export function Login() {
       setLoading(true)
       setTimeout(() => {
         login(values.email, values.password)
-          .then(({data: {api_token}}) => {
+          .then(({data: {api_token, refreshToken}}) => {
             setLoading(false)
-            dispatch(auth.actions.login(api_token))
+            dispatch(auth.actions.login(api_token, refreshToken))
           })
           .catch(() => {
             setLoading(false)
@@ -66,7 +66,7 @@ export function Login() {
       <div className='fv-row mb-10'>
         <label className='form-label fs-6 fw-bolder text-dark'>Email</label>
         <input
-          placeholder='Email'
+          placeholder='Email address'
           {...formik.getFieldProps('email')}
           className={clsx(
             'form-control form-control-lg form-control-solid',
@@ -109,6 +109,7 @@ export function Login() {
         </div>
         <input
           type='password'
+          placeholder='Password'
           autoComplete='off'
           {...formik.getFieldProps('password')}
           className={clsx(
