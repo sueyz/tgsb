@@ -15,7 +15,7 @@ const UserInfoCell: FC<Props> = ({user}) => (
       <a href='#'>
         {user.avatar ? (
           <div className='symbol-label'>
-            <img src={toAbsoluteUrl(`/media/${user.avatar}`)} alt={user.name} className='w-100' />
+            <img src={toAbsoluteUrl(`/media/${user.avatar}`)} className='w-100' />
           </div>
         ) : (
           <div
@@ -32,7 +32,7 @@ const UserInfoCell: FC<Props> = ({user}) => (
     </div>
     <div className='d-flex flex-column'>
       <a href='#' className='text-gray-800 text-hover-primary mb-1'>
-        {user.name}
+        {user.first_name} {user.last_name}
       </a>
       <span>{user.email}</span>
     </div>

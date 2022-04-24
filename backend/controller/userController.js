@@ -8,9 +8,11 @@ const { use } = require('express/lib/application')
 // @rout Post /api/user
 // @access Public
 const registerUser = asyncHandler( async (req, res) => {
-    const {first_name, last_name, email, password } = req.body
+    const {first_name, last_name, email, role } = req.body
 
-    if(!first_name || !last_name || !email || !password){
+    const password = 'tgsb1234'
+
+    if(!first_name || !last_name || !email ){
         res.status(400)
         throw new Error('Please add all fields')
     }
@@ -32,6 +34,7 @@ const registerUser = asyncHandler( async (req, res) => {
         first_name,
         last_name,
         email,
+        role,
         password: hashedPassword
     })
 
@@ -172,33 +175,17 @@ const updateUser = asyncHandler (async (req, res) => {
 // @ desc Delete something
 // @rout DELETE /api/dashboard
 const deleteUser = asyncHandler (async (req, res) => {
-    const project = await Project.findById(req.params.projectId)
 
-    if(!project){
+    if(!req.user){
         res.status(400)
-        throw new Error('Project not found')
+        throw new Error('User not found')
     }
 
-    const company = await Company.findById(req.params.id)
+    const deletedUser = await User.findByIdAndDelete(req.params.id)
 
-    if(!company){
-        res.status(401)
-        throw new Error('Company not found')
-    }
-
-    // make sure logged in user matches the project user
-    if(project.company.toString() !== company.id){
-        res.status(401)
-        throw new Error('Company not authorized')
-    }
-
-    await project.remove()
-
-    res.status(200).json({id: req.params.projectId})
+    res.status(200).json(deletedUser)
 
 })
-
-
 
 // @desc get user data
 // @rout GEt /api/user/me

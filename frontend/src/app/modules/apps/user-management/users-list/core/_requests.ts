@@ -21,14 +21,14 @@ const getUserById = (id: ID): Promise<User | undefined> => {
 
 const createUser = (user: User): Promise<User | undefined> => {
   return axios
-    .put(USER_URL, user)
+    .post(USER_URL, user)
     .then((response: AxiosResponse<Response<User>>) => response.data)
     .then((response: Response<User>) => response.data)
 }
 
 const updateUser = (user: User): Promise<User | undefined> => {
   return axios
-    .post(`${USER_URL}/${user.id}`, user)
+    .put(`${USER_URL}/${user.id}`, user)
     .then((response: AxiosResponse<Response<User>>) => response.data)
     .then((response: Response<User>) => response.data)
 }
