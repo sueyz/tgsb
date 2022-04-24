@@ -86,6 +86,8 @@ const verifyToken = asyncHandler(async (req, res) => {
             //Get user from the decoded token
             req.user = await User.findById(decoded.id).select('-password')
 
+            console.log(token)
+
             res.status(200).json({
                 api_token: decoded,
                 first_name: req.user.first_name,
@@ -140,10 +142,68 @@ const queryAllUser = asyncHandler( async (req, res) => {
 })
 
 
+// @desc get user data
+// @rout GEt /api/user/me
+// @access Private
+const getUser = asyncHandler( async (req, res) => {
+    const user = await User.findById(req.params.id)
+
+    res.status(200).json({
+        data: user
+    })
+})
+
+
+// @ desc Update something
+// @rout PUT /api/dashboard/:id
+const updateUser = asyncHandler (async (req, res) => {
+
+    if(!req.user){
+        res.status(400)
+        throw new Error('User not found')
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {new: true})
+
+    res.status(200).json(updatedUser)
+
+})
+
+// @ desc Delete something
+// @rout DELETE /api/dashboard
+const deleteUser = asyncHandler (async (req, res) => {
+    const project = await Project.findById(req.params.projectId)
+
+    if(!project){
+        res.status(400)
+        throw new Error('Project not found')
+    }
+
+    const company = await Company.findById(req.params.id)
+
+    if(!company){
+        res.status(401)
+        throw new Error('Company not found')
+    }
+
+    // make sure logged in user matches the project user
+    if(project.company.toString() !== company.id){
+        res.status(401)
+        throw new Error('Company not authorized')
+    }
+
+    await project.remove()
+
+    res.status(200).json({id: req.params.projectId})
+
+})
+
+
 
 // @desc get user data
 // @rout GEt /api/user/me
 // @access Private
+//probably profile
 const getMe = asyncHandler( async (req, res) => {
     const {_id, name, email} =  await User.findById(req.user.id)
 
@@ -178,5 +238,8 @@ module.exports = {
     getMe,
     verifyToken,
     refreshToken,
-    queryAllUser
+    queryAllUser,
+    updateUser,
+    getUser,
+    deleteUser
 }

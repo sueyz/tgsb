@@ -20,12 +20,12 @@ const UserInfoCell: FC<Props> = ({user}) => (
         ) : (
           <div
             className={clsx(
-              'symbol-label fs-3',
-              `bg-light-${user.initials?.state}`,
-              `text-${user.initials?.state}`
+              'symbol-label fs-3'
+              // `bg-light-${user.initials?.state}`,
+              // `text-${user.initials?.state}`
             )}
           >
-            {user.initials?.label}
+            {/* {user.initials?.label} */}
           </div>
         )}
       </a>

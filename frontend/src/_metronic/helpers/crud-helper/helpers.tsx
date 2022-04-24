@@ -120,5 +120,5 @@ export {
   groupingOnSelect,
   groupingOnSelectAll,
   useDebounce,
-  isNotEmpty
+  isNotEmpty,
 }

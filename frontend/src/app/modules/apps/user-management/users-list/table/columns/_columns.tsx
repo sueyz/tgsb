@@ -28,7 +28,19 @@ const usersColumns: ReadonlyArray<Column<User>> = [
       <UserCustomHeader tableProps={props} title='Last login' className='min-w-125px' />
     ),
     id: 'last_login',
-    Cell: ({...props}) => <UserLastLoginCell last_login={props.data[props.row.index].last_login} />,
+
+    Cell: ({...props}) => (
+      <UserLastLoginCell
+        last_login={new Intl.DateTimeFormat('en-US', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        }).format(new Date(props.data[props.row.index].last_login))}
+      />
+    ),
   },
   {
     Header: (props) => (

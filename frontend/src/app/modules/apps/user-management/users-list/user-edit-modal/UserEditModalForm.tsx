@@ -8,6 +8,7 @@ import {useListView} from '../core/ListViewProvider'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import {createUser, updateUser} from '../core/_requests'
 import {useQueryResponse} from '../core/QueryResponseProvider'
+import {UserEditModalHeader} from './UserEditModalHeader'
 
 type Props = {
   isUserLoading: boolean
@@ -36,7 +37,7 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
     role: user.role || initialUser.role,
     position: user.position || initialUser.position,
     name: user.name || initialUser.name,
-    email: user.email || initialUser.email
+    email: user.email || initialUser.email,
   })
 
   const cancel = (withRefresh?: boolean) => {
@@ -71,8 +72,11 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
 
   return (
     <>
+      <UserEditModalHeader checkUser={user.email} />
+
       <form id='kt_modal_add_user_form' className='form' onSubmit={formik.handleSubmit} noValidate>
         {/* begin::Scroll */}
+
         <div
           className='d-flex flex-column scroll-y me-n7 pe-7'
           id='kt_modal_add_user_scroll'

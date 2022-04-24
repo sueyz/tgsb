@@ -20,11 +20,6 @@ const UsersList: FC<Props> = ({users = undefined}) => {
             >
               <div className='symbol symbol-35px symbol-circle'>
                 {user.avatar && <img src={toAbsoluteUrl(user.avatar)} alt='Pic' />}
-                {user.initials && (
-                  <span className='symbol-label bg-primary text-inverse-primary fw-bolder'>
-                    {user.initials}
-                  </span>
-                )}
               </div>
             </OverlayTrigger>
           )
