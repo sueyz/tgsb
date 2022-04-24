@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom'
+import ReactDOM from 'react-dom/client'
 // Redux
 // https://github.com/rt2zz/redux-persist
 import {PersistGate} from 'redux-persist/integration/react'
@@ -43,7 +43,8 @@ Chart.register(...registerables)
 
 const queryClient = new QueryClient()
 
-ReactDOM.render(
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
+root.render(
   <QueryClientProvider client={queryClient}>
     <MetronicI18nProvider>
       <Provider store={store}>
@@ -54,6 +55,5 @@ ReactDOM.render(
       </Provider>
     </MetronicI18nProvider>
     <ReactQueryDevtools initialIsOpen={false} />
-  </QueryClientProvider>,
-  document.getElementById('root')
+  </QueryClientProvider>
 )

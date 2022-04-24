@@ -7,8 +7,6 @@ export type User = {
   position?: string
   role?: string
   last_login?: string
-  two_steps?: boolean
-  joined_day?: string
   online?: boolean
   initials?: {
     label: string
@@ -23,5 +21,5 @@ export const initialUser: User = {
   position: 'Art Director',
   role: 'Administrator',
   name: '',
-  email: ''
+  email: '',
 }

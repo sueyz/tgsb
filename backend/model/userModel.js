@@ -18,6 +18,22 @@ const userSchema = mongoose.Schema({
         type: String,
         required: [true, 'Please add a password']
     },
+    phone :{
+        type: String,
+        required: false
+    },
+    role :{
+        type: String,
+        required: false
+    },
+    position :{
+        type: String,
+        required: false
+    },
+    last_login:{
+        type: Date,
+        required: false
+    }
 },{
     timestamps: true
 })

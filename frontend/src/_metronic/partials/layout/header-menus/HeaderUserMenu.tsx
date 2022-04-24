@@ -12,6 +12,8 @@ import {toAbsoluteUrl} from '../../../helpers'
 const HeaderUserMenu: FC = () => {
   const user: UserModel = useSelector<RootState>(({auth}) => auth.user, shallowEqual) as UserModel
 
+  // console.log(user)
+
   const dispatch = useDispatch()
   const logout = () => {
     dispatch(auth.actions.logout())
@@ -30,7 +32,7 @@ const HeaderUserMenu: FC = () => {
 
           <div className='d-flex flex-column'>
             <div className='fw-bolder d-flex align-items-center fs-5'>
-              {user.first_name} {user.first_name}
+              {user.first_name} {user.last_name}
               <span className='badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2'>Pro</span>
             </div>
             <a href='#' className='fw-bold text-muted text-hover-primary fs-7'>

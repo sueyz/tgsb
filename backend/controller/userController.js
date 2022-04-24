@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
-const User =require('../model/userModel')
+const User = require('../model/userModel')
 const { use } = require('express/lib/application')
 
 // @ desc Register User
@@ -58,7 +58,7 @@ const loginUser = asyncHandler( async (req, res) => {
     const {email, password} = req.body
 
     //check for user email
-    const user = await User.findOne({email})
+    const user = await User.findOneAndUpdate({email}, { last_login: Date.now() }, {new: true})
 
     if(user && (await bcrypt.compare(password, user.password))){
 
@@ -83,9 +83,14 @@ const verifyToken = asyncHandler(async (req, res) => {
             //Verify token
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
 
+            //Get user from the token
+            req.user = await User.findById(decoded.id).select('-password')
 
             res.status(200).json({
-                api_token: decoded
+                api_token: decoded,
+                first_name: req.user.first_name,
+                last_name: req.user.last_name
+
             })
             
         }
@@ -120,6 +125,18 @@ const refreshToken = asyncHandler(async (req, res) => {
         res.status(401)
         throw new Error('Invalid token')
     }
+})
+
+// @desc get all user 
+// @rout GEt /api/user/query
+// @access Private
+const queryAllUser = asyncHandler( async (req, res) => {
+    const user =  await User.find()
+
+    res.status(200).json({
+        data: user,
+        payload: 'test'
+    })
 })
 
 
@@ -160,5 +177,6 @@ module.exports = {
     loginUser,
     getMe,
     verifyToken,
-    refreshToken
+    refreshToken,
+    queryAllUser
 }

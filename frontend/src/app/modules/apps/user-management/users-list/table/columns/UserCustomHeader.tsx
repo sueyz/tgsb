@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import {FC, PropsWithChildren, useMemo} from 'react'
 import {HeaderProps} from 'react-table'
-import { initialQueryState } from '../../../../../../../_metronic/helpers'
+import {initialQueryState} from '../../../../../../../_metronic/helpers'
 import {useQueryRequest} from '../../core/QueryRequestProvider'
 import {User} from '../../core/_models'
 
@@ -50,7 +50,7 @@ const UserCustomHeader: FC<Props> = ({className, title, tableProps}) => {
         className,
         isSelectedForSorting && order !== undefined && `table-sort-${order}`
       )}
-      style={{cursor: 'pointer'}}
+      style={{cursor: 'pointer', paddingRight: '2%'}}
       onClick={sortColumn}
     >
       {title}
