@@ -83,7 +83,7 @@ const verifyToken = asyncHandler(async (req, res) => {
             //Verify token
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
 
-            //Get user from the token
+            //Get user from the decoded token
             req.user = await User.findById(decoded.id).select('-password')
 
             res.status(200).json({
@@ -116,7 +116,7 @@ const refreshToken = asyncHandler(async (req, res) => {
     try {
         //Verify token
         const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
-        const accessToken = generateToken(decoded._id)
+        const accessToken = generateToken(decoded.id)
 
         res.json({ accessToken });
 
