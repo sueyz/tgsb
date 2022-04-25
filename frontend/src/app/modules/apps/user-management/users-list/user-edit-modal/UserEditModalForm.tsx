@@ -54,7 +54,7 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
     setItemIdForUpdate(undefined)
   }
 
-  const notifyUserExist = () => toast('User already exist!')
+  const notifyUserExist = () => toast('User already exists!')
 
   const blankImg = toAbsoluteUrl('/media/svg/avatars/blank.svg')
   const userAvatarImg = toAbsoluteUrl(`/media/${userForEdit.avatar}`)

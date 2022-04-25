@@ -132,23 +132,121 @@ const refreshToken = asyncHandler(async (req, res) => {
     }
 })
 
-// @desc get all user 
+// @desc get  user 
 // @rout GEt /api/user/query
 // @access Private
-const queryAllUser = asyncHandler( async (req, res) => {
-    const user =  await User.find()
+const queryUser = asyncHandler( async (req, res) => {
 
-    res.status(200).json({
-        data: user,
-        payload: 'test'
+
+    var userName = req.query.search; //userName = 'Juan David Nicholls';
+    var searchString = new RegExp(userName, 'ig');
+
+    const page = parseInt(req.query.page)
+    const limit = 10
+
+    const startIndex = (page - 1) * limit
+    const endIndex = page * limit
+
+    const link = []
+
+        
+    User.aggregate()
+    .project({
+        id: '$_id',
+        full_name: { $concat: ['$first_name', ' ', '$last_name'] },
+        first_name: 1,
+        last_name: 1,
+        role: 1,
+        last_login: 1,
+        email: 1,
     })
+    .match({ full_name: searchString })
+    .skip(startIndex) 
+    .limit(limit)
+    .exec(function (err, users) {
+        if (err) throw err;
+
+        User.estimatedDocumentCount(searchString).exec((count_error, count) => {
+            const lastPage = Math.ceil(count / limit)
+            const fromValue = (limit * page) - (limit -1)
+            const toValue = page === lastPage ? count : (limit * page)
+
+            if (err) {
+              return res.json(count_error);
+            }
+
+            if (startIndex > 0) {
+                link.push({
+                    url: `/?page=${page - 1}`,
+                    label: "&laquo; Previous",
+                    active: false,
+                    page: page - 1
+                })
+            }
+
+            var startPage, endPage;
+            if (lastPage <= 10) {
+            // less than 10 total pages so show all
+                startPage = 1;
+                endPage = lastPage;
+            } else {
+            // more than 10 total pages so calculate start and end pages
+                if (page <= 6) {
+                    startPage = 1;
+                    endPage = 10;
+                } else if (page + 4 >= lastPage) {
+                    startPage = lastPage - 9;
+                    endPage = lastPage;
+                } else {
+                    startPage = page - 5;
+                    endPage = page + 4;
+                }
+            }
+
+            for (let index = startPage; index <= endPage; index++) {
+                    link.push({
+                        url: `/?page=${index}`,
+                        label: `${index}`,
+                        active: true,
+                        page: index
+                    }) 
+            }
+            
+
+            if (endIndex < count) {
+                link.push({
+                    url: `/?page=${page + 1}`,
+                    label: "Next &raquo;",
+                    active: false,
+                    page: page + 1
+                })
+            }  
+
+            res.status(200).json({
+                data: users,
+                payload: {pagination: {
+                    page: page,
+                    items_per_page: limit,
+                    first_page_url: '/?page=1',
+                    from: fromValue,
+                    last_page: lastPage,
+                    links: link,
+                    next_page_url: page + 1 > lastPage? null :`/?page=${page + 1}`,
+                    items_per_page: limit,
+                    prev_page_url: page - 1 === 0 ? null :` /?page=${page - 1}`,
+                    to: toValue,
+                    total: count
+                }}
+            })
+        });
+    });
 })
 
 
 // @desc get user data
 // @rout GEt /api/user/me
 // @access Private
-const getUser = asyncHandler( async (req, res) => {
+const getUserById = asyncHandler( async (req, res) => {
     const user = await User.findById(req.params.id)
 
     res.status(200).json({
@@ -225,8 +323,8 @@ module.exports = {
     getMe,
     verifyToken,
     refreshToken,
-    queryAllUser,
+    queryUser,
     updateUser,
-    getUser,
+    getUserById,
     deleteUser
 }

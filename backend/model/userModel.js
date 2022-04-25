@@ -39,18 +39,18 @@ const userSchema = mongoose.Schema({
 })
 
 
-userSchema.methods.toJSON = function () {
-    return {
-      id: this._id,
-      first_name: this.first_name,
-      last_name: this.last_name,
-      email: this.email,
-      password: this.password,
-      phone: this.phone,
-      role: this.role,
-      position: this.position,
-      last_login: this.last_login
-    }
-  }
+// userSchema.methods.toJSON = function () {
+//     return {
+//       id: this._id,
+//       first_name: this.first_name,
+//       last_name: this.last_name,
+//       email: this.email,
+//       password: this.password,
+//       phone: this.phone,
+//       role: this.role,
+//       position: this.position,
+//       last_login: this.last_login
+//     }
+//   }
 
 module.exports = mongoose.model('User', userSchema)
