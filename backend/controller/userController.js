@@ -125,7 +125,7 @@ const refreshToken = asyncHandler(async (req, res) => {
     } catch (error) {
         
         res.status(401)
-        throw new Error('Invalid token')
+        throw new Error('Please login again to verify your identiy')
     }
 })
 

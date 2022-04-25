@@ -13,6 +13,7 @@ import {ErrorsPage} from '../modules/errors/ErrorsPage'
 import {Logout, AuthPage} from '../modules/auth'
 import {RootState} from '../../setup'
 import {App} from '../App'
+import {LayoutSplashScreen} from '../../_metronic/layout/core'
 
 /**
  * Base URL of the website.
@@ -23,6 +24,11 @@ const {PUBLIC_URL} = process.env
 
 const AppRoutes: FC = () => {
   const isAuthorized = useSelector<RootState>(({auth}) => auth.user, shallowEqual)
+
+  if (localStorage.getItem('isTokenValidated') === 'true' && isAuthorized === undefined)
+    //state of refreshing access token
+    return <LayoutSplashScreen /> // or some kind of loading animation
+
   return (
     <BrowserRouter basename={PUBLIC_URL}>
       <Routes>

@@ -8,6 +8,8 @@ export default function setupAxios(axios: any, store: any) {
         auth: {accessToken},
       } = store.getState()
 
+      localStorage.setItem('isTokenValidated', 'false')
+
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`
       }
@@ -56,10 +58,11 @@ export default function setupAxios(axios: any, store: any) {
 
               // update new access token to persist
               store.dispatch(auth.actions.login(accessToken, refreshToken))
+              localStorage.setItem('isTokenValidated', 'true')
 
               console.log('updated New AccessToken')
 
-              return originalConfig
+              return axios(originalConfig)
             } catch (_error: any) {
               if (_error.response && _error.response.data) {
                 return Promise.reject(_error.response.data)
