@@ -17,57 +17,63 @@ export default function setupAxios(axios: any, store: any) {
     (err: any) => Promise.reject(err)
   )
 
-  const interceptor = axios.interceptors.response.use(
-    (res: any) => {
-      return res
-    },
-    async (err: any) => {
-      const originalConfig = err.config
+  createAxiosResponseInterceptor()
 
-      if (err.response) {
-        // access token expired, will hit error but auto renew token and make user not lose contact with current page
-        if (err.response.status === 401 && !originalConfig._retry) {
-          // handle infinite loop
-          originalConfig._retry = true
+  function createAxiosResponseInterceptor() {
+    const interceptor = axios.interceptors.response.use(
+      (res: any) => {
+        return res
+      },
+      async (err: any) => {
+        const originalConfig = err.config
 
-          const {
-            auth: {refreshToken},
-          } = store.getState()
+        if (err.response) {
+          // access token expired, will hit error but auto renew token and make user not lose contact with current page
 
-          /*
-           * When response code is 401, try to refresh the token.
-           * Eject the interceptor so it doesn't loop in case
-           * token refresh causes the 401 response
-           */
-          axios.interceptors.response.eject(interceptor)
+          if (err.response.status === 401 && !originalConfig._retry) {
+            // handle infinite loop
+            originalConfig._retry = true
 
-          try {
-            const rs = await axios.post('http://localhost:5000/api/user/refresh_token', {
-              refreshToken: refreshToken,
-            })
+            const {
+              auth: {refreshToken},
+            } = store.getState()
 
-            const {accessToken} = rs.data
+            /*
+             * When response code is 401, try to refresh the token.
+             * Eject the interceptor so it doesn't loop in case
+             * token refresh causes the 401 response
+             */
+            axios.interceptors.response.eject(interceptor)
 
-            originalConfig.headers.Authorization = `Bearer ${accessToken}`
+            try {
+              const rs = await axios.post('http://localhost:5000/api/user/refresh_token', {
+                refreshToken: refreshToken,
+              })
 
-            // update new access token to persist
-            store.dispatch(auth.actions.login(accessToken, refreshToken))
+              const {accessToken} = rs.data
 
-            console.log('updated New AccessToken')
+              originalConfig.headers.Authorization = `Bearer ${accessToken}`
 
-            return originalConfig
-          } catch (_error: any) {
-            if (_error.response && _error.response.data) {
-              return Promise.reject(_error.response.data)
+              // update new access token to persist
+              store.dispatch(auth.actions.login(accessToken, refreshToken))
+
+              console.log('updated New AccessToken')
+
+              return originalConfig
+            } catch (_error: any) {
+              if (_error.response && _error.response.data) {
+                return Promise.reject(_error.response.data)
+              }
+
+              return Promise.reject(_error)
+            } finally {
+              createAxiosResponseInterceptor()
             }
-
-            return Promise.reject(_error)
           }
+          // refresh token expired
         }
-
-        // refresh token expired
+        return Promise.reject(err)
       }
-      return Promise.reject(err)
-    }
-  )
+    )
+  }
 }

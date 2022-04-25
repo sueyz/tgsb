@@ -39,8 +39,7 @@ const registerUser = asyncHandler( async (req, res) => {
     })
 
     // will not generate token here since only registering through admin do next
-    if(user){
-      
+    if(user){ 
         res.status(201).json({
             _id: user.id,
             first_name: user.first_name,
@@ -68,9 +67,7 @@ const loginUser = asyncHandler( async (req, res) => {
         res.status(201).json({
             api_token: generateToken(user._id),
             refreshToken:generateRefreshToken(user._id)
-        })
-
-       
+        })  
     }else{
         res.status(400)
         throw new Error('Invalid credentials')
@@ -172,7 +169,7 @@ const queryUser = asyncHandler( async (req, res) => {
             const toValue = page === lastPage ? count : (limit * page)
 
             if (err) {
-              return res.json(count_error);
+                return res.json(count_error);
             }
 
             if (startIndex > 0) {
