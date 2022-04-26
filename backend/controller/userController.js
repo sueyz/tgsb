@@ -157,13 +157,24 @@ const queryUser = asyncHandler( async (req, res) => {
         last_login: 1,
         email: 1,
     })
-    .match({ full_name: searchString })
+    .match({ full_name: searchString})
     .skip(startIndex) 
     .limit(limit)
     .exec(function (err, users) {
         if (err) throw err;
 
-        User.estimatedDocumentCount(searchString).exec((count_error, count) => {
+        User.aggregate()
+        .project({full_name: { $concat: ['$first_name', ' ', '$last_name'] }})
+        .match({ full_name: searchString})
+        .count('finalCount')
+        .exec((count_error, valueCount) => {
+
+            var count = 0
+
+            if(valueCount.length >= 1){
+                count = valueCount[0].finalCount
+            }
+
             const lastPage = Math.ceil(count / limit)
             const fromValue = (limit * page) - (limit -1)
             const toValue = page === lastPage ? count : (limit * page)
