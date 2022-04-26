@@ -120,7 +120,11 @@ const refreshToken = asyncHandler(async (req, res) => {
         const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
         const accessToken = generateToken(decoded.id)
 
-        res.json({ accessToken });
+        //Get user from the decoded token
+        req.user = await User.findById(decoded.id).select('-password')
+
+        res.json({ accessToken: accessToken,
+            user: req.user });
 
     } catch (error) {
         

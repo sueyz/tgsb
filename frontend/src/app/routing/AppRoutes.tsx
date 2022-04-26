@@ -5,15 +5,14 @@
  * components (e.g: `src/app/modules/Auth/pages/AuthPage`, `src/app/BasePage`).
  */
 
-import {FC} from 'react'
+import React, {FC} from 'react'
 import {Routes, Route, BrowserRouter, Navigate} from 'react-router-dom'
-import {shallowEqual, useSelector} from 'react-redux'
+import {shallowEqual, useSelector, useDispatch} from 'react-redux'
 import {PrivateRoutes} from './PrivateRoutes'
 import {ErrorsPage} from '../modules/errors/ErrorsPage'
 import {Logout, AuthPage} from '../modules/auth'
 import {RootState} from '../../setup'
 import {App} from '../App'
-import {LayoutSplashScreen} from '../../_metronic/layout/core'
 
 /**
  * Base URL of the website.
@@ -24,10 +23,24 @@ const {PUBLIC_URL} = process.env
 
 const AppRoutes: FC = () => {
   const isAuthorized = useSelector<RootState>(({auth}) => auth.user, shallowEqual)
+  // const inputRef = React.useRef(isAuthorized)
+  // const dispatch = useDispatch()
 
-  if (localStorage.getItem('isTokenValidated') === 'true' && isAuthorized === undefined)
-    //state of refreshing access token
-    return <LayoutSplashScreen /> // or some kind of loading animation
+  // if (isAuthorized !== undefined) {
+  //   inputRef.current = isAuthorized
+  // }
+
+  // if (localStorage.getItem('isTokenValidated') === 'true' && isAuthorized === undefined) {
+  //   dispatch(auth.actions.setUser(inputRef.current as UserModel))
+  // }
+
+  // need to double check above solution
+
+  // if (localStorage.getItem('isTokenValidated') === 'true' && isAuthorized === undefined)
+  //   //state of refreshing access token
+  //   return <div /> // or some kind of loading animation
+
+  // triggered 2 kali sebab masa verify token tu ada pegi fetech user pula walaupun masa login dah amik user
 
   return (
     <BrowserRouter basename={PUBLIC_URL}>

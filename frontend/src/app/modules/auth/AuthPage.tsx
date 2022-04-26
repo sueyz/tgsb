@@ -5,6 +5,7 @@ import {Registration} from './components/Registration'
 import {ForgotPassword} from './components/ForgotPassword'
 import {Login} from './components/Login'
 import {toAbsoluteUrl} from '../../../_metronic/helpers'
+import {LayoutSplashScreen} from '../../../_metronic/layout/core'
 
 const AuthLayout = () => {
   useEffect(() => {
@@ -13,6 +14,10 @@ const AuthLayout = () => {
       document.body.classList.remove('bg-white')
     }
   }, [])
+
+  // if (localStorage.getItem('isTokenValidated') === 'false')
+  //   //state of refreshing access token
+  //   return <LayoutSplashScreen /> // or some kind of loading animation
 
   return (
     <div

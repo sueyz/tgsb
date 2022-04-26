@@ -52,12 +52,14 @@ export default function setupAxios(axios: any, store: any) {
                 refreshToken: refreshToken,
               })
 
-              const {accessToken} = rs.data
+              const {accessToken, user} = rs.data
 
               originalConfig.headers.Authorization = `Bearer ${accessToken}`
 
               // update new access token to persist
               store.dispatch(auth.actions.login(accessToken, refreshToken))
+              store.dispatch(auth.actions.setUser(user))
+
               localStorage.setItem('isTokenValidated', 'true')
 
               console.log('updated New AccessToken')
@@ -75,6 +77,7 @@ export default function setupAxios(axios: any, store: any) {
           }
           // refresh token expired
         }
+
         return Promise.reject(err)
       }
     )

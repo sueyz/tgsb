@@ -66,7 +66,6 @@ const PrivateRoutes = () => {
           }
         />
         <Route
-        
           path='apps/user-management/*'
           element={
             <SuspensedView>
