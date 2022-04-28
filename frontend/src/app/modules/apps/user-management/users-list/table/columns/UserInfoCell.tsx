@@ -15,17 +15,15 @@ const UserInfoCell: FC<Props> = ({user}) => (
       <a href='#'>
         {user.avatar ? (
           <div className='symbol-label'>
-            <img src={toAbsoluteUrl(`/media/${user.avatar}`)} className='w-100' />
+            <img
+              src={toAbsoluteUrl(`/media/${user.avatar}`)}
+              className='h-100 w-100'
+              style={{objectFit: 'cover'}}
+            />
           </div>
         ) : (
-          <div
-            className={clsx(
-              'symbol-label fs-3'
-              // `bg-light-${user.initials?.state}`,
-              // `text-${user.initials?.state}`
-            )}
-          >
-            {/* {user.initials?.label} */}
+          <div className='symbol-label'>
+            <img src={toAbsoluteUrl('/media/avatars/blank.png')} className='w-100' />
           </div>
         )}
       </a>

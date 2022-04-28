@@ -33,6 +33,10 @@ const userSchema = mongoose.Schema({
     last_login:{
         type: Date,
         required: false
+    },
+    avatar:{
+        type: String,
+        required: false
     }
 },{
     timestamps: true
@@ -49,7 +53,8 @@ userSchema.methods.toJSON = function () {
       phone: this.phone,
       role: this.role,
       position: this.position,
-      last_login: this.last_login
+      last_login: this.last_login,
+      avatar: this.avatar,
     }
   }
 

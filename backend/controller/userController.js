@@ -8,8 +8,7 @@ const { use } = require('express/lib/application')
 // @rout Post /api/user
 // @access Public
 const registerUser = asyncHandler( async (req, res) => {
-    const {first_name, last_name, email, role } = req.body
-
+    const {first_name, last_name, email, role, avatar } = req.body
     const password = 'tgsb1234'
 
     if(!first_name || !last_name || !email ){
@@ -31,6 +30,7 @@ const registerUser = asyncHandler( async (req, res) => {
 
     //Create User
     const user = await User.create({
+        avatar,
         first_name,
         last_name,
         email,
@@ -175,6 +175,7 @@ const queryUser = asyncHandler( async (req, res) => {
         role: 1,
         last_login: 1,
         email: 1,
+        avatar: 1
     })
     .match(queryMatch)
     .match({role: {$ne: 'Administrator'}})
@@ -314,10 +315,23 @@ const deleteUser = asyncHandler (async (req, res) => {
 
 })
 
+const uploadAvatar =(req, res) => {
+
+    if(!req.file ){
+        res.status(400)
+        throw new Error('Please choose an image')
+    }
+
+    res.status(200).json({
+        filename: req.file.filename
+    })
+}
+
+////////////////////////////////////////////////////////////
 // @desc get user data
 // @rout GEt /api/user/me
 // @access Private
-//probably profile
+//probably profile LATER
 const getMe = asyncHandler( async (req, res) => {
     const {_id, name, email} =  await User.findById(req.user.id)
 
@@ -355,5 +369,6 @@ module.exports = {
     queryUser,
     updateUser,
     getUserById,
-    deleteUser
+    deleteUser,
+    uploadAvatar
 }

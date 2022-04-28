@@ -6,7 +6,7 @@ import {initialUser, User} from '../core/_models'
 import clsx from 'clsx'
 import {useListView} from '../core/ListViewProvider'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
-import {createUser, updateUser} from '../core/_requests'
+import {createUser, updateUser, uploadImage} from '../core/_requests'
 import {useQueryResponse} from '../core/QueryResponseProvider'
 import {UserEditModalHeader} from './UserEditModalHeader'
 import {ToastContainer, toast} from 'react-toastify'
@@ -47,6 +47,14 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
     email: user.email || initialUser.email,
   })
 
+  const [file, setFile] = useState<File>()
+  const [picture, setPicture] = useState<String>(`/media/${userForEdit.avatar}`)
+
+  const onChangePicture = (e: any) => {
+    setPicture(URL.createObjectURL(e.target.files[0]))
+    setFile(e.target.files?.[0])
+  }
+
   const cancel = (withRefresh?: boolean) => {
     if (withRefresh) {
       refetch()
@@ -57,7 +65,6 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
   const notifyUserExist = () => toast('User already exists!')
 
   const blankImg = toAbsoluteUrl('/media/svg/avatars/blank.svg')
-  const userAvatarImg = toAbsoluteUrl(`/media/${userForEdit.avatar}`)
 
   const formik = useFormik({
     initialValues: userForEdit,
@@ -68,6 +75,12 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
         if (isNotEmpty(values.id)) {
           await updateUser(values)
         } else {
+          if (file !== undefined) {
+            let fd = new FormData()
+            fd.append('avatar', file)
+            values.avatar = `profile/${await uploadImage(fd)}`
+          }
+          console.log(values)
           await createUser(values)
         }
         cancel(true)
@@ -104,7 +117,6 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
             {/* begin::Label */}
             <label className='d-block fw-bold fs-6 mb-5'>Avatar</label>
             {/* end::Label */}
-
             {/* begin::Image input */}
             <div
               className='image-input image-input-outline'
@@ -114,33 +126,40 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
               {/* begin::Preview existing avatar */}
               <div
                 className='image-input-wrapper w-125px h-125px'
-                style={{backgroundImage: `url('${userAvatarImg}')`}}
+                style={{backgroundImage: `url('${picture}')`}}
               ></div>
               {/* end::Preview existing avatar */}
 
               {/* begin::Label */}
-              {/* <label
-              className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
-              data-kt-image-input-action='change'
-              data-bs-toggle='tooltip'
-              title='Change avatar'
-            >
-              <i className='bi bi-pencil-fill fs-7'></i>
+              <label
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='change'
+                data-bs-toggle='tooltip'
+                title='Change avatar'
+              >
+                <i className='bi bi-pencil-fill fs-7'></i>
 
-              <input type='file' name='avatar' accept='.png, .jpg, .jpeg' />
-              <input type='hidden' name='avatar_remove' />
-            </label> */}
+                <input
+                  type='file'
+                  name='avatar'
+                  accept='.png, .jpg, .jpeg'
+                  onChange={(e) => {
+                    onChangePicture(e)
+                  }}
+                />
+                <input type='hidden' name='avatar_remove' />
+              </label>
               {/* end::Label */}
 
               {/* begin::Cancel */}
-              {/* <span
-              className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
-              data-kt-image-input-action='cancel'
-              data-bs-toggle='tooltip'
-              title='Cancel avatar'
-            >
-              <i className='bi bi-x fs-2'></i>
-            </span> */}
+              <span
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='cancel'
+                data-bs-toggle='tooltip'
+                title='Cancel avatar'
+              >
+                <i className='bi bi-x fs-2'></i>
+              </span>
               {/* end::Cancel */}
 
               {/* begin::Remove */}
@@ -155,9 +174,8 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
               {/* end::Remove */}
             </div>
             {/* end::Image input */}
-
             {/* begin::Hint */}
-            {/* <div className='form-text'>Allowed file types: png, jpg, jpeg.</div> */}
+            <div className='form-text'>Allowed file types: png, jpg, jpeg.</div>
             {/* end::Hint */}
           </div>
           {/* end::Input group */}
