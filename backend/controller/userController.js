@@ -184,8 +184,9 @@ const queryUser = asyncHandler( async (req, res) => {
         if (err) throw err;
 
         User.aggregate()
-        .project({full_name: { $concat: ['$first_name', ' ', '$last_name'] }, role: filter})
+        .project({full_name: { $concat: ['$first_name', ' ', '$last_name'] }, role: 1})
         .match(queryMatch)
+        .match({role: {$ne: 'Administrator'}})
         .count('finalCount')
         .exec((count_error, valueCount) => {
 
