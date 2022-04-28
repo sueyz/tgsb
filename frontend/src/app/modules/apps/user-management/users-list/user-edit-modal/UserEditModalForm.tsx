@@ -269,19 +269,17 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
                   {...formik.getFieldProps('role')}
                   name='role'
                   type='radio'
-                  value='Administrator'
+                  value='Analyst'
                   id='kt_modal_update_role_option_0'
-                  checked={formik.values.role === 'Administrator'}
+                  checked={formik.values.role === 'Analyst'}
                   disabled={formik.isSubmitting || isUserLoading}
                 />
 
                 {/* end::Input */}
                 {/* begin::Label */}
                 <label className='form-check-label' htmlFor='kt_modal_update_role_option_0'>
-                  <div className='fw-bolder text-gray-800'>Administrator</div>
-                  <div className='text-gray-600'>
-                    Admin with payment logs and user management access
-                  </div>
+                  <div className='fw-bolder text-gray-800'>Analyst</div>
+                  <div className='text-gray-600'>Analyst of the company</div>
                 </label>
                 {/* end::Label */}
               </div>
@@ -351,7 +349,7 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
                 />
                 <label className='form-check-label' htmlFor='kt_modal_update_role_option_3'>
                   <div className='fw-bolder text-gray-800'>Support</div>
-                  <div className='text-gray-600'>Regular employees that are not and admin</div>
+                  <div className='text-gray-600'>Regular employees that are</div>
                 </label>
               </div>
             </div>

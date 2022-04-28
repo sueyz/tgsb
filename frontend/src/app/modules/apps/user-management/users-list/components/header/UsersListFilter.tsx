@@ -69,8 +69,8 @@ const UsersListFilter = () => {
               value={role}
             >
               <option value=''></option>
-              <option value='Administrator'>Administrator</option>
-              {/* <option value='Analyst'>Analyst</option> */}
+              {/* <option value='Administrator'>Administrator</option> */}
+              <option value='Analyst'>Analyst</option>
               {/* <option value='Developer'>Developer</option> */}
               <option value='Support'>Support</option>
               {/* <option value='Trial'>Trial</option> */}

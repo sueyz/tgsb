@@ -146,6 +146,9 @@ const queryUser = asyncHandler( async (req, res) => {
     var filter = req.query.filter_role
     var queryMatch = {}
 
+    const sort = req.query.sort
+    const order = req.query.order
+
     if(filter === undefined){
         filter = null
         queryMatch = { full_name: searchString}
@@ -163,6 +166,7 @@ const queryUser = asyncHandler( async (req, res) => {
 
         
     User.aggregate()
+    .sort({ [sort]: order } )
     .project({
         id: '$_id',
         full_name: { $concat: ['$first_name', ' ', '$last_name'] },
@@ -173,6 +177,7 @@ const queryUser = asyncHandler( async (req, res) => {
         email: 1,
     })
     .match(queryMatch)
+    .match({role: {$ne: 'Administrator'}})
     .skip(startIndex) 
     .limit(limit)
     .exec(function (err, users) {
