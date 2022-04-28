@@ -143,6 +143,17 @@ const queryUser = asyncHandler( async (req, res) => {
     var searchString = new RegExp(userName, 'ig');
 
     const page = parseInt(req.query.page)
+    var filter = req.query.filter_role
+    var queryMatch = {}
+
+    if(filter === undefined){
+        filter = null
+        queryMatch = { full_name: searchString}
+    }else{
+        filter = filter.charAt(0).toUpperCase() + filter.slice(1)
+        queryMatch = { full_name: searchString, role: filter}
+    }
+
     const limit = 10
 
     const startIndex = (page - 1) * limit
@@ -161,15 +172,15 @@ const queryUser = asyncHandler( async (req, res) => {
         last_login: 1,
         email: 1,
     })
-    .match({ full_name: searchString})
+    .match(queryMatch)
     .skip(startIndex) 
     .limit(limit)
     .exec(function (err, users) {
         if (err) throw err;
 
         User.aggregate()
-        .project({full_name: { $concat: ['$first_name', ' ', '$last_name'] }})
-        .match({ full_name: searchString})
+        .project({full_name: { $concat: ['$first_name', ' ', '$last_name'] }, role: filter})
+        .match(queryMatch)
         .count('finalCount')
         .exec((count_error, valueCount) => {
 

@@ -13,10 +13,10 @@ const UsersListToolbar = () => {
       <UsersListFilter />
 
       {/* begin::Export */}
-      <button type='button' className='btn btn-light-primary me-3'>
+      {/* <button type='button' className='btn btn-light-primary me-3'>
         <KTSVG path='/media/icons/duotune/arrows/arr078.svg' className='svg-icon-2' />
         Export
-      </button>
+      </button> */}
       {/* end::Export */}
 
       {/* begin::Add user */}

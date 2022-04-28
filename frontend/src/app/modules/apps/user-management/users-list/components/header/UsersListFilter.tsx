@@ -8,20 +8,22 @@ const UsersListFilter = () => {
   const {updateState} = useQueryRequest()
   const {isLoading} = useQueryResponse()
   const [role, setRole] = useState<string | undefined>()
-  const [lastLogin, setLastLogin] = useState<string | undefined>()
+  // const [lastLogin, setLastLogin] = useState<string | undefined>()
 
   useEffect(() => {
     MenuComponent.reinitialization()
   }, [])
 
   const resetData = () => {
+    setRole('')
     updateState({filter: undefined, ...initialQueryState})
   }
 
   const filterData = () => {
+    console.log(role)
     updateState({
-      filter: {role, last_login: lastLogin},
-      ...initialQueryState
+      filter: {role},
+      ...initialQueryState,
     })
   }
 
@@ -68,16 +70,16 @@ const UsersListFilter = () => {
             >
               <option value=''></option>
               <option value='Administrator'>Administrator</option>
-              <option value='Analyst'>Analyst</option>
-              <option value='Developer'>Developer</option>
+              {/* <option value='Analyst'>Analyst</option> */}
+              {/* <option value='Developer'>Developer</option> */}
               <option value='Support'>Support</option>
-              <option value='Trial'>Trial</option>
+              {/* <option value='Trial'>Trial</option> */}
             </select>
           </div>
           {/* end::Input group */}
 
           {/* begin::Input group */}
-          <div className='mb-10'>
+          {/* <div className='mb-10'>
             <label className='form-label fs-6 fw-bold'>Last login:</label>
             <select
               className='form-select form-select-solid fw-bolder'
@@ -95,7 +97,7 @@ const UsersListFilter = () => {
               <option value='5 hours ago'>5 hours ago</option>
               <option value='2 days ago'>2 days ago</option>
             </select>
-          </div>
+          </div> */}
           {/* end::Input group */}
 
           {/* begin::Actions */}
@@ -103,7 +105,7 @@ const UsersListFilter = () => {
             <button
               type='button'
               disabled={isLoading}
-              onClick={filterData}
+              onClick={resetData}
               className='btn btn-light btn-active-light-primary fw-bold me-2 px-6'
               data-kt-menu-dismiss='true'
               data-kt-user-table-filter='reset'
@@ -113,7 +115,7 @@ const UsersListFilter = () => {
             <button
               disabled={isLoading}
               type='button'
-              onClick={resetData}
+              onClick={filterData}
               className='btn btn-primary fw-bold px-6'
               data-kt-menu-dismiss='true'
               data-kt-user-table-filter='filter'
