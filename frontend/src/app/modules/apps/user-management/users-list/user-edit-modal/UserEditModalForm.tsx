@@ -72,15 +72,15 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
     onSubmit: async (values, {setSubmitting}) => {
       setSubmitting(true)
       try {
+        if (file !== undefined) {
+          let fd = new FormData()
+          fd.append('avatar', file)
+          values.avatar = `profile/${await uploadImage(fd)}`
+        }
+
         if (isNotEmpty(values.id)) {
           await updateUser(values)
         } else {
-          if (file !== undefined) {
-            let fd = new FormData()
-            fd.append('avatar', file)
-            values.avatar = `profile/${await uploadImage(fd)}`
-          }
-          console.log(values)
           await createUser(values)
         }
         cancel(true)

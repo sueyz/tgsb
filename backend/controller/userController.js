@@ -3,6 +3,9 @@ const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 const User = require('../model/userModel')
 const { use } = require('express/lib/application')
+const fs = require('fs')
+const path = require('path')
+
 
 // @ desc Register User
 // @rout Post /api/user
@@ -294,8 +297,32 @@ const updateUser = asyncHandler (async (req, res) => {
         throw new Error('User not found')
     }
 
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {new: true})
+    const user = await User.findById(req.params.id)
 
+    const oldPhoto = user.avatar
+
+    //  Remove old photo
+    if (oldPhoto !== 'avatars/blank.png' && oldPhoto !== undefined) {
+        console.log(__dirname)
+
+        try {
+            const oldPath = path.join(__dirname, '../../frontend/public/media/', oldPhoto);
+
+            if (fs.existsSync(oldPath)) {
+                fs.unlink(oldPath, (err) => {
+                    if (err) {
+                    console.error(err);
+                    return;
+                    }
+                });
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {new: true})
     res.status(200).json(updatedUser)
 
 })
@@ -307,6 +334,30 @@ const deleteUser = asyncHandler (async (req, res) => {
     if(!req.user){
         res.status(400)
         throw new Error('User not found')
+    }
+
+    const user = await User.findById(req.params.id)
+
+    const oldPhoto = user.avatar
+
+    //  Remove old photo
+    if (oldPhoto !== 'avatars/blank.png' && oldPhoto !== undefined) {
+        console.log(__dirname)
+
+        try {
+            const oldPath = path.join(__dirname, '../../frontend/public/media/', oldPhoto);
+
+            if (fs.existsSync(oldPath)) {
+                fs.unlink(oldPath, (err) => {
+                    if (err) {
+                    console.error(err);
+                    return;
+                    }
+                });
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const deletedUser = await User.findByIdAndDelete(req.params.id)
