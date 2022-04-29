@@ -6,19 +6,19 @@ import {UserSocialNetworksModel} from './UserSocialNetworksModel'
 
 export interface UserModel {
   id: number
-  username: string
-  password: string | undefined
-  email: string
-  first_name: string
-  last_name: string
-  fullname?: string
-  occupation?: string
-  companyName?: string
-  phone?: string
-  roles?: Array<number>
-  pic?: string
+  username: String
+  password: String | undefined
+  email: String
+  first_name: String
+  last_name: String
+  fullname?: String
+  occupation?: String
+  companyName?: String
+  phone?: String
+  role: String
+  pic?: String
   language?: 'en' | 'de' | 'es' | 'fr' | 'ja' | 'zh' | 'ru'
-  timeZone?: string
+  timeZone?: String
   website?: 'https://keenthemes.com'
   emailSettings?: UserEmailSettingsModel
   auth?: AuthModel

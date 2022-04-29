@@ -93,6 +93,7 @@ const verifyToken = asyncHandler(async (req, res) => {
 
             res.status(200).json({
                 api_token: decoded,
+                role: req.user.role,
                 first_name: req.user.first_name,
                 last_name: req.user.last_name
 

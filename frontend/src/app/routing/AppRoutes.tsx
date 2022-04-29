@@ -7,7 +7,7 @@
 
 import React, {FC} from 'react'
 import {Routes, Route, BrowserRouter, Navigate} from 'react-router-dom'
-import {shallowEqual, useSelector, useDispatch} from 'react-redux'
+import {shallowEqual, useSelector} from 'react-redux'
 import {PrivateRoutes} from './PrivateRoutes'
 import {ErrorsPage} from '../modules/errors/ErrorsPage'
 import {Logout, AuthPage} from '../modules/auth'

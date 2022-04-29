@@ -5,8 +5,12 @@ import TopBarProgress from 'react-topbar-progress-indicator'
 import {DashboardWrapper} from '../pages/dashboard/DashboardWrapper'
 import {MenuTestPage} from '../pages/MenuTestPage'
 import {getCSSVariableValue} from '../../_metronic/assets/ts/_utils'
+import {shallowEqual, useSelector} from 'react-redux'
+import {RootState} from '../../setup'
 
 const PrivateRoutes = () => {
+  const isAdmin = useSelector<RootState>(({auth}) => auth.user?.role, shallowEqual)
+
   const BuilderPageWrapper = lazy(() => import('../pages/layout-builder/BuilderPageWrapper'))
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
   const WizardsPage = lazy(() => import('../modules/wizards/WizardsPage'))
@@ -65,14 +69,21 @@ const PrivateRoutes = () => {
             </SuspensedView>
           }
         />
-        <Route
-          path='apps/user-management/*'
-          element={
-            <SuspensedView>
-              <UsersPage />
-            </SuspensedView>
-          }
-        />
+        {isAdmin === 'Administrator' ? (
+          <>
+            <Route
+              path='apps/user-management/*'
+              element={
+                <SuspensedView>
+                  <UsersPage />
+                </SuspensedView>
+              }
+            />
+          </>
+        ) : (
+          <></>
+        )}
+
         {/* Page Not Found */}
         <Route path='*' element={<Navigate to='/error/404' />} />
       </Route>
