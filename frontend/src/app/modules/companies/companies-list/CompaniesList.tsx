@@ -3,7 +3,7 @@ import {QueryRequestProvider} from './core/QueryRequestProvider'
 import {QueryResponseProvider} from './core/QueryResponseProvider'
 import {CompaniesListHeader} from './components/header/CompaniesListHeader'
 import {UsersTable} from './table/CompaniesTable'
-import {UserEditModal} from './user-edit-modal/CompaniesEditModal'
+import {UserEditModal} from './companies-edit-modal/CompaniesEditModal'
 import {KTCard} from '../../../../_metronic/helpers'
 
 const CompaniesList = () => {

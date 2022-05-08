@@ -69,7 +69,7 @@ const CompaniesListFilter = () => {
             >
               <option value=''></option>
               <option value='Regular'>Regular</option>
-              <option value='Sub-Consultant'>Sub-Consultant</option>
+              <option value='Sub-consultant'>Sub-consultant</option>
             </select>
           </div>
           {/* end::Input group */}

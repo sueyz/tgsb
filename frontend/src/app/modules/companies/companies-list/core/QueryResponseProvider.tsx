@@ -9,7 +9,7 @@ import {
   QUERIES,
   stringifyRequestQuery,
 } from '../../../../../_metronic/helpers'
-import {getUsers} from './_requests'
+import {getCompanies} from './_requests'
 import {Companies} from './_models'
 import {useQueryRequest} from './QueryRequestProvider'
 
@@ -32,7 +32,7 @@ const QueryResponseProvider: FC = ({children}) => {
   } = useQuery(
     `${QUERIES.COMPANIES_LIST}-${query}`,
     () => {
-      return getUsers(query)
+      return getCompanies(query)
     },
     {cacheTime: 0, keepPreviousData: true, refetchOnWindowFocus: false}
   )

@@ -2,11 +2,11 @@ import {FC, useState} from 'react'
 import * as Yup from 'yup'
 import {useFormik} from 'formik'
 import {isNotEmpty, toAbsoluteUrl} from '../../../../../_metronic/helpers'
-import {initialUser, Companies} from '../core/_models'
+import {initialCompany, Companies} from '../core/_models'
 import clsx from 'clsx'
 import {useListView} from '../core/ListViewProvider'
 import {CompaniesListLoading} from '../components/loading/CompaniesListLoading'
-import {createUser, updateUser, uploadImage} from '../core/_requests'
+import {createCompanies, updateCompanies, uploadImage} from '../core/_requests'
 import {useQueryResponse} from '../core/QueryResponseProvider'
 import {UserEditModalHeader} from './CompaniesEditModalHeader'
 import {ToastContainer, toast} from 'react-toastify'
@@ -14,7 +14,7 @@ import 'react-toastify/dist/ReactToastify.css'
 
 type Props = {
   isUserLoading: boolean
-  user: Companies
+  company: Companies
 }
 
 const editUserSchema = Yup.object().shape({
@@ -23,28 +23,28 @@ const editUserSchema = Yup.object().shape({
     .min(3, 'Minimum 3 symbols')
     .max(50, 'Maximum 50 symbols')
     .required('Email is required'),
-  first_name: Yup.string()
+  name: Yup.string()
     .min(3, 'Minimum 3 symbols')
     .max(50, 'Maximum 50 symbols')
-    .required('Name is required'),
-  last_name: Yup.string()
-    .min(3, 'Minimum 3 symbols')
-    .max(50, 'Maximum 50 symbols')
-    .required('Name is required'),
+    .required('Name is required')
 })
 
-const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
+const CompaniesEditModalForm: FC<Props> = ({company, isUserLoading}) => {
   const {setItemIdForUpdate} = useListView()
   const {refetch} = useQueryResponse()
 
   const [userForEdit] = useState<Companies>({
-    ...user,
-    avatar: user.avatar || initialUser.avatar,
-    role: user.role || initialUser.role,
-    position: user.position || initialUser.position,
-    first_name: user.first_name || initialUser.first_name,
-    last_name: user.last_name || initialUser.last_name,
-    email: user.email || initialUser.email,
+    ...company,
+    avatar: company.avatar || initialCompany.avatar,
+    type: company.type || initialCompany.type,
+    poc: company.poc || initialCompany.poc,
+    name: company.name || initialCompany.name,
+    phone: company.phone || initialCompany.phone,
+    email: company.email || initialCompany.email,
+    address: company.address || initialCompany.address,
+    bank: company.bank || initialCompany.bank,
+    accountNo: company.accountNo || initialCompany.accountNo,
+
   })
 
   const [file, setFile] = useState<File>()
@@ -79,9 +79,9 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
         }
 
         if (isNotEmpty(values.id)) {
-          await updateUser(values)
+          await updateCompanies(values)
         } else {
-          await createUser(values)
+          await createCompanies(values)
         }
         cancel(true)
       } catch (ex) {
@@ -97,7 +97,7 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
   return (
     <>
       <ToastContainer position='bottom-center' />
-      <UserEditModalHeader checkUser={user.email} />
+      <UserEditModalHeader checkUser={company.email} />
 
       <form id='kt_modal_add_user_form' className='form' onSubmit={formik.handleSubmit} noValidate>
         {/* begin::Scroll */}
@@ -180,59 +180,59 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
           </div>
           {/* end::Input group */}
 
-          {/* begin::Form group Firstname */}
+          {/* begin::Form group Name */}
           <div className='row fv-row mb-7'>
             <div className='col-xl-6'>
-              <label className='form-label fw-bolder text-dark fs-6'>First name</label>
+              <label className='form-label fw-bolder text-dark fs-6'>Name</label>
               <input
-                placeholder='First name'
+                placeholder='Name'
                 type='text'
                 autoComplete='off'
-                {...formik.getFieldProps('first_name')}
+                {...formik.getFieldProps('name')}
                 className={clsx(
                   'form-control form-control-lg form-control-solid',
                   {
-                    'is-invalid': formik.touched.first_name && formik.errors.first_name,
+                    'is-invalid': formik.touched.name && formik.errors.name,
                   },
                   {
-                    'is-valid': formik.touched.first_name && !formik.errors.first_name,
+                    'is-valid': formik.touched.name && !formik.errors.name,
                   }
                 )}
               />
-              {formik.touched.first_name && formik.errors.first_name && (
+              {formik.touched.name && formik.errors.name && (
                 <div className='fv-plugins-message-container'>
                   <div className='mt-2 fv-help-block'>
                     <span role='alert' style={{color: '#f1416c'}}>
-                      {formik.errors.first_name}
+                      {formik.errors.name}
                     </span>
                   </div>
                 </div>
               )}
             </div>
             <div className='col-xl-6'>
-              {/* begin::Form group Lastname */}
+              {/* begin::Form group Address */}
               <div className='fv-row mb-5'>
-                <label className='form-label fw-bolder text-dark fs-6'>Last name</label>
+                <label className='form-label fw-bolder text-dark fs-6'>Address</label>
                 <input
-                  placeholder='Last name'
+                  placeholder='Address'
                   type='text'
                   autoComplete='off'
-                  {...formik.getFieldProps('last_name')}
+                  {...formik.getFieldProps('address')}
                   className={clsx(
                     'form-control form-control-lg form-control-solid',
                     {
-                      'is-invalid': formik.touched.last_name && formik.errors.last_name,
+                      'is-invalid': formik.touched.address && formik.errors.address,
                     },
                     {
-                      'is-valid': formik.touched.last_name && !formik.errors.last_name,
+                      'is-valid': formik.touched.address && !formik.errors.address,
                     }
                   )}
                 />
-                {formik.touched.last_name && formik.errors.last_name && (
+                {formik.touched.address && formik.errors.address && (
                   <div className='fv-plugins-message-container'>
                     <div className='mt-2 fv-help-block'>
                       <span role='alert' style={{color: '#f1416c'}}>
-                        {formik.errors.last_name}
+                        {formik.errors.address}
                       </span>
                     </div>
                   </div>
@@ -274,7 +274,7 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
           {/* begin::Input group */}
           <div className='mb-7'>
             {/* begin::Label */}
-            <label className='required fw-bold fs-6 mb-5'>Role</label>
+            <label className='required fw-bold fs-6 mb-5'>Type</label>
             {/* end::Label */}
             {/* begin::Roles */}
             {/* begin::Input row */}
@@ -284,20 +284,20 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
                 {/* begin::Input */}
                 <input
                   className='form-check-input me-3'
-                  {...formik.getFieldProps('role')}
-                  name='role'
+                  {...formik.getFieldProps('type')}
+                  name='type'
                   type='radio'
-                  value='Analyst'
+                  value='Regular'
                   id='kt_modal_update_role_option_0'
-                  checked={formik.values.role === 'Analyst'}
+                  checked={formik.values.type === 'Regular'}
                   disabled={formik.isSubmitting || isUserLoading}
                 />
 
                 {/* end::Input */}
                 {/* begin::Label */}
                 <label className='form-check-label' htmlFor='kt_modal_update_role_option_0'>
-                  <div className='fw-bolder text-gray-800'>Analyst</div>
-                  <div className='text-gray-600'>Analyst of the company</div>
+                  <div className='fw-bolder text-gray-800'>Regular</div>
+                  <div className='text-gray-600'>Regular Quotation Company</div>
                 </label>
                 {/* end::Label */}
               </div>
@@ -357,17 +357,17 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
               <div className='form-check form-check-custom form-check-solid'>
                 <input
                   className='form-check-input me-3'
-                  {...formik.getFieldProps('role')}
-                  name='role'
+                  {...formik.getFieldProps('type')}
+                  name='type'
                   type='radio'
-                  value='Support'
+                  value='Sub-consultant'
                   id='kt_modal_update_role_option_3'
-                  checked={formik.values.role === 'Support'}
+                  checked={formik.values.type === 'Sub-consultant'}
                   disabled={formik.isSubmitting || isUserLoading}
                 />
                 <label className='form-check-label' htmlFor='kt_modal_update_role_option_3'>
-                  <div className='fw-bolder text-gray-800'>Support</div>
-                  <div className='text-gray-600'>Regular employees that are</div>
+                  <div className='fw-bolder text-gray-800'>Sub-consultant</div>
+                  <div className='text-gray-600'>Sub-consultant Company that we hire</div>
                 </label>
               </div>
             </div>
@@ -436,4 +436,4 @@ const UserEditModalForm: FC<Props> = ({user, isUserLoading}) => {
   )
 }
 
-export {UserEditModalForm}
+export {CompaniesEditModalForm}

@@ -1,20 +1,20 @@
 import {useQuery} from 'react-query'
-import {UserEditModalForm} from './CompaniesEditModalForm'
+import {CompaniesEditModalForm} from './CompaniesEditModalForm'
 import {isNotEmpty, QUERIES} from '../../../../../_metronic/helpers'
 import {useListView} from '../core/ListViewProvider'
-import {getUserById} from '../core/_requests'
+import {getCompaniesById} from '../core/_requests'
 
 const UserEditModalFormWrapper = () => {
   const {itemIdForUpdate, setItemIdForUpdate} = useListView()
   const enabledQuery: boolean = isNotEmpty(itemIdForUpdate)
   const {
     isLoading,
-    data: user,
+    data: company,
     error,
   } = useQuery(
     `${QUERIES.COMPANIES_LIST}-user-${itemIdForUpdate}`,
     () => {
-      return getUserById(itemIdForUpdate)
+      return getCompaniesById(itemIdForUpdate)
     },
     {
       cacheTime: 0,
@@ -27,11 +27,11 @@ const UserEditModalFormWrapper = () => {
   )
 
   if (!itemIdForUpdate) {
-    return <UserEditModalForm isUserLoading={isLoading} user={{id: undefined}} />
+    return <CompaniesEditModalForm isUserLoading={isLoading} company={{id: undefined}} />
   }
 
-  if (!isLoading && !error && user) {
-    return <UserEditModalForm isUserLoading={isLoading} user={user} />
+  if (!isLoading && !error && company) {
+    return <CompaniesEditModalForm isUserLoading={isLoading} company={company} />
   }
 
   return null

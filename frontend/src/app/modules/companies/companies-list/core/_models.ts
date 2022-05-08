@@ -1,13 +1,15 @@
 import {ID, Response} from '../../../../../_metronic/helpers'
 export type Companies = {
   id?: ID
-  first_name?: String
-  last_name?: String
+  type?: String
+  name?: String
+  address?: String
   avatar?: String
   email?: String
-  position?: String
-  role?: String
-  last_login?: String
+  phone?: String
+  poc?: String
+  accountNo?: String
+  bank?: String
   // online?: boolean
   // initials?: {
   //   label: string
@@ -17,11 +19,14 @@ export type Companies = {
 
 export type UsersQueryResponse = Response<Array<Companies>>
 
-export const initialUser: Companies = {
+export const initialCompany: Companies = {
   avatar: 'avatars/blank.png',
-  position: '',
-  role: 'Support',
-  first_name: '',
-  last_name: '',
+  address: '',
+  type: 'Regular',
+  name: '',
   email: '',
+  phone: '',
+  poc: '',
+  accountNo: '',
+  bank: '',
 }

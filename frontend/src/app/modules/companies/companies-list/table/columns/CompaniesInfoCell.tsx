@@ -7,10 +7,12 @@ import cn from "classnames";
 import {CompaniesActionsCell} from './CompaniesActionsCell'
 
 type Props = {
-  user: Companies
+  company: Companies
 }
 
-const CompaniesInfoCell: FC<Props> = ({user}) => (
+const CompaniesInfoCell: FC<Props> = ({company}) => {
+  console.log(company)
+  return(
   <div className='d-flex align-items-center'>
     {/* begin:: Avatar */}
 
@@ -20,28 +22,28 @@ const CompaniesInfoCell: FC<Props> = ({user}) => (
         })}>
         <div className="card front">
           <div className="card-body d-flex justify-content-center align-items-center">
-            <p className="card-text fs-1 fw-bold">{user.first_name} {user.last_name}</p>
+            <p className="card-text fs-1 fw-bold">{company.name}</p>
           </div>
         </div>
         <div className="card back">
           <div>
-          <CompaniesActionsCell id={user.id}/>
+          <CompaniesActionsCell id={company.id}/>
           </div>
 
           <div className='d-flex flex-column'>
       <a href='#' className='text-gray-800 text-hover-primary mb-1'>
-        {user.first_name} {user.last_name}
+        {company.name}
       </a>
-      <span>{user.email}</span>
+      <span>{company.email}</span>
     </div>
 
           <div className="card-body d-flex justify-content-center align-items-center">
           <div className='symbol symbol-circle symbol-50px overflow-hidden me-3'>
               <a href='#'>
-                {user.avatar ? (
+                {company.avatar ? (
                   <div className='symbol-label'>
                     <img
-                      src={toAbsoluteUrl(`/media/${user.avatar}`)}
+                      src={toAbsoluteUrl(`/media/${company.avatar}`)}
                       className='h-100 w-100'
                       style={{objectFit: 'cover'}}
                     />
@@ -59,6 +61,6 @@ const CompaniesInfoCell: FC<Props> = ({user}) => (
       </div>
     </div>
   </div>
-)
+)}
 
 export {CompaniesInfoCell}

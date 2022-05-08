@@ -5,7 +5,7 @@ import {MenuComponent} from '../../../../../../_metronic/assets/ts/components'
 import {ID, KTSVG, QUERIES} from '../../../../../../_metronic/helpers'
 import {useListView} from '../../core/ListViewProvider'
 import {useQueryResponse} from '../../core/QueryResponseProvider'
-import {deleteUser} from '../../core/_requests'
+import {deleteCompanies} from '../../core/_requests'
 
 type Props = {
   id: ID
@@ -21,10 +21,12 @@ const CompaniesActionsCell: FC<Props> = ({id}) => {
   }, [])
 
   const openEditModal = () => {
+    console.log('llllllll')
+    console.log(id)
     setItemIdForUpdate(id)
   }
 
-  const deleteItem = useMutation(() => deleteUser(id), {
+  const deleteItem = useMutation(() => deleteCompanies(id), {
     // 💡 response of the mutation is passed to onSuccess
     onSuccess: () => {
       // ✅ update detail view directly

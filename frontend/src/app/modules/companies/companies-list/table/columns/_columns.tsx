@@ -9,10 +9,9 @@ const usersColumns: ReadonlyArray<Column<Companies>> = [
     id: '1',
     Cell: ({...props}) => {
     test = props.row.index * 3
-    console.log(props.data.length)
 
     if(test < props.data.length)
-      return <CompaniesInfoCell user={props.data[test]} />},
+      return <CompaniesInfoCell company={props.data[test]} />},
   },
   {
     id: '2',
@@ -20,14 +19,14 @@ const usersColumns: ReadonlyArray<Column<Companies>> = [
 
       test = props.row.index * 3 + 1
       if(test < props.data.length)
-        return <CompaniesInfoCell user={props.data[test]} />},
+        return <CompaniesInfoCell company={props.data[test]} />},
   },
   {
     id: '3',
     Cell: ({...props}) => {
       test = props.row.index * 3 + 2
     if(test < props.data.length)
-      return <CompaniesInfoCell user={props.data[test]} />},
+      return <CompaniesInfoCell company={props.data[test]} />},
   }
 ]
 
