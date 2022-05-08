@@ -31,6 +31,12 @@ export function AsideMenuMain() {
           <span className='menu-section text-muted text-uppercase fs-8 ls-1'>Inventory</span>
         </div>
       </div>
+      <AsideMenuItem
+        to='/companies'
+        icon='/media/icons/duotune/general/gen022.svg'
+        title='Companies'
+        fontIcon='bi-layers'
+      />
       <AsideMenuItemWithSub
         to='/crafted/pages'
         title='Pages'
@@ -76,7 +82,7 @@ export function AsideMenuMain() {
         <AsideMenuItem to='/error/404' title='Error 404' hasBullet={true} />
         <AsideMenuItem to='/error/500' title='Error 500' hasBullet={true} />
       </AsideMenuItemWithSub>
-      <AsideMenuItemWithSub
+      {/* <AsideMenuItemWithSub
         to='/crafted/widgets'
         title='Widgets'
         icon='/media/icons/duotune/general/gen025.svg'
@@ -88,7 +94,7 @@ export function AsideMenuMain() {
         <AsideMenuItem to='/crafted/widgets/mixed' title='Mixed' hasBullet={true} />
         <AsideMenuItem to='/crafted/widgets/tables' title='Tables' hasBullet={true} />
         <AsideMenuItem to='/crafted/widgets/feeds' title='Feeds' hasBullet={true} />
-      </AsideMenuItemWithSub>
+      </AsideMenuItemWithSub> */}
 
       {/* <AsideMenuItemWithSub
         to='/apps/chat'
