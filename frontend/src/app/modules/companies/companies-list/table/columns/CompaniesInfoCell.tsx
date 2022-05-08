@@ -20,8 +20,8 @@ const CompaniesInfoCell: FC<Props> = ({ company }) => {
         <div className={cn("flip-card-inner", {
           "hover-trigger": true
         })}>
-          <div className="card front" style={{display: 'flex'}}>
-            <div className="card-body d-flex justify-content-center align-items-center" style={{flexDirection: 'column'}}>
+          <div className="card front" style={{ display: 'flex' }}>
+            <div className="card-body d-flex justify-content-center align-items-center" style={{ flexDirection: 'column' }}>
               <div className='symbol symbol-circle symbol-100px overflow-hidden mb-3'>
                 <a href='#'>
                   {company.avatar ? (
@@ -46,16 +46,16 @@ const CompaniesInfoCell: FC<Props> = ({ company }) => {
             <div>
               <CompaniesActionsCell id={company.id} />
             </div>
+            <p className="card-text ms-5 fst-italic">Quotation: {company.type}</p>
+            <p className="card-text ms-5 fst-italic">Address: {company.address}</p>
+            <p className="card-text ms-5 fst-italic">Email: <a href={"mailto:" + company.email}>{company.email}</a></p>
 
-            <div className='d-flex flex-column'>
-              <a href='#' className='text-gray-800 text-hover-primary mb-1'>
-                {company.name}
-              </a>
-              <span>{company.email}</span>
-            </div>
+            <p className="card-text ms-5 fst-italic">Tel: {company.phone}</p>
+            <p className="card-text ms-5 fst-italic">Person In Charge: {company.poc}</p>
+
             <div className="card-body d-flex justify-content-center align-items-center">
 
-              <p className="card-text fs-1 fw-bold">Back</p>
+              <a style={{ color: '#34b0f6' }} href='#' className="card-text fs-1 fw-bolder"><u>More Info</u></a>
             </div>
           </div>
         </div>

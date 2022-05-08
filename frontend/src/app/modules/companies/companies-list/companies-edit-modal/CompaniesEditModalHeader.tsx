@@ -10,7 +10,7 @@ const UserEditModalHeader = (props: any) => {
       style={{paddingLeft: 0, paddingRight: 0, paddingTop: 0, paddingBottom: 20, marginBottom: 20}}
     >
       {/* begin::Modal title */}
-      <h2 className='fw-bolder'>{props.checkUser ? 'Edit User' : 'Add User'}</h2>
+      <h2 className='fw-bolder'>{props.checkUser ? 'Edit Company' : 'Add Company'}</h2>
       {/* end::Modal title */}
 
       {/* begin::Close */}

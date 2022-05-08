@@ -113,7 +113,7 @@ const CompaniesEditModalForm: FC<Props> = ({company, isUserLoading}) => {
           data-kt-scroll-offset='300px'
         >
           {/* begin::Input group */}
-          <div className='fv-row mb-7'>
+          <div className='d-flex align-items-center flex-column fv-row mb-10'>
             {/* begin::Label */}
             <label className='d-block fw-bold fs-6 mb-5'>Avatar</label>
             {/* end::Label */}

@@ -65,7 +65,7 @@ const queryCompany = asyncHandler( async (req, res) => {
     var queryMatch = {}
 
     const sort = req.query.sort
-    // const order = req.query.order
+    const order = req.query.order
 
     if(filter === undefined){
         filter = null
@@ -93,6 +93,8 @@ const queryCompany = asyncHandler( async (req, res) => {
         avatar: 1,
         phone: 1
     })
+    .collation({locale: "en" })
+    .sort({'name': 1} )
     .match(queryMatch)
     .skip(startIndex) 
     .limit(limit)
