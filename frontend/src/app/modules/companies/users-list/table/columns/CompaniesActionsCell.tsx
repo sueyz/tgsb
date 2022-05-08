@@ -11,7 +11,7 @@ type Props = {
   id: ID
 }
 
-const UserActionsCell: FC<Props> = ({id}) => {
+const CompaniesActionsCell: FC<Props> = ({id}) => {
   const {setItemIdForUpdate} = useListView()
   const {query} = useQueryResponse()
   const queryClient = useQueryClient()
@@ -39,9 +39,9 @@ const UserActionsCell: FC<Props> = ({id}) => {
         className='btn btn-light btn-active-light-primary btn-sm'
         data-kt-menu-trigger='click'
         data-kt-menu-placement='bottom-end'
-      >
-        Actions
-        <KTSVG path='/media/icons/duotune/arrows/arr072.svg' className='svg-icon-5 m-0' />
+        style={{float:'right'}}
+      >   
+        <KTSVG path='/media/icons/duotune/arrows/menu.svg' className='svg-icon-5 m-0' />
       </a>
       {/* begin::Menu */}
       <div
@@ -73,4 +73,4 @@ const UserActionsCell: FC<Props> = ({id}) => {
   )
 }
 
-export {UserActionsCell}
+export {CompaniesActionsCell}

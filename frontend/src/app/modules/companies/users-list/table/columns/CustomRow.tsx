@@ -17,6 +17,7 @@ const CustomRow: FC<Props> = ({row}) => (
         >
           {cell.render('Cell')}
         </td>
+        
       )
     })}
   </tr>
