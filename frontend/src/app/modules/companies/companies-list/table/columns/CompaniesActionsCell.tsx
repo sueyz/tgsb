@@ -38,10 +38,10 @@ const CompaniesActionsCell: FC<Props> = ({id}) => {
     <>
       <a
         href='#'
-        className='btn btn-light btn-active-light-primary btn-sm'
+        className='btn btn-active-light-primary btn-sm'
         data-kt-menu-trigger='click'
         data-kt-menu-placement='bottom-end'
-        style={{float:'right'}}
+        style={{float:'right', marginRight: 10, marginTop: 10}}
       >   
         <KTSVG path='/media/icons/duotune/arrows/menu.svg' className='svg-icon-5 m-0' />
       </a>
