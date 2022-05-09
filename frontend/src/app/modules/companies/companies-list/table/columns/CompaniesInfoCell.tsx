@@ -11,7 +11,6 @@ type Props = {
 }
 
 const CompaniesInfoCell: FC<Props> = ({ company }) => {
-  console.log(company)
   return (
     <div className='d-flex align-items-center'>
       {/* begin:: Avatar */}
@@ -22,7 +21,7 @@ const CompaniesInfoCell: FC<Props> = ({ company }) => {
         })}>
           <div className="card front" style={{ display: 'flex' }}>
             <div className="card-body d-flex justify-content-center align-items-center" style={{ flexDirection: 'column' }}>
-              <div className='symbol symbol-circle symbol-100px overflow-hidden mb-3'>
+              <div className='symbol symbol-100px overflow-hidden mb-3'>
                 <a href='#'>
                   {company.avatar ? (
                     <div className='symbol-label'>
@@ -55,7 +54,10 @@ const CompaniesInfoCell: FC<Props> = ({ company }) => {
 
             <div className="card-body d-flex justify-content-center align-items-center">
 
-              <a style={{ color: '#34b0f6' }} href='#' className="card-text fs-1 fw-bolder"><u>More Info</u></a>
+              <a style={{ color: '#34b0f6' }} href='/crafted/account/overview' className="card-text fs-1 fw-bolder"><u>More Info</u></a>
+              {/* <Link to='/crafted/account/settings' className='menu-link px-5'>
+          Account Settings
+        </Link> */}
             </div>
           </div>
         </div>
