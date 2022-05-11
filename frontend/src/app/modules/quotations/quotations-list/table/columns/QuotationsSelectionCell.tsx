@@ -12,8 +12,6 @@ const QuotationsSelectionCell: FC<Props> = ({id}) => {
   return (
     <div className='form-check form-check-sm form-check-custom form-check-solid'>
       
-      {/* <label id='box-round'> */}
-
        <input
         className='form-check-input'
         type='checkbox'
@@ -25,13 +23,7 @@ const QuotationsSelectionCell: FC<Props> = ({id}) => {
       />
       <div id="tick_mark"></div>
 
-      {/* </label> */}
-
-    {/* <input type="checkbox" id="_checkbox"/> */}
-
     </div>
-
-    
   )
 }
 

@@ -7,7 +7,6 @@ export type Companies = {
   avatar?: String
   email?: String
   phone?: String
-  poc?: String
   accountNo?: String
   bank?: String
   // online?: boolean
@@ -17,7 +16,7 @@ export type Companies = {
   // }
 }
 
-export type UsersQueryResponse = Response<Array<Companies>>
+export type CompaniesQueryResponse = Response<Array<Companies>>
 
 export const initialCompany: Companies = {
   avatar: 'avatars/blank.png',
@@ -26,7 +25,6 @@ export const initialCompany: Companies = {
   name: '',
   email: '',
   phone: '',
-  poc: '',
   accountNo: '',
   bank: '',
 }

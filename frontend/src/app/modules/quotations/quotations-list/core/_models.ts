@@ -1,13 +1,23 @@
 import {ID, Response} from '../../../../../_metronic/helpers'
 export type Quotations = {
   id?: ID
-  first_name?: String
-  last_name?: String
-  avatar?: String
-  email?: String
-  position?: String
-  role?: String
-  last_login?: String
+  company?: String,
+  type?: String,
+  name?: String,
+  invoiceNo?: String,
+  address?: String,
+  quotations?: String,
+  balancePaid?: String,
+  balanceDue?: String,
+  nextPaymentDate?: String,
+  finalPaymentDate?: String,
+  paymentTerm?: String,
+  projectSchedule?: String,
+  note?: String,
+  poc?: String,
+  contact?: String,
+  isFinished?: Boolean,
+  workType?: String
   // online?: boolean
   // initials?: {
   //   label: string
@@ -15,13 +25,24 @@ export type Quotations = {
   // }
 }
 
-export type UsersQueryResponse = Response<Array<Quotations>>
+export type QuotationsQueryResponse = Response<Array<Quotations>>
 
 export const initialQuotations: Quotations = {
-  avatar: 'avatars/blank.png',
-  position: '',
-  role: 'Support',
-  first_name: '',
-  last_name: '',
-  email: '',
+  company: '',
+  type: '',
+  name: '',
+  invoiceNo: '',
+  address: '',
+  quotations: '',
+  balancePaid: '',
+  balanceDue: '',
+  nextPaymentDate: '',
+  finalPaymentDate: '',
+  paymentTerm: '',
+  projectSchedule: '',
+  note: '',
+  poc: '',
+  contact: '',
+  isFinished: false,
+  workType: ''
 }

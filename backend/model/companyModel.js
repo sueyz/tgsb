@@ -22,14 +22,10 @@ const companySchema = mongoose.Schema({
         type: String,
         required: false
     },
-    poc: {
-        type: String,
-        required: false
-    },
-    accountNo: {
+    bankAccount: {
         type: String,
     },
-    bank: {
+    bankName: {
         type: String,
     },
     avatar:{
@@ -49,9 +45,8 @@ companySchema.methods.toJSON = function () {
       address: this.address,
       email: this.email,
       phone: this.phone,
-      poc: this.poc,
-      accountNo: this.accountNo,
-      bank: this.bank,
+      bankAccount: this.bankAccount,
+      bankName: this.bankName,
       avatar: this.avatar,
     }
   }

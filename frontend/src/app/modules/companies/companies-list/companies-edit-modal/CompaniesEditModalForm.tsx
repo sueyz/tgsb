@@ -37,7 +37,6 @@ const CompaniesEditModalForm: FC<Props> = ({company, isUserLoading}) => {
     ...company,
     avatar: company.avatar || initialCompany.avatar,
     type: company.type || initialCompany.type,
-    poc: company.poc || initialCompany.poc,
     name: company.name || initialCompany.name,
     phone: company.phone || initialCompany.phone,
     email: company.email || initialCompany.email,

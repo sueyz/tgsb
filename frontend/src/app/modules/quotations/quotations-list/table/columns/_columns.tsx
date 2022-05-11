@@ -1,6 +1,6 @@
 import {Column} from 'react-table'
-import {QuotationsInfoCell} from './QuotaionsInfoCell'
-import {UserLastLoginCell} from './QuotaionsLastLoginCell'
+import {QuotationsInfoCell} from './QuotationsInfoCell'
+import {UserLastLoginCell} from './QuotationsLastLoginCell'
 import {UserActionsCell} from './QuotationsActionsCell'
 import {QuotationsSelectionCell} from './QuotationsSelectionCell'
 import {QuotationsCustomHeader} from './QuotationsCustomHeader'
@@ -18,7 +18,7 @@ const usersColumns: ReadonlyArray<Column<Quotations>> = [
   },
   {
     Header: (props) => <QuotationsCustomHeader tableProps={props} title='Role' className='min-w-125px' />,
-    accessor: 'role',
+    accessor: 'workType',
   },
   {
     Header: (props) => (

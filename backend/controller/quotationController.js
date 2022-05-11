@@ -1,61 +1,80 @@
 const asyncHandler = require('express-async-handler')
-const Company = require('../model/companyModel')
+const { globalAgent } = require('http')
+
+const Quotation = require('../model/quotationModel')
 
 // @ desc Register Company
 // @rout Post /api/registerCompany
 // @access Public
-const registerCompany = asyncHandler( async (req, res) => {
-    const {type, name, address, email, phone, poc, accountNo, bank, avatar } = req.body
+const registerQuotation = asyncHandler( async (req, res) => {
+    const {company, type, name, invoiceNo, address, quotations, balancePaid, balanceDue, nextPaymentDate,
+        finalPaymentDate, paymentTerm, projectSchedule, note, poc, contact, isFinished, workType} = req.body
 
-    if(!name || !address || !email){
+    if(!company || !type|| !name|| !address || !invoiceNo || !quotations ||!poc ||!contact){
         res.status(400)
         throw new Error('Please add all required fields')
     }
 
-    //Check if Company exist
-    const companyExists = await Company.findOne({email}) // need to double check in case same email
+    //Check if Project exist
+    const projectExists = await Quotation.findOne({invoiceNo}) 
 
-    if(companyExists){
+    if(projectExists){
         res.status(400)
-        throw new Error('Company already exists!')
+        throw new Error('{Project already exists!')
     }
 
-    //Create Company
-    const company = await Company.create({
+    //Create Quotation
+    const quotation = await Quotation.create({
+        company,
         type,
         name,
+        invoiceNo,
         address,
-        email,
-        phone,
+        quotations,
+        balancePaid,
+        balanceDue,
+        nextPaymentDate,
+        finalPaymentDate,
+        paymentTerm,
+        projectSchedule,
+        note,
         poc,
-        accountNo,
-        bank,
-        avatar
+        contact,
+        isFinished,
+        workType
     })
 
-    if(company){
+    if(quotation){
         res.status(201).json({
-            _id: company.id,
-            type: company.type,
-            name: company.name,
-            address:company.address,
-            email:company.email,
-            phone:company.phone,
-            poc:company.poc,
-            accountNo: company.accountNo,
-            bank: company.bank,
+            _id: quotation.id,
+            company: quotation.company,
+            type: quotation.type,
+            name: quotation.name,
+            invoiceNo: quotation.invoiceNo,
+            address: quotation.address,
+            quotations: quotation.quotations,
+            balancePaid: quotation.balancePaid,
+            balanceDue: quotation.balanceDue,
+            nextPaymentDate: quotation.nextPaymentDate,
+            finalPaymentDate: quotation.finalPaymentDate,
+            paymentTerm: quotation.paymentTerm,
+            projectSchedule: quotation.projectSchedule,
+            note: quotation.note,
+            poc: quotation.poc,
+            contact: quotation.contact,
+            isFinished: quotation.isFinished,
+            workType: quotation.workType
         })
     } else{
         res.status(400)
-        throw new Error('Invalid company data')
+        throw new Error('Invalid quotation data')
     }
 })
 
-// @desc get  Company 
+// @desc get Projec 
 // @rout GEt /api/user/query
 // @access Private
-const queryCompany = asyncHandler( async (req, res) => {
-
+const queryQuotation = asyncHandler( async (req, res) => {
 
     var userQuery = req.query.search; 
     var searchString = new RegExp(userQuery, 'ig');
@@ -63,6 +82,9 @@ const queryCompany = asyncHandler( async (req, res) => {
     const page = parseInt(req.query.page)
     var filter = req.query.filter_type
     var queryMatch = {}
+
+    const sort = req.query.sort
+    const order = req.query.order
 
     if(filter === undefined){
         filter = null
@@ -72,7 +94,7 @@ const queryCompany = asyncHandler( async (req, res) => {
         queryMatch = { name: searchString, type: filter}
     }
 
-    const limit = 9
+    const limit = 10
 
     const startIndex = (page - 1) * limit
     const endIndex = page * limit
@@ -80,15 +102,25 @@ const queryCompany = asyncHandler( async (req, res) => {
     const link = []
 
         
-    Company.aggregate()
+    Quotation.aggregate()
     .project({
         id: '$_id',
-        name: 1,
-        address: 1,
         type: 1,
-        email: 1,
-        avatar: 1,
-        phone: 1
+        name: 1,
+        invoiceNo: 1,
+        address: 1,
+        quotations: 1,
+        balancePaid: 1,
+        balanceDue: 1,
+        nextPaymentDate: 1,
+        finalPaymentDate: 1,
+        paymentTerm: 1,
+        projectSchedule: 1,
+        note: 1,
+        poc: 1,
+        contact: 1,
+        isFinished: 1,
+        workType: 1
     })
     .collation({locale: "en" })
     .sort({'name': 1} )
@@ -98,8 +130,7 @@ const queryCompany = asyncHandler( async (req, res) => {
     .exec(function (err, companies) {
         if (err) throw err;
 
-
-        Company.aggregate()
+        Quotation.aggregate()
         .project({name: 1, type: 1}) //for filter + search
         .match(queryMatch)
         .count('finalCount')
@@ -186,115 +217,51 @@ const queryCompany = asyncHandler( async (req, res) => {
     });
 })
 
-
-// @ desc Get Company
-// @rout GET /api/company/:id
-// @access Public
-const getCompanyById = asyncHandler (async (req, res) => {
-    const company = await Company.findById(req.params.id)
+// @ desc Get something
+// @rout GET api/company/:id/project
+const getQuotationById = asyncHandler (async (req, res) => {
+    const quotations = await Quotation.find(req.params.id)
 
     res.status(200).json({
-        data: company
+        data: quotations
     })
 })
 
-
 // @ desc Update something
 // @rout PUT /api/dashboard/:id
-const updateCompany = asyncHandler (async (req, res) => {
+const updateQuotation = asyncHandler (async (req, res) => {
 
-    const company = await Company.findById(req.params.id)
+    const quotation = await Quotation.findById(req.params.id)
 
-    if(!company){
+    if(!quotation){
         res.status(400)
-        throw new Error('Company not found')
+        throw new Error('Quotation not found')
     }
 
-    const oldPhoto = company.avatar
-
-    //  Remove old photo
-    if (oldPhoto !== 'avatars/blank.png' && oldPhoto !== undefined) {
-        console.log(__dirname)
-
-        try {
-            const oldPath = path.join(__dirname, '../../frontend/public/media/', oldPhoto);
-
-            if (fs.existsSync(oldPath)) {
-                fs.unlink(oldPath, (err) => {
-                    if (err) {
-                    console.error(err);
-                    return;
-                    }
-                });
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-
-    const updatedCompany = await Company.findByIdAndUpdate(req.params.id, req.body, {new: true})
-    res.status(200).json(updatedCompany)
+    const updatedQuotation = await Quotation.findByIdAndUpdate(req.params.id, req.body, {new: true})
+    res.status(200).json(updatedQuotation)
 
 })
 
 // @ desc Delete something
 // @rout DELETE /api/dashboard
-const deleteCompany = asyncHandler (async (req, res) => {
+const deleteQuotation = asyncHandler (async (req, res) => {
+    const quotation = await Quotation.findById(req.params.id)
 
-    const company = await Company.findById(req.params.id)
-
-    if(!company){
+    if(!quotation){
         res.status(400)
-        throw new Error('Company not found')
+        throw new Error('Quotation not found')
     }
 
-    const oldPhoto = company.avatar
+    const deletedQuotation= await Quotation.findByIdAndDelete(req.params.id)
 
-    //  Remove old photo
-    if (oldPhoto !== 'avatars/blank.png' && oldPhoto !== undefined) {
-        console.log(__dirname)
-
-        try {
-            const oldPath = path.join(__dirname, '../../frontend/public/media/', oldPhoto);
-
-            if (fs.existsSync(oldPath)) {
-                fs.unlink(oldPath, (err) => {
-                    if (err) {
-                    console.error(err);
-                    return;
-                    }
-                });
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const deletedCompany = await Company.findByIdAndDelete(req.params.id)
-
-    res.status(200).json(deletedCompany)
-
+    res.status(200).json(deletedQuotation)
 })
 
-const uploadAvatar =(req, res) => {
-
-    if(!req.file ){
-        res.status(400)
-        throw new Error('Please choose an image')
-    }
-
-    res.status(200).json({
-        filename: req.file.filename
-    })
-}
-
-
 module.exports = {
-    registerCompany,
-    getCompanyById,
-    queryCompany,
-    updateCompany,
-    deleteCompany,
-    uploadAvatar
+    registerQuotation,
+    queryQuotation,
+    getQuotationById,
+    updateQuotation,
+    deleteQuotation
 }

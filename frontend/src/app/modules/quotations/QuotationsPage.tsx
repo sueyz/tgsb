@@ -5,7 +5,7 @@ import {QuotationsListWrapper} from './quotations-list/QuotationsList'
 const quotationsBreadcrumbs: Array<PageLink> = [
   {
     title: 'Quotations',
-    path: '/quotations/regular',
+    path: '/quotations',
     isSeparator: false,
     isActive: false,
   },
@@ -17,32 +17,24 @@ const quotationsBreadcrumbs: Array<PageLink> = [
   },
 ]
 
-const UsersPage = () => {
-  return (
-    <Routes>
-      <Route element={<Outlet />}>
-      <Route
-        path='regular'
-        element={
-          <>
-            <PageTitle breadcrumbs={quotationsBreadcrumbs}>Regular</PageTitle>
-            <QuotationsListWrapper />
-          </>
-        }
-      />
-      <Route
-        path='sub-consultant'
-        element={
-          <>
-            <PageTitle breadcrumbs={quotationsBreadcrumbs}>Sub-Consultant</PageTitle>
-            <QuotationsListWrapper />
-          </>
-        }
-      />
-      </Route>
-      <Route index element={<Navigate to='/quotations/regular' />} />
-    </Routes>
-  )
+const QuotationsPage = () => {
+  return <QuotationsListWrapper/>
+  // (
+  //   <Routes>
+  //     <Route element={<Outlet />}>
+  //     <Route
+  //       path='quotations'
+  //       element={
+  //         <>
+  //           <PageTitle>Quotation lists</PageTitle>
+  //           <QuotationsListWrapper />
+  //         </>
+  //       }
+  //     />
+  //     </Route>
+  //     <Route index element={<Navigate to='/' />} />
+  //   </Routes>
+  // )
 }
 
-export default UsersPage
+export default QuotationsPage

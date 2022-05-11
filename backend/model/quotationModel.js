@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const projectSchema = mongoose.Schema({
+const quotationsSchema = mongoose.Schema({
     company: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -14,17 +14,22 @@ const projectSchema = mongoose.Schema({
         type: String,
         required: [true, 'PLease add project name']
     },
+    address: {
+        type: String,
+        required: [true, 'PLease add project address']
+    },
     invoiceNo: {
         type: String,
+        unique: true,
         required: [true, 'PLease add an invoice number']
     },
-    quotationReg: {
+    workType: {
+        type: String,
+        required: [true, 'PLease add work type']
+    },
+    quotations: {
         type: Array,
         default : [{desc: 'ex', amount: 0}],
-        required: false
-    },
-    quotationSub: {
-        type: Number,
         required: false
     },
     //get time updated from timestamps updated everytime change balance paid only
@@ -44,14 +49,6 @@ const projectSchema = mongoose.Schema({
         type: Date,
         required: false
     },
-    bankName:{
-        type: String,
-        required: false
-    },
-    bankAccount:{
-        type: String,
-        required: false
-    },
     //ex: 40,40,20 
     paymentTerm: {
         type: Array,
@@ -66,10 +63,45 @@ const projectSchema = mongoose.Schema({
     note: {
         type: String,
         required: false
-    }
+    },
+    poc: {
+        type: String,
+        required: false
+    },
+    contact: {
+        type: String,
+        required: false
+    },
+    isFinished: {
+        type: Boolean,
+        required: false
+    },
 }, {
     timestamps: true
 })
 
-module.exports = mongoose.model('Project', projectSchema)
+quotationsSchema.methods.toJSON = function () {
+    return {
+      id: this._id,
+      company: this.company,
+      type: this.type,
+      name: this.name,
+      address: this.address,
+      invoiceNo: this.invoiceNo,
+      quotations: this.quotations,
+      balancePaid: this.balancePaid,
+      balanceDue: this.balanceDue,
+      nextPaymentDate: this.nextPaymentDate,
+      finalPaymentDate: this.finalPaymentDate,
+      paymentTerm: this.paymentTerm,
+      projectSchedule: this.projectSchedule,
+      note: this.note,
+      poc: this.poc,
+      contact: this.contact,
+      isFinished: this.isFinished,
+      workType: this.workType
+    }
+  }
+
+module.exports = mongoose.model('Quotations', quotationsSchema)
 

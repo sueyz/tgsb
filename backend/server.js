@@ -20,7 +20,7 @@ app.use(cors(corsOptions))
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 
-// app.use('/api/project', require('./routes/projectRoutes'))
+app.use('/api/quotations', require('./routes/quotationRoutes'))
 app.use('/api/user', require('./routes/userRoutes'))
 app.use('/api/company', require('./routes/companyRoutes'))
 

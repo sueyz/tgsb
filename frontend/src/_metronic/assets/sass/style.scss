@@ -67,16 +67,11 @@ $mode: default;
       }
     }
   }
-
-  #_checkbox {
-    // position: absolute;
-
-  }
   
   #box-round {
     top: 100%;
-    width: 47px;
-    height: 47px;
+    width: 37px;
+    height: 37px;
     margin: 0 auto;
     background-color: #f72414;
     transform: translateY(0%);
@@ -94,8 +89,8 @@ $mode: default;
     top: 50%;
     right: 0;
     left: 0;
-    width: 30px;
-    height: 30px;
+    width: 23px;
+    height: 23px;
     margin: 0 auto;
     background-color: #fff;
     transform: translateY(-50%);
@@ -105,8 +100,8 @@ $mode: default;
   }// round putih
   
   #box-round:hover:before {
-    width: 37px;
-    height: 37px;
+    width: 30px;
+    height: 30px;
     box-shadow: inset 0 7px 10px #ff9d96;
   }
   

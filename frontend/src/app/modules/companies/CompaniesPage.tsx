@@ -1,6 +1,6 @@
-import {Route, Routes, Outlet, Navigate} from 'react-router-dom'
-import {PageLink, PageTitle} from '../../../_metronic/layout/core'
-import {CompaniesListWrapper} from './companies-list/CompaniesList'
+import { Route, Routes, Outlet, Navigate } from 'react-router-dom'
+import { PageLink, PageTitle } from '../../../_metronic/layout/core'
+import { CompaniesListWrapper } from './companies-list/CompaniesList'
 
 const usersBreadcrumbs: Array<PageLink> = [
   {
@@ -18,22 +18,24 @@ const usersBreadcrumbs: Array<PageLink> = [
 ]
 
 const CompaniesPage = () => {
-  return (
-    <Routes>
-      <Route element={<Outlet />}>
-        <Route
-          path='companies'
-          element={
-            <>
-              <PageTitle>Companies list</PageTitle>
-              <CompaniesListWrapper />
-            </>
-          }
-        />
-      </Route>
-      <Route index element={<Navigate to='/companies' />} />
-    </Routes>
-  )
+  return <CompaniesListWrapper />
+
+  // (
+  //   <Routes>
+  //     <Route element={<Outlet />}>
+  //       <Route
+  //         path='companies'
+  //         element={
+  //           <>
+  //             <PageTitle>Company list</PageTitle>
+  //             <CompaniesListWrapper />
+  //           </>
+  //         }
+  //       />
+  //     </Route>
+  //     <Route index element={<Navigate to='/companies' />} />
+  //   </Routes>
+  // )
 }
 
 export default CompaniesPage

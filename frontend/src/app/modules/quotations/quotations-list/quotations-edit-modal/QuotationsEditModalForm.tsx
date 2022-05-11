@@ -6,7 +6,7 @@ import {initialQuotations, Quotations} from '../core/_models'
 import clsx from 'clsx'
 import {useListView} from '../core/ListViewProvider'
 import {UsersListLoading} from '../components/loading/QuotationsListLoading'
-import {createUser, updateUser, uploadImage} from '../core/_requests'
+import {createUser, updateUser} from '../core/_requests'
 import {useQueryResponse} from '../core/QueryResponseProvider'
 import {UserEditModalHeader} from './QuotationsEditModalHeader'
 import {ToastContainer, toast} from 'react-toastify'
@@ -39,21 +39,33 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
 
   const [userForEdit] = useState<Quotations>({
     ...quotations,
-    avatar: quotations.avatar || initialQuotations.avatar,
-    role: quotations.role || initialQuotations.role,
-    position: quotations.position || initialQuotations.position,
-    first_name: quotations.first_name || initialQuotations.first_name,
-    last_name: quotations.last_name || initialQuotations.last_name,
-    email: quotations.email || initialQuotations.email,
+    company: quotations.company || initialQuotations.company,
+    type: quotations.type || initialQuotations.type,
+    name: quotations.name || initialQuotations.name,
+    invoiceNo: quotations.invoiceNo || initialQuotations.invoiceNo,
+    address: quotations.address || initialQuotations.address,
+    quotations: quotations.quotations || initialQuotations.quotations,
+    balancePaid: quotations.balancePaid || initialQuotations.balancePaid,
+    balanceDue: quotations.balanceDue || initialQuotations.balanceDue,
+    nextPaymentDate: quotations.nextPaymentDate || initialQuotations.nextPaymentDate,
+    finalPaymentDate: quotations.finalPaymentDate || initialQuotations.finalPaymentDate,
+    paymentTerm: quotations.paymentTerm || initialQuotations.paymentTerm,
+    projectSchedule: quotations.projectSchedule || initialQuotations.projectSchedule,
+    note: quotations.note || initialQuotations.note,
+    poc: quotations.poc || initialQuotations.poc,
+    contact: quotations.quotations || initialQuotations.contact,
+    isFinished: quotations.isFinished || initialQuotations.isFinished,
+    workType: quotations.workType || initialQuotations.workType,
+
   })
 
-  const [file, setFile] = useState<File>()
-  const [picture, setPicture] = useState<String>(`/media/${userForEdit.avatar}`)
+  // const [file, setFile] = useState<File>()
+  // const [picture, setPicture] = useState<String>(`/media/${userForEdit.avatar}`)
 
-  const onChangePicture = (e: any) => {
-    setPicture(URL.createObjectURL(e.target.files[0]))
-    setFile(e.target.files?.[0])
-  }
+  // const onChangePicture = (e: any) => {
+  //   setPicture(URL.createObjectURL(e.target.files[0]))
+  //   setFile(e.target.files?.[0])
+  // }
 
   const cancel = (withRefresh?: boolean) => {
     if (withRefresh) {
@@ -72,11 +84,11 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
     onSubmit: async (values, {setSubmitting}) => {
       setSubmitting(true)
       try {
-        if (file !== undefined) {
-          let fd = new FormData()
-          fd.append('avatar', file)
-          values.avatar = `profile/${await uploadImage(fd)}`
-        }
+        // if (file !== undefined) {
+        //   let fd = new FormData()
+        //   fd.append('avatar', file)
+        //   values.avatar = `profile/${await uploadImage(fd)}`
+        // }
 
         if (isNotEmpty(values.id)) {
           await updateUser(values)
@@ -97,7 +109,7 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
   return (
     <>
       <ToastContainer position='bottom-center' />
-      <UserEditModalHeader checkUser={quotations.email} />
+      <UserEditModalHeader checkUser={quotations.id} /> 
 
       <form id='kt_modal_add_user_form' className='form' onSubmit={formik.handleSubmit} noValidate>
         {/* begin::Scroll */}
@@ -124,10 +136,10 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
               style={{backgroundImage: `url('${blankImg}')`}}
             >
               {/* begin::Preview existing avatar */}
-              <div
+              {/* <div
                 className='image-input-wrapper w-125px h-125px'
                 style={{backgroundImage: `url('${picture}')`}}
-              ></div>
+              ></div> */}
               {/* end::Preview existing avatar */}
 
               {/* begin::Label */}
@@ -139,7 +151,7 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
               >
                 <i className='bi bi-pencil-fill fs-7'></i>
 
-                <input
+                {/* <input
                   type='file'
                   name='avatar'
                   accept='.png, .jpg, .jpeg'
@@ -147,7 +159,7 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
                     onChangePicture(e)
                   }}
                 />
-                <input type='hidden' name='avatar_remove' />
+                <input type='hidden' name='avatar_remove' /> */}
               </label>
               {/* end::Label */}
 
@@ -180,30 +192,30 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
           </div>
           {/* end::Input group */}
 
-          {/* begin::Form group Firstname */}
+          {/* begin::Form group ProjectName */}
           <div className='row fv-row mb-7'>
             <div className='col-xl-6'>
-              <label className='form-label fw-bolder text-dark fs-6'>First name</label>
+              <label className='form-label fw-bolder text-dark fs-6'>Project name</label>
               <input
-                placeholder='First name'
+                placeholder='Project Name'
                 type='text'
                 autoComplete='off'
-                {...formik.getFieldProps('first_name')}
+                {...formik.getFieldProps('name')}
                 className={clsx(
                   'form-control form-control-lg form-control-solid',
                   {
-                    'is-invalid': formik.touched.first_name && formik.errors.first_name,
+                    'is-invalid': formik.touched.name && formik.errors.name,
                   },
                   {
-                    'is-valid': formik.touched.first_name && !formik.errors.first_name,
+                    'is-valid': formik.touched.name && !formik.errors.name,
                   }
                 )}
               />
-              {formik.touched.first_name && formik.errors.first_name && (
+              {formik.touched.name && formik.errors.name && (
                 <div className='fv-plugins-message-container'>
                   <div className='mt-2 fv-help-block'>
                     <span role='alert' style={{color: '#f1416c'}}>
-                      {formik.errors.first_name}
+                      {formik.errors.name}
                     </span>
                   </div>
                 </div>
@@ -212,27 +224,27 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
             <div className='col-xl-6'>
               {/* begin::Form group Lastname */}
               <div className='fv-row mb-5'>
-                <label className='form-label fw-bolder text-dark fs-6'>Last name</label>
+                <label className='form-label fw-bolder text-dark fs-6'>Work type</label>
                 <input
-                  placeholder='Last name'
+                  placeholder='Work type'
                   type='text'
                   autoComplete='off'
-                  {...formik.getFieldProps('last_name')}
+                  {...formik.getFieldProps('workType')}
                   className={clsx(
                     'form-control form-control-lg form-control-solid',
                     {
-                      'is-invalid': formik.touched.last_name && formik.errors.last_name,
+                      'is-invalid': formik.touched.workType && formik.errors.workType,
                     },
                     {
-                      'is-valid': formik.touched.last_name && !formik.errors.last_name,
+                      'is-valid': formik.touched.workType && !formik.errors.workType,
                     }
                   )}
                 />
-                {formik.touched.last_name && formik.errors.last_name && (
+                {formik.touched.workType && formik.errors.workType && (
                   <div className='fv-plugins-message-container'>
                     <div className='mt-2 fv-help-block'>
                       <span role='alert' style={{color: '#f1416c'}}>
-                        {formik.errors.last_name}
+                        {formik.errors.workType}
                       </span>
                     </div>
                   </div>
@@ -245,25 +257,25 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
 
           {/* begin::Form group Email */}
           <div className='fv-row mb-7'>
-            <label className='form-label fw-bolder text-dark fs-6'>Email</label>
+            <label className='form-label fw-bolder text-dark fs-6'>Invoice Number</label>
             <input
-              placeholder='Email address'
-              type='email'
+              placeholder='Invoice Number'
+              type='invoiceNo'
               autoComplete='off'
-              {...formik.getFieldProps('email')}
+              {...formik.getFieldProps('invoiceNo')}
               className={clsx(
                 'form-control form-control-lg form-control-solid',
-                {'is-invalid': formik.touched.email && formik.errors.email},
+                {'is-invalid': formik.touched.invoiceNo && formik.errors.invoiceNo},
                 {
-                  'is-valid': formik.touched.email && !formik.errors.email,
+                  'is-valid': formik.touched.invoiceNo && !formik.errors.invoiceNo,
                 }
               )}
             />
-            {formik.touched.email && formik.errors.email && (
+            {formik.touched.invoiceNo && formik.errors.invoiceNo && (
               <div className='fv-plugins-message-container'>
                 <div className='mt-2 fv-help-block'>
                   <span role='alert' style={{color: '#f1416c'}}>
-                    {formik.errors.email}
+                    {formik.errors.invoiceNo}
                   </span>
                 </div>
               </div>
@@ -274,7 +286,7 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
           {/* begin::Input group */}
           <div className='mb-7'>
             {/* begin::Label */}
-            <label className='required fw-bold fs-6 mb-5'>Role</label>
+            <label className='required fw-bold fs-6 mb-5'>workType</label>
             {/* end::Label */}
             {/* begin::Roles */}
             {/* begin::Input row */}
@@ -284,12 +296,12 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
                 {/* begin::Input */}
                 <input
                   className='form-check-input me-3'
-                  {...formik.getFieldProps('role')}
-                  name='role'
+                  {...formik.getFieldProps('workType')}
+                  name='workType'
                   type='radio'
                   value='Analyst'
                   id='kt_modal_update_role_option_0'
-                  checked={formik.values.role === 'Analyst'}
+                  checked={formik.values.workType === 'Analyst'}
                   disabled={formik.isSubmitting || isUserLoading}
                 />
 
@@ -357,12 +369,12 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
               <div className='form-check form-check-custom form-check-solid'>
                 <input
                   className='form-check-input me-3'
-                  {...formik.getFieldProps('role')}
-                  name='role'
+                  {...formik.getFieldProps('workType')}
+                  name='workType'
                   type='radio'
                   value='Support'
                   id='kt_modal_update_role_option_3'
-                  checked={formik.values.role === 'Support'}
+                  checked={formik.values.workType === 'Support'}
                   disabled={formik.isSubmitting || isUserLoading}
                 />
                 <label className='form-check-label' htmlFor='kt_modal_update_role_option_3'>

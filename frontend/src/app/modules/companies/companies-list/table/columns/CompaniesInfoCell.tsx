@@ -50,7 +50,6 @@ const CompaniesInfoCell: FC<Props> = ({ company }) => {
             <p className="card-text ms-5 fst-italic">Email: <a href={"mailto:" + company.email}>{company.email}</a></p>
 
             <p className="card-text ms-5 fst-italic">Tel: {company.phone}</p>
-            <p className="card-text ms-5 fst-italic">Person In Charge: {company.poc}</p>
 
             <div className="card-body d-flex justify-content-center align-items-center">
 

@@ -1,16 +1,16 @@
 import axios, {AxiosResponse} from 'axios'
 import {ID, Response} from '../../../../../_metronic/helpers'
-import {Companies, UsersQueryResponse} from './_models'
+import {Companies, CompaniesQueryResponse} from './_models'
 
 const API_URL = process.env.REACT_APP_THEME_API_URL
 const COMPANY_URL = `${API_URL}/company`
 const COMPANY_IMAGE_UPLOAD_URL = `${API_URL}/company/upload`
 const GET_COMPANIES_URL = `${API_URL}/company/query`
 
-const getCompanies = (query: string): Promise<UsersQueryResponse> => {
+const getCompanies = (query: string): Promise<CompaniesQueryResponse> => {
   return axios
     .get(`${GET_COMPANIES_URL}?${query}`)
-    .then((d: AxiosResponse<UsersQueryResponse>) => d.data)
+    .then((d: AxiosResponse<CompaniesQueryResponse>) => d.data)
 }
 
 const getCompaniesById = (id: ID): Promise<Companies | undefined> => {

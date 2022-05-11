@@ -1,15 +1,17 @@
-import {lazy, FC, Suspense} from 'react'
-import {Route, Routes, Navigate} from 'react-router-dom'
-import {MasterLayout} from '../../_metronic/layout/MasterLayout'
+import { lazy, FC, Suspense } from 'react'
+import { Route, Routes, Navigate } from 'react-router-dom'
+import { MasterLayout } from '../../_metronic/layout/MasterLayout'
 import TopBarProgress from 'react-topbar-progress-indicator'
-import {DashboardWrapper} from '../pages/dashboard/DashboardWrapper'
-import {MenuTestPage} from '../pages/MenuTestPage'
-import {getCSSVariableValue} from '../../_metronic/assets/ts/_utils'
-import {shallowEqual, useSelector} from 'react-redux'
-import {RootState} from '../../setup'
+import { DashboardWrapper } from '../pages/dashboard/DashboardWrapper'
+import { MenuTestPage } from '../pages/MenuTestPage'
+import { getCSSVariableValue } from '../../_metronic/assets/ts/_utils'
+import { shallowEqual, useSelector } from 'react-redux'
+import { RootState } from '../../setup'
+import { PageTitle } from '../../_metronic/layout/core'
+
 
 const PrivateRoutes = () => {
-  const isAdmin = useSelector<RootState>(({auth}) => auth.user?.role, shallowEqual)
+  const isAdmin = useSelector<RootState>(({ auth }) => auth.user?.role, shallowEqual)
 
   const BuilderPageWrapper = lazy(() => import('../pages/layout-builder/BuilderPageWrapper'))
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
@@ -71,20 +73,22 @@ const PrivateRoutes = () => {
             </SuspensedView>
           }
         />
-      {/* companies */}
+        {/* companies */}
         <Route
-          path='/*'
+          path='/companies'
           element={
             <SuspensedView>
-              <CompaniesPage />
+              <PageTitle>Company list</PageTitle>
+              <CompaniesPage/>
             </SuspensedView>
           }
         />
         {/* Quotations */}
         <Route
-          path='/quotations/*'
+          path='/quotations'
           element={
             <SuspensedView>
+              <PageTitle>Quotation lists</PageTitle>
               <QuotationsPage />
             </SuspensedView>
           }
@@ -111,7 +115,7 @@ const PrivateRoutes = () => {
   )
 }
 
-const SuspensedView: FC = ({children}) => {
+const SuspensedView: FC = ({ children }) => {
   const baseColor = getCSSVariableValue('--bs-primary')
   TopBarProgress.config({
     barColors: {
@@ -123,4 +127,4 @@ const SuspensedView: FC = ({children}) => {
   return <Suspense fallback={<TopBarProgress />}>{children}</Suspense>
 }
 
-export {PrivateRoutes}
+export { PrivateRoutes }
