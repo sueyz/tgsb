@@ -35,7 +35,7 @@ const UsersTable = () => {
             </tr>
           </thead>
           <tbody className='text-gray-600 fw-bold' {...getTableBodyProps()}>
-            {rows.length > 0 ? (
+            {rows.length > 0 && !isLoading? (
               rows.map((row: Row<User>, i) => {
                 prepareRow(row)
                 return <CustomRow row={row} key={`row-${i}-${row.id}`} />

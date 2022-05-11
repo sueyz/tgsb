@@ -10,9 +10,9 @@ import {UsersListPagination} from '../components/pagination/QuotationsListPagina
 import {KTCardBody} from '../../../../../_metronic/helpers'
 
 const QuotationsTable = () => {
-  const users = useQueryResponseData()
+  const quotations = useQueryResponseData()
   const isLoading = useQueryResponseLoading()
-  const data = useMemo(() => users, [users])
+  const data = useMemo(() => quotations, [quotations])
   const columns = useMemo(() => usersColumns, [])
   const {getTableProps, getTableBodyProps, headers, rows, prepareRow} = useTable({
     columns,
@@ -35,7 +35,7 @@ const QuotationsTable = () => {
             </tr>
           </thead>
           <tbody className='text-gray-600 fw-bold' {...getTableBodyProps()}>
-            {rows.length > 0 ? (
+            {rows.length > 0 && !isLoading? (
               rows.map((row: Row<Quotations>, i) => {
                 prepareRow(row)
                 return <CustomRow row={row} key={`row-${i}-${row.id}`} />

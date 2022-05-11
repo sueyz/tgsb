@@ -87,6 +87,7 @@ const PrivateRoutes = () => {
         <Route
           path='/quotations'
           element={
+            
             <SuspensedView>
               <PageTitle>Quotation lists</PageTitle>
               <QuotationsPage />

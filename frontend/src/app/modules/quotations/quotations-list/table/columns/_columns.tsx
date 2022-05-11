@@ -3,28 +3,34 @@ import {QuotationsInfoCell} from './QuotationsInfoCell'
 import {UserLastLoginCell} from './QuotationsLastLoginCell'
 import {UserActionsCell} from './QuotationsActionsCell'
 import {QuotationsSelectionCell} from './QuotationsSelectionCell'
+import {QuotationsSelectionHeader} from './QuotationsSelectionHeader'
 import {QuotationsCustomHeader} from './QuotationsCustomHeader'
 import {Quotations} from '../../core/_models'
 
 const usersColumns: ReadonlyArray<Column<Quotations>> = [
   {
+    Header: (props) => <QuotationsSelectionHeader tableProps={props} />,
     id: 'finalize',
     Cell: ({...props}) => <QuotationsSelectionCell id={props.data[props.row.index].id} />,
   },
   {
+    Header: (props) => <QuotationsCustomHeader tableProps={props} title='Quotation category' className='min-w-125px' />,
+    accessor: 'type',
+  },
+  {
     Header: (props) => <QuotationsCustomHeader tableProps={props} title='Name' className='min-w-125px' />,
-    id: 'first_name',
+    id: 'name',
     Cell: ({...props}) => <QuotationsInfoCell quotations={props.data[props.row.index]} />,
   },
   {
-    Header: (props) => <QuotationsCustomHeader tableProps={props} title='Role' className='min-w-125px' />,
-    accessor: 'workType',
+    Header: (props) => <QuotationsCustomHeader tableProps={props} title='Venue' className='min-w-125px' />,
+    accessor: 'address',
   },
   {
     Header: (props) => (
-      <QuotationsCustomHeader tableProps={props} title='Last login' className='min-w-125px' />
+      <QuotationsCustomHeader tableProps={props} title='Status' className='min-w-125px' />
     ),
-    id: 'last_login',
+    id: 'status',
 
     Cell: ({...props}) => (
       <UserLastLoginCell
