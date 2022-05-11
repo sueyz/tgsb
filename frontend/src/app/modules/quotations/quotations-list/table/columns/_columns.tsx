@@ -4,13 +4,11 @@ import {UserLastLoginCell} from './QuotaionsLastLoginCell'
 import {UserActionsCell} from './QuotationsActionsCell'
 import {QuotationsSelectionCell} from './QuotationsSelectionCell'
 import {QuotationsCustomHeader} from './QuotationsCustomHeader'
-import {UserSelectionHeader} from './QuotationsSelectionHeader'
 import {Quotations} from '../../core/_models'
 
 const usersColumns: ReadonlyArray<Column<Quotations>> = [
   {
-    Header: (props) => <UserSelectionHeader tableProps={props} />,
-    id: 'selection',
+    id: 'finalize',
     Cell: ({...props}) => <QuotationsSelectionCell id={props.data[props.row.index].id} />,
   },
   {

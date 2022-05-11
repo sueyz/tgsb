@@ -68,6 +68,61 @@ $mode: default;
     }
   }
 
+  #_checkbox {
+    // position: absolute;
+
+  }
+  
+  #box-round {
+    top: 100%;
+    width: 47px;
+    height: 47px;
+    margin: 0 auto;
+    background-color: #f72414;
+    transform: translateY(0%);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.2s ease transform, 0.2s ease background-color,
+      0.2s ease box-shadow;
+    overflow: hidden;
+    z-index: 1;
+  }// base
+  
+  #box-round:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    width: 30px;
+    height: 30px;
+    margin: 0 auto;
+    background-color: #fff;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    box-shadow: inset 0 7px 10px #ffbeb8;
+    transition: 0.2s ease width, 0.2s ease height;
+  }// round putih
+  
+  #box-round:hover:before {
+    width: 37px;
+    height: 37px;
+    box-shadow: inset 0 7px 10px #ff9d96;
+  }
+  
+  #box-round:active {
+    transform: translateY(-50%) scale(0.9);
+  }
+  
+  #box-round:checked {
+    background-color: #07d410;
+  }
+  
+  #box-round:checked:before {
+    width: 0;
+    height: 0;
+  }
+  
 // Layout
 @import "layout/layout";
 @import "./core/layout/docs/layout";
