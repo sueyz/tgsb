@@ -9,13 +9,9 @@ const expensesSchema = mongoose.Schema({
         type: String,
         required: [true, 'Please add a expense type']
     },
-    bankName: {
+    bank: {
         type: String,
-        required: [true, 'Please add a bank name']
-    },
-    bankAccount: {
-        type: String,
-        required: [true, 'Please add a bank account']
+        required: [true, 'Please add a bank']
     },
     card_type: {
         type: String,
@@ -27,11 +23,10 @@ const expensesSchema = mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        required: [true, 'Please add a date'],
         unique: true
     },
     amount: {
-        type: String,
+        type: Number,
         required: [true, 'Please add an email'],
     },
     note: {
@@ -60,8 +55,7 @@ expensesSchema.methods.toJSON = function () {
       id: this._id,
       category: this.category,
       type: this.type,
-      bankName: this.bankName,
-      bankAccount: this.bankAccount,
+      bank: this.bank,
       card_type: this.card_type,
       title: this.title,
       createdAt: this.createdAt,

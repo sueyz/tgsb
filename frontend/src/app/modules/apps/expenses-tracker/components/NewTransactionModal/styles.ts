@@ -11,8 +11,9 @@ export const Container = styled.form`
   input {
     width: 100%;
     padding: 0 1.5rem;
-    height: 4rem;
+    height: 3rem;
     border-radius: 0.25rem;
+    margin-top: 1rem;
 
     border: 1px solid #d7d7d7;
     background: #e7e9ee;
@@ -24,6 +25,21 @@ export const Container = styled.form`
     &::placeholder {
       color: var(--text-body);
     }
+
+   
+  }
+
+  select {
+    width: 190px;
+    padding: 0 1.5rem;
+    height: 3rem;
+    margin-top: 1rem;
+
+    border-radius: 0.25rem;
+    padding-left: 1rem;
+    padding-right: 3rem;
+    
+    border: 1px solid #d7d7d7;
 
     // spacing between elements but not the first and last one
     & + input {
@@ -54,7 +70,7 @@ export const Container = styled.form`
 export const TransactionTypeContainer = styled.div`
   margin: 1rem 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 0.5rem;
 `;
 

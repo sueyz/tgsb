@@ -6,66 +6,45 @@ const Expenses = require('../model/expensesModel')
 // @ desc Register Company
 // @rout Post /api/registerCompany
 // @access Public
-const registerQuotation = asyncHandler( async (req, res) => {
-    const {company, type, name, invoiceNo, address, quotations, balancePaid, nextPaymentDate,
-        finalPaymentDate, paymentTerm, projectSchedule, note, poc, contact, isFinished, workType} = req.body
+const registerExpenses = asyncHandler( async (req, res) => {
+    const {category, type, bank, card_type, title, amount, note,lent_upfronted, refund, claim_date} = req.body
 
-    if(!company || !type|| !name|| !address || !invoiceNo || !quotations ||!poc ||!contact){
+    if(!category || !type|| !bank|| !card_type || !title || !amount){
         res.status(400)
         throw new Error('Please add all required fields')
     }
 
-    //Check if Project exist
-    const projectExists = await Quotation.findOne({invoiceNo}) 
-
-    if(projectExists){
-        res.status(400)
-        throw new Error('{Project already exists!')
-    }
-
-    //Create Quotation
-    const quotation = await Quotation.create({
-        company,
+    //Create expenses
+    const expenses = await Expenses.create({
+        category,
         type,
-        name,
-        invoiceNo,
-        address,
-        quotations,
-        balancePaid,
-        nextPaymentDate,
-        finalPaymentDate,
-        paymentTerm,
-        projectSchedule,
+        bank,
+        card_type,
+        title,
+        amount,
         note,
-        poc,
-        contact,
-        isFinished,
-        workType
+        lent_upfronted,
+        refund,
+        claim_date
     })
 
     if(quotation){
         res.status(201).json({
             _id: quotation.id,
-            company: quotation.company,
+            category: quotation.category,
             type: quotation.type,
-            name: quotation.name,
-            invoiceNo: quotation.invoiceNo,
-            address: quotation.address,
-            quotations: quotation.quotations,
-            balancePaid: quotation.balancePaid,
-            nextPaymentDate: quotation.nextPaymentDate,
-            finalPaymentDate: quotation.finalPaymentDate,
-            paymentTerm: quotation.paymentTerm,
-            projectSchedule: quotation.projectSchedule,
+            bank: quotation.bank,
+            card_type: quotation.card_type,
+            title: quotation.title,
+            amount: quotation.amount,
             note: quotation.note,
-            poc: quotation.poc,
-            contact: quotation.contact,
-            isFinished: quotation.isFinished,
-            workType: quotation.workType
+            lent_upfronted: quotation.lent_upfronted,
+            refund: quotation.refund,
+            claim_date: quotation.claim_date
         })
     } else{
         res.status(400)
-        throw new Error('Invalid quotation data')
+        throw new Error('Invalid expenses data')
     }
 })
 
@@ -240,7 +219,7 @@ const queryQuotation = asyncHandler( async (req, res) => {
 // })
 
 // @ desc Get something
-// @rout GET api/company/:id/project
+// @rout GET 
 const getTransactions = asyncHandler (async (req, res) => {
     const expenses = await Expenses.find()
 
@@ -281,7 +260,7 @@ const deleteQuotation = asyncHandler (async (req, res) => {
 })
 
 module.exports = {
-    registerQuotation,
+    registerExpenses,
     queryQuotation,
     getTransactions,
     updateQuotation,

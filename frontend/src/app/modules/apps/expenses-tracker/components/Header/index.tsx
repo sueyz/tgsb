@@ -12,7 +12,6 @@ export function Header({onOpenNewTransactionModal}: HeaderProps) {
     <Container>
       <Content>
         <img src={logoImg} alt="TGSB bank" />
-        {/* <img style={{marginLeft: 20}} src={textImg} alt="text" /> */}
         <b style={{marginLeft: 20, color: 'white', fontFamily: 'monospace', fontSize: 'xxx-large'}}>TGSB Bank</b>
         <button type="button" onClick={onOpenNewTransactionModal}>
           New transaction

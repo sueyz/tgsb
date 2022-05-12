@@ -74,10 +74,9 @@ export const GlobalStyle = createGlobalStyle`
 
   // the modal
   .react-modal-content {
-    width: 100%;
-    max-width: 576px;
     background: var(--background);
     padding: 3rem;
+    margin-top: 5rem;
     position: relative;
     border-radius: 0.25rem;
   }

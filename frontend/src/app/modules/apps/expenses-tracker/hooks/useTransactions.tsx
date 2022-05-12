@@ -10,11 +10,17 @@ interface Transaction {
   type: string;
   category: string;
   createdAt: string;
+  bank: string;
+  card_type: string,
+  note: string;
+  lent_upfronted: string;
+  refund: number;
+  claim_date: string;
 }
 
 const API_URL = process.env.REACT_APP_THEME_API_URL
-const TRANSACTION_URL = `${API_URL}/expenses`
-const GET_TRANSACTION_URL = `${API_URL}/expenses/transactions`
+// const TRANSACTION_URL = `${API_URL}/expenses`
+const TRANSACTION_URL = `${API_URL}/expenses/transactions`
 
 
 type TransactionInput = Omit<Transaction, "id" | "createdAt">;
@@ -39,7 +45,7 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
 
   useEffect(() => {
     axios
-      .get(GET_TRANSACTION_URL)
+      .get(TRANSACTION_URL)
       .then((response: any) => {
         setTransactions(response.data.transactions)}
       );
