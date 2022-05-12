@@ -1,11 +1,23 @@
 import {FC} from 'react'
+import "react-step-progress-bar/styles.css";
+import { ProgressBar } from "react-step-progress-bar";
 
 type Props = {
-  last_login?: string
+  percentageDone?: number
+  balanceDue?: number
 }
 
-const UserLastLoginCell: FC<Props> = ({last_login}) => (
-  <div className='badge badge-light fw-bolder'>{last_login}</div>
+const QuotationsStatusCell: FC<Props> = ({balanceDue, percentageDone}) => (
+  <div>
+
+  <ProgressBar
+        percent={percentageDone? percentageDone:75}
+        filledBackground="linear-gradient(to right, #fefb72, #f0bb31)"
+        // text=''
+      />
+      <i style={{fontSize: 'x-small'}}>RM {balanceDue} remaining</i>
+
+      </div>
 )
 
-export {UserLastLoginCell}
+export {QuotationsStatusCell}

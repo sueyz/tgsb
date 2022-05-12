@@ -15,17 +15,17 @@ const usersColumns: ReadonlyArray<Column<User>> = [
     Cell: ({...props}) => <UserSelectionCell id={props.data[props.row.index].id} />,
   },
   {
-    Header: (props) => <UserCustomHeader tableProps={props} title='Name' className='min-w-125px' />,
+    Header: (props) => <UserCustomHeader tableProps={props} title='Name' className='min-w-125px text-hover-primary cursor-pointer' />,
     id: 'first_name',
     Cell: ({...props}) => <UserInfoCell user={props.data[props.row.index]} />,
   },
   {
-    Header: (props) => <UserCustomHeader tableProps={props} title='Role' className='min-w-125px' />,
+    Header: (props) => <UserCustomHeader tableProps={props} title='Role' className='min-w-125px text-hover-primary cursor-pointer' />,
     accessor: 'role',
   },
   {
     Header: (props) => (
-      <UserCustomHeader tableProps={props} title='Last login' className='min-w-125px' />
+      <UserCustomHeader tableProps={props} title='Last login' className='min-w-125px text-hover-primary cursor-pointer' />
     ),
     id: 'last_login',
 

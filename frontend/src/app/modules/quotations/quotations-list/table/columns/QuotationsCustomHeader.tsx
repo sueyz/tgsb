@@ -21,7 +21,7 @@ const QuotationsCustomHeader: FC<Props> = ({className, title, tableProps}) => {
 
   const sortColumn = () => {
     // avoid sorting for these columns
-    if (id === 'actions' || id === 'selection') {
+    if (id === 'actions') {
       return
     }
 
@@ -50,7 +50,7 @@ const QuotationsCustomHeader: FC<Props> = ({className, title, tableProps}) => {
         className,
         isSelectedForSorting && order !== undefined && `table-sort-${order}`
       )}
-      style={{cursor: 'pointer', paddingRight: '2%'}}
+      style={{paddingRight: '2%'}}
       onClick={sortColumn}
     >
       {title}

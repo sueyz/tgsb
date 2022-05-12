@@ -7,7 +7,7 @@ const Quotation = require('../model/quotationModel')
 // @rout Post /api/registerCompany
 // @access Public
 const registerQuotation = asyncHandler( async (req, res) => {
-    const {company, type, name, invoiceNo, address, quotations, balancePaid, balanceDue, nextPaymentDate,
+    const {company, type, name, invoiceNo, address, quotations, balancePaid, nextPaymentDate,
         finalPaymentDate, paymentTerm, projectSchedule, note, poc, contact, isFinished, workType} = req.body
 
     if(!company || !type|| !name|| !address || !invoiceNo || !quotations ||!poc ||!contact){
@@ -32,7 +32,6 @@ const registerQuotation = asyncHandler( async (req, res) => {
         address,
         quotations,
         balancePaid,
-        balanceDue,
         nextPaymentDate,
         finalPaymentDate,
         paymentTerm,
@@ -54,7 +53,6 @@ const registerQuotation = asyncHandler( async (req, res) => {
             address: quotation.address,
             quotations: quotation.quotations,
             balancePaid: quotation.balancePaid,
-            balanceDue: quotation.balanceDue,
             nextPaymentDate: quotation.nextPaymentDate,
             finalPaymentDate: quotation.finalPaymentDate,
             paymentTerm: quotation.paymentTerm,
@@ -103,6 +101,7 @@ const queryQuotation = asyncHandler( async (req, res) => {
 
         
     Quotation.aggregate()
+    .sort({ [sort]: order } )
     .project({
         id: '$_id',
         type: 1,
@@ -111,7 +110,6 @@ const queryQuotation = asyncHandler( async (req, res) => {
         address: 1,
         quotations: 1,
         balancePaid: 1,
-        balanceDue: 1,
         nextPaymentDate: 1,
         finalPaymentDate: 1,
         paymentTerm: 1,
@@ -123,7 +121,6 @@ const queryQuotation = asyncHandler( async (req, res) => {
         workType: 1
     })
     .collation({locale: "en" })
-    .sort({'name': 1} )
     .match(queryMatch)
     .skip(startIndex) 
     .limit(limit)

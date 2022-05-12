@@ -37,10 +37,6 @@ const quotationsSchema = mongoose.Schema({
         type: String,
         required: false
     },
-    balanceDue: {
-        type: String,
-        required: false
-    },
     nextPaymentDate: {
         type: Date,
         required: false
@@ -90,7 +86,6 @@ quotationsSchema.methods.toJSON = function () {
       invoiceNo: this.invoiceNo,
       quotations: this.quotations,
       balancePaid: this.balancePaid,
-      balanceDue: this.balanceDue,
       nextPaymentDate: this.nextPaymentDate,
       finalPaymentDate: this.finalPaymentDate,
       paymentTerm: this.paymentTerm,

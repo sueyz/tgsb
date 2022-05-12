@@ -10,9 +10,9 @@ type Props = {
 const QuotationsInfoCell: FC<Props> = ({quotations}) => (
   <div className='d-flex align-items-center'>    
     <div className='d-flex flex-column'>
-      <a href='#' className='text-gray-800 text-hover-primary mb-1'>
-        ({quotations.workType}) {quotations.name}
-      </a>
+      <p className='text-gray-800 mb-1'>
+        {quotations.name} <b>({quotations.workType})</b>
+      </p>
     </div>
   </div>
 )

@@ -46,7 +46,6 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
     address: quotations.address || initialQuotations.address,
     quotations: quotations.quotations || initialQuotations.quotations,
     balancePaid: quotations.balancePaid || initialQuotations.balancePaid,
-    balanceDue: quotations.balanceDue || initialQuotations.balanceDue,
     nextPaymentDate: quotations.nextPaymentDate || initialQuotations.nextPaymentDate,
     finalPaymentDate: quotations.finalPaymentDate || initialQuotations.finalPaymentDate,
     paymentTerm: quotations.paymentTerm || initialQuotations.paymentTerm,
