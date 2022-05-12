@@ -20,12 +20,6 @@ export function AsideMenuMain() {
         title={intl.formatMessage({id: 'MENU.DASHBOARD'})}
         fontIcon='bi-app-indicator'
       />
-      <AsideMenuItem
-        to='/builder'
-        icon='/media/icons/duotune/general/gen019.svg'
-        title='Layout Builder'
-        fontIcon='bi-layers'
-      />
       <div className='menu-item'>
         <div className='menu-content pt-8 pb-2'>
           <span className='menu-section text-muted text-uppercase fs-8 ls-1'>Inventory</span>
@@ -35,6 +29,12 @@ export function AsideMenuMain() {
         to='/companies'
         icon='/media/icons/duotune/general/gen022.svg'
         title='Companies'
+        fontIcon='bi-layers'
+      />
+      <AsideMenuItem
+        to='/quotations'
+        icon='/media/icons/duotune/finance/fin007.svg'
+        title='Quotations'
         fontIcon='bi-layers'
       />
       <AsideMenuItemWithSub
@@ -117,6 +117,18 @@ export function AsideMenuMain() {
             to='/apps/user-management/users'
             icon='/media/icons/duotune/general/gen051.svg'
             title='User management'
+            fontIcon='bi-layers'
+          />
+        </>
+      ) : (
+        <></>
+      )}
+      {isAdmin === 'Administrator' ? (
+        <>
+          <AsideMenuItem
+            to='/apps/expenses-tracker/expenses'
+            icon='/media/icons/duotune/finance/fin010.svg'
+            title='Expenses tracker'
             fontIcon='bi-layers'
           />
         </>

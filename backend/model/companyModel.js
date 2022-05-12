@@ -24,9 +24,11 @@ const companySchema = mongoose.Schema({
     },
     bankAccount: {
         type: String,
+        required: false
     },
     bankName: {
         type: String,
+        required: false
     },
     avatar:{
         type: String,

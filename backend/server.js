@@ -23,7 +23,7 @@ app.use(express.urlencoded({extended: false}))
 app.use('/api/quotations', require('./routes/quotationRoutes'))
 app.use('/api/user', require('./routes/userRoutes'))
 app.use('/api/company', require('./routes/companyRoutes'))
-
+app.use('/api/expenses', require('./routes/expensesRoutes'))
 
 app.use(errorHandler)
 

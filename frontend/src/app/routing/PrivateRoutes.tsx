@@ -13,13 +13,13 @@ import { PageTitle } from '../../_metronic/layout/core'
 const PrivateRoutes = () => {
   const isAdmin = useSelector<RootState>(({ auth }) => auth.user?.role, shallowEqual)
 
-  const BuilderPageWrapper = lazy(() => import('../pages/layout-builder/BuilderPageWrapper'))
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
   const WizardsPage = lazy(() => import('../modules/wizards/WizardsPage'))
   const AccountPage = lazy(() => import('../modules/accounts/AccountPage'))
   const WidgetsPage = lazy(() => import('../modules/widgets/WidgetsPage'))
   const ChatPage = lazy(() => import('../modules/apps/chat/ChatPage'))
   const UsersPage = lazy(() => import('../modules/apps/user-management/UsersPage'))
+  const ExpensesPage = lazy(() => import('../modules/apps/expenses-tracker/ExpensesPage'))
   const CompaniesPage = lazy(() => import('../modules/companies/CompaniesPage'))
   const QuotationsPage = lazy(() => import('../modules/quotations/QuotationsPage'))
 
@@ -30,7 +30,6 @@ const PrivateRoutes = () => {
         <Route path='auth/*' element={<Navigate to='/dashboard' />} />
         {/* Pages */}
         <Route path='dashboard' element={<DashboardWrapper />} />
-        <Route path='builder' element={<BuilderPageWrapper />} />
         <Route path='menu-test' element={<MenuTestPage />} />
         {/* Lazy Modules */}
         <Route
@@ -101,6 +100,20 @@ const PrivateRoutes = () => {
               element={
                 <SuspensedView>
                   <UsersPage />
+                </SuspensedView>
+              }
+            />
+          </>
+        ) : (
+          <></>
+        )}
+        {isAdmin === 'Administrator' ? (
+          <>
+            <Route
+              path='apps/expenses-tracker/*'
+              element={
+                <SuspensedView>
+                  <ExpensesPage />
                 </SuspensedView>
               }
             />
