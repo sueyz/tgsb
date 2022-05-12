@@ -7,22 +7,23 @@ import {useQueryResponse} from '../../core/QueryResponseProvider'
 const QuotationsListFilter = () => {
   const {updateState} = useQueryRequest()
   const {isLoading} = useQueryResponse()
-  const [role, setRole] = useState<string | undefined>()
-  // const [lastLogin, setLastLogin] = useState<string | undefined>()
+  const [type, setType] = useState<string | undefined>()
+  const [workType, setWorkType] = useState<string | undefined>()
 
   useEffect(() => {
     MenuComponent.reinitialization()
   }, [])
 
   const resetData = () => {
-    setRole('')
+    setType('')
+    setWorkType('')
     updateState({filter: undefined, ...initialQueryState})
   }
 
   const filterData = () => {
-    console.log(role)
+    console.log(type)
     updateState({
-      filter: {role},
+      filter: {type, workType},
       ...initialQueryState,
     })
   }
@@ -57,47 +58,46 @@ const QuotationsListFilter = () => {
         <div className='px-7 py-5' data-kt-user-table-filter='form'>
           {/* begin::Input group */}
           <div className='mb-10'>
-            <label className='form-label fs-6 fw-bold'>Role:</label>
+            <label className='form-label fs-6 fw-bold'>Quotation:</label>
             <select
               className='form-select form-select-solid fw-bolder'
               data-kt-select2='true'
               data-placeholder='Select option'
               data-allow-clear='true'
-              data-kt-user-table-filter='role'
+              data-kt-user-table-filter='type'
               data-hide-search='true'
-              onChange={(e) => setRole(e.target.value)}
-              value={role}
+              onChange={(e) => setType(e.target.value)}
+              value={type}
             >
               <option value=''></option>
               {/* <option value='Administrator'>Administrator</option> */}
-              <option value='Analyst'>Analyst</option>
+              <option value='Regular'>Regular</option>
               {/* <option value='Developer'>Developer</option> */}
-              <option value='Support'>Support</option>
+              <option value='Sub-consultant'>Sub-consultant</option>
               {/* <option value='Trial'>Trial</option> */}
             </select>
           </div>
           {/* end::Input group */}
 
           {/* begin::Input group */}
-          {/* <div className='mb-10'>
-            <label className='form-label fs-6 fw-bold'>Last login:</label>
+          <div className='mb-10'>
+            <label className='form-label fs-6 fw-bold'>Work type:</label>
             <select
               className='form-select form-select-solid fw-bolder'
               data-kt-select2='true'
               data-placeholder='Select option'
               data-allow-clear='true'
-              data-kt-user-table-filter='two-step'
+              data-kt-user-table-filter='workType'
               data-hide-search='true'
-              onChange={(e) => setLastLogin(e.target.value)}
-              value={lastLogin}
+              onChange={(e) => setWorkType(e.target.value)}
+              value={workType}
             >
               <option value=''></option>
-              <option value='Yesterday'>Yesterday</option>
-              <option value='20 mins ago'>20 mins ago</option>
-              <option value='5 hours ago'>5 hours ago</option>
-              <option value='2 days ago'>2 days ago</option>
+              <option value='EMT'>EMT</option>
+              <option value='DSR'>DSR</option>
+              
             </select>
-          </div> */}
+          </div>
           {/* end::Input group */}
 
           {/* begin::Actions */}

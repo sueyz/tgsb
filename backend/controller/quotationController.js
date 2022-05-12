@@ -79,17 +79,32 @@ const queryQuotation = asyncHandler( async (req, res) => {
 
     const page = parseInt(req.query.page)
     var filter = req.query.filter_type
+    var filter2 = req.query.filter_worktype
     var queryMatch = {}
 
     const sort = req.query.sort
     const order = req.query.order
 
-    if(filter === undefined){
+    if(filter === undefined && filter2 === undefined){
         filter = null
+        filter2 = null
         queryMatch = { name: searchString}
-    }else{
+    } else if(filter === undefined && filter2 !== undefined){
+        filter = null
+        filter2 = filter2.toUpperCase()
+
+        queryMatch = { name: searchString, workType: filter2}
+    } else if(filter !== undefined && filter2 === undefined){
+        filter2 = null
         filter = filter.charAt(0).toUpperCase() + filter.slice(1)
+
         queryMatch = { name: searchString, type: filter}
+    }
+    else{
+        filter = filter.charAt(0).toUpperCase() + filter.slice(1)
+        filter2 = filter2.toUpperCase()
+
+        queryMatch = { name: searchString, type: filter, workType: filter2}
     }
 
     const limit = 10
@@ -128,7 +143,7 @@ const queryQuotation = asyncHandler( async (req, res) => {
         if (err) throw err;
 
         Quotation.aggregate()
-        .project({name: 1, type: 1}) //for filter + search
+        .project({name: 1, type: 1, workType: 1}) //for filter + search
         .match(queryMatch)
         .count('finalCount')
         .exec((count_error, valueCount) => {
