@@ -1,21 +1,45 @@
-import { FormEvent, useState } from "react";
+import { FormEvent } from "react";
 import Modal from "react-modal";
 import { useTransactions } from '../../hooks/useTransactions';
+
+import useState from 'react-usestateref'
 
 import incomeImg from "../../assets/income.svg";
 import outcomeImg from "../../assets/outcome.svg";
 import closeImg from "../../assets/close.svg";
 
 import { Container, TransactionTypeContainer, RadioBox } from "./styles";
+import { ID } from "../../../../../../_metronic/helpers";
+
+interface Transaction {
+  id: ID;
+  title: string;
+  amount: number;
+  type: string;
+  category: string;
+  createdAt: string;
+  bank: string;
+  card_type: string,
+  note: string;
+  lent_upfronted: string;
+  refund: number;
+  claim_date: string;
+}
 
 interface NewTransactionModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
+  transaction?: Transaction;
 }
+
+var holder = false
+var current: Transaction | undefined = undefined
+
 
 export function NewTransactionModal({
   isOpen,
   onRequestClose,
+  transaction
 }: NewTransactionModalProps) {
   const { createTransaction } = useTransactions();
 
@@ -26,10 +50,11 @@ export function NewTransactionModal({
 
   var newtoday = yyyy + '-' + mm + '-' + dd;
 
+
   // modal form initial state
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState(0);
-  const [category, setCategory] = useState("Regular");
+  const [category, setCategory] = useState("Regular Quotation");
   const [type, setType] = useState("deposit");
   const [bank, setBank] = useState("Maybank 000111222111");
   const [card_type, setCardType] = useState("Debit");
@@ -37,6 +62,26 @@ export function NewTransactionModal({
   const [lent_upfronted, setLendUpfront] = useState("");
   const [refund, setRefund] = useState(0);
   const [claim_date, setClaimDate] = useState('');
+  
+  if((transaction !== undefined && holder === false )|| transaction !== current){
+    setStuff()
+    holder = true
+    current = transaction
+  }
+
+  function setStuff(){
+    setTitle(transaction?.title ? transaction.title : "");
+    setAmount(transaction?.amount? transaction.amount: 0);
+    setCategory(transaction?.category? transaction.category: 'Regular Quotation');
+    setCardType('Debit');
+    setBank('Maybank 000111222111');
+    setType('deposit');
+    setNote('');
+    setLendUpfront('');
+    setRefund(0);
+    setClaimDate('');
+  }
+
 
   async function handleCreateNewTransaction(event: FormEvent) {
     event.preventDefault();
@@ -55,7 +100,7 @@ export function NewTransactionModal({
     });
 
     // clean input data
-    setTitle('');
+    setTitle("");
     setAmount(0);
     setCategory('Regular');
     setCardType('Debit');
@@ -80,7 +125,9 @@ export function NewTransactionModal({
     >
       <button
         type="button"
-        onClick={onRequestClose}
+        onClick={() => {
+          setStuff()
+          onRequestClose()}}
         className="react-modal-close"
       >
         <img src={closeImg} alt="Fechar modal" />
@@ -90,8 +137,8 @@ export function NewTransactionModal({
 
         {/* Category */}
         <select style={{ textOverflow: 'ellipsis' }} className="form-select" aria-label="Default select example"
-          onChange={(event) => setCategory(event.target.value)}>
-          <option defaultValue="Regular Quotation">Regular Quotation</option>
+          value={category} onChange={(event) => setCategory(event.target.value)}>
+          <option value="Regular Quotation">Regular Quotation</option>
           <option value="Sub-Consultant Quotation">Sub-Consultant Quotation</option>
           <option value="Petty cash">Petty cash</option>
         </select>
@@ -119,15 +166,15 @@ export function NewTransactionModal({
 
           {/* bank */}
           <select style={{ textOverflow: 'ellipsis' }} className="form-select" aria-label="Default select example"
-            onChange={(event) => setBank(event.target.value)}>
-            <option defaultValue="Maybank 000111222111">Maybank 000111222111</option>
+            value={bank} onChange={(event) => setBank(event.target.value)}>
+            <option value="Maybank 000111222111">Maybank 000111222111</option>
             <option value="Cimb 344343434">Cimb 344343434</option>
           </select>
 
           {/* Card type */}
           <select className="form-select" aria-label="Default select example"
-            onChange={(event) => setBank(event.target.value)}>
-            <option defaultValue="Debit">Debit</option>
+            value={card_type} onChange={(event) => setCardType(event.target.value)}>
+            <option value="Debit">Debit</option>
             <option value="Credit">Credit</option>
           </select>
 
@@ -176,11 +223,11 @@ export function NewTransactionModal({
             type="number"
             placeholder="Refund"
             value={refund}
-            onChange={(event) => setAmount(Number(event.target.value))}
+            onChange={(event) => setRefund(Number(event.target.value))}
           />
 
 
-          <input className="form-control" type="date" value={claim_date} onChange={(event) => setClaimDate(event.target.value)}
+          <input className="form-control" type="date" value={transaction?.claim_date} onChange={(event) => setClaimDate(event.target.value)}
           />
 
         </TransactionTypeContainer> : <></>}

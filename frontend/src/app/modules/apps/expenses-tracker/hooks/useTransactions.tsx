@@ -1,10 +1,11 @@
 import { createContext, useEffect, useState, ReactNode, useContext } from "react";
 // import { api } from "../services/api";
 import axios from "axios";
+import { ID } from "../../../../../_metronic/helpers";
 
 
 interface Transaction {
-  id: number;
+  id: ID;
   title: string;
   amount: number;
   type: string;
@@ -33,6 +34,7 @@ interface TransactionsProviderProps {
 interface TransactionsContextData {
   transactions: Transaction[];
   createTransaction: (transaction: TransactionInput) => Promise<void>;
+  deleteTransaction: (transactionId: ID) => Promise<void>;
 }
 
 const TransactionsContext = createContext<TransactionsContextData>(
@@ -61,9 +63,15 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
     setTransactions([...transactions, transaction]);
   }
 
+  async function deleteTransaction(transactionId: ID) {
+    await axios.delete(`${TRANSACTION_URL}/${transactionId}`).then((response: any) => {
+      setTransactions(response.data.transactions)}
+    );
+  }
+
   // provide the context data for all children
   return (
-    <TransactionsContext.Provider value={{ transactions, createTransaction }}>
+    <TransactionsContext.Provider value={{ transactions, createTransaction , deleteTransaction}}>
       {children}
     </TransactionsContext.Provider>
   );

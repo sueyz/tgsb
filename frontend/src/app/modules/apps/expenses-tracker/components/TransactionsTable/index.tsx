@@ -1,10 +1,21 @@
 import { useTransactions } from '../../hooks/useTransactions';
 import { Container } from "./styles";
-import { toAbsoluteUrl } from '../../../../../../_metronic/helpers'
+import { ID, toAbsoluteUrl } from '../../../../../../_metronic/helpers'
 import React from 'react';
 
-export function TransactionsTable() {
-  const { transactions } = useTransactions();
+interface HeaderProps {
+  clickHandler: (transaction: any) => any;
+
+}
+
+export function TransactionsTable({ clickHandler}: HeaderProps) {
+  const { transactions, deleteTransaction  } = useTransactions();
+  
+
+  async function handleDeleteTransaction(id: ID) {
+    await deleteTransaction(id);
+  }
+
 
   return (
     <Container>
@@ -36,8 +47,13 @@ export function TransactionsTable() {
                   <td>
                     {new Intl.DateTimeFormat('en-US', {}).format(new Date(transaction.createdAt))}
                   </td>
-                  <td><img style={{ cursor: 'pointer', marginRight: 15 }} src={toAbsoluteUrl('/media/icons/duotune/general/pencil.png')}/>
-                  <img style={{ cursor: 'pointer' }} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}/>
+                  <td><img style={{ cursor: 'pointer', marginRight: 15 }} src={toAbsoluteUrl('/media/icons/duotune/general/pencil.png')} onClick={() =>
+
+                    clickHandler(transaction)                  
+                  }
+                    
+                    />
+                  <img style={{ cursor: 'pointer' }} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')} onClick={() => handleDeleteTransaction(transaction.id)}/>
                   </td>
 
                 </tr>
