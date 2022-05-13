@@ -3,14 +3,18 @@ import { Container } from "./styles";
 import { ID, toAbsoluteUrl } from '../../../../../../_metronic/helpers'
 import React from 'react';
 
+
+var count = 0
+var lastLength = 0
+
 interface HeaderProps {
   clickHandler: (transaction: any) => any;
 
 }
 
-export function TransactionsTable({ clickHandler}: HeaderProps) {
-  const { transactions, deleteTransaction  } = useTransactions();
-  
+export function TransactionsTable({ clickHandler }: HeaderProps) {
+  const { transactions, deleteTransaction } = useTransactions();
+
 
   async function handleDeleteTransaction(id: ID) {
     await deleteTransaction(id);
@@ -22,6 +26,7 @@ export function TransactionsTable({ clickHandler}: HeaderProps) {
       <table>
         <thead>
           <tr>
+            <th>#</th>
             <th>Title</th>
             <th>Amount</th>
             <th>Category</th>
@@ -32,10 +37,20 @@ export function TransactionsTable({ clickHandler}: HeaderProps) {
 
         <tbody>
           {transactions.map((transaction) => {
+            if (lastLength !== transactions.length) {
+              lastLength = transactions.length
+              count = 0
+            }
+            count++
+            if (count >= transactions.length + 1)
+              count = 1
             return (
               <React.Fragment key={transaction.id}>
                 <tr>
-                  <td><img style={{ cursor: 'pointer' }} src={toAbsoluteUrl('/media/icons/duotune/arrows/arr013.svg')} data-bs-toggle="collapse" data-bs-target={"#a" + transaction.id} aria-expanded="false" aria-controls={'a' + transaction.id} />
+                  <td style={{ fontWeight: 900 }}><img style={{ cursor: 'pointer' }} src={toAbsoluteUrl('/media/icons/duotune/arrows/arr013.svg')} data-bs-toggle="collapse" data-bs-target={"#a" + transaction.id} aria-expanded="false" aria-controls={'a' + transaction.id} />
+                    {" " + count}
+                  </td>
+                  <td>
                     {"   " + transaction.title}</td>
                   <td className={transaction.type}>
                     {new Intl.NumberFormat("en-US", {
@@ -49,17 +64,17 @@ export function TransactionsTable({ clickHandler}: HeaderProps) {
                   </td>
                   <td><img style={{ cursor: 'pointer', marginRight: 15 }} src={toAbsoluteUrl('/media/icons/duotune/general/pencil.png')} onClick={() =>
 
-                    clickHandler(transaction)                  
+                    clickHandler(transaction)
                   }
-                    
-                    />
-                  <img style={{ cursor: 'pointer' }} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')} onClick={() => handleDeleteTransaction(transaction.id)}/>
+
+                  />
+                    <img style={{ cursor: 'pointer' }} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')} onClick={() => handleDeleteTransaction(transaction.id)} />
                   </td>
 
                 </tr>
 
                 <tr>
-                  <td key={'a' + transaction.id} colSpan={5} style={{ padding: 0 }} className="collapse" id={'a' + transaction.id}>
+                  <td key={'a' + transaction.id} colSpan={6} style={{ padding: 0 }} className="collapse" id={'a' + transaction.id}>
                     <div className="card card-body" style={{ borderRadius: 0, color: 'white', backgroundColor: "#1E1E2D" }}>
                       <p><b>Bank: </b>{transaction.bank} </p>
                       <p><b>Card type: </b>{transaction.card_type} </p>

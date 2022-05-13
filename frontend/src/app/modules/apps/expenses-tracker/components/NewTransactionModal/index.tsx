@@ -48,8 +48,6 @@ export function NewTransactionModal({
   var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
   var yyyy = today.getFullYear();
 
-  var newtoday = yyyy + '-' + mm + '-' + dd;
-
   console.log(transaction?.claim_date)
 
   // modal form initial state
