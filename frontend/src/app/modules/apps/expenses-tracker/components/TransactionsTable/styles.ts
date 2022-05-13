@@ -15,12 +15,9 @@ export const Container = styled.div`
       line-height: 1.5rem;
     }
 
-    tbody> tr {
-      :nth-of-type(even) {
+    tbody> tr{
+      :nth-of-type(odd) {
         background-color: white;
-      }
-      :hover {
-        background-color: lightblue;
       }
     }
 

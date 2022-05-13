@@ -36,7 +36,7 @@ export function NewTransactionModal({
   const [note, setNote] = useState("");
   const [lent_upfronted, setLendUpfront] = useState("");
   const [refund, setRefund] = useState(0);
-  const [claim_date, setClaimDate] = useState(newtoday);
+  const [claim_date, setClaimDate] = useState('');
 
   async function handleCreateNewTransaction(event: FormEvent) {
     event.preventDefault();
@@ -64,7 +64,7 @@ export function NewTransactionModal({
     setNote('');
     setLendUpfront('');
     setRefund(0);
-    setClaimDate(newtoday);
+    setClaimDate('');
 
     // close modal after save the data (async await)
     onRequestClose();
