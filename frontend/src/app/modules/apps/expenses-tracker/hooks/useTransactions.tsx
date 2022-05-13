@@ -55,7 +55,6 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
     // post -> used for insertion
     const response = await axios.post(TRANSACTION_URL, {
       ...transactionInput,
-      createdAt: new Date(),
     });
     const { transaction } = response.data; // saving transaction data from axios
 

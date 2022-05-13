@@ -28,19 +28,9 @@ const registerExpenses = asyncHandler( async (req, res) => {
         claim_date
     })
 
-    if(quotation){
+    if(expenses){
         res.status(201).json({
-            _id: quotation.id,
-            category: quotation.category,
-            type: quotation.type,
-            bank: quotation.bank,
-            card_type: quotation.card_type,
-            title: quotation.title,
-            amount: quotation.amount,
-            note: quotation.note,
-            lent_upfronted: quotation.lent_upfronted,
-            refund: quotation.refund,
-            claim_date: quotation.claim_date
+            transaction: expenses
         })
     } else{
         res.status(400)

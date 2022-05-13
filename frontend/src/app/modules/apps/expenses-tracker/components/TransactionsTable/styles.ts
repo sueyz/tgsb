@@ -9,18 +9,25 @@ export const Container = styled.div`
 
     th {
       color: var(--text-body);
-      font-weight: 400;
+      font-weight: 900;
       padding: 1rem 2rem;
       text-align: left;
       line-height: 1.5rem;
     }
 
+    tbody> tr {
+      :nth-of-type(even) {
+        background-color: white;
+      }
+      :hover {
+        background-color: lightblue;
+      }
+    }
+
     td {
       padding: 1rem 2rem;
       border: 0;
-      background: var(--shape);
       color: var(--text-body);
-      border-radius: 0.25rem;
 
       &:first-child {
         color: var(--text-title);

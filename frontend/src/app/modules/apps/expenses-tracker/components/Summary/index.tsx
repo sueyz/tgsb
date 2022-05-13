@@ -11,10 +11,6 @@ export function Summary() {
 
   const summary = transactions.reduce(
     (acc, transaction) => {
-      console.log(transaction)
-      console.log(acc)
-      console.log(transactions)
-
 
       if (transaction.type === "deposit") {
         acc.deposits += transaction.amount;

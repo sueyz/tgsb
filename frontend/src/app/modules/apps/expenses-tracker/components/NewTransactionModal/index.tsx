@@ -74,6 +74,7 @@ export function NewTransactionModal({
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
+      ariaHideApp = {false}
       overlayClassName="react-modal-overlay"
       className="react-modal-content"
     >
@@ -90,7 +91,7 @@ export function NewTransactionModal({
         {/* Category */}
         <select style={{ textOverflow: 'ellipsis' }} className="form-select" aria-label="Default select example"
           onChange={(event) => setCategory(event.target.value)}>
-          <option selected value="Regular Quotation">Regular Quotation</option>
+          <option defaultValue="Regular Quotation">Regular Quotation</option>
           <option value="Sub-Consultant Quotation">Sub-Consultant Quotation</option>
           <option value="Petty cash">Petty cash</option>
         </select>
@@ -119,14 +120,14 @@ export function NewTransactionModal({
           {/* bank */}
           <select style={{ textOverflow: 'ellipsis' }} className="form-select" aria-label="Default select example"
             onChange={(event) => setBank(event.target.value)}>
-            <option selected value="Maybank 000111222111">Maybank 000111222111</option>
+            <option defaultValue="Maybank 000111222111">Maybank 000111222111</option>
             <option value="Cimb 344343434">Cimb 344343434</option>
           </select>
 
           {/* Card type */}
           <select className="form-select" aria-label="Default select example"
             onChange={(event) => setBank(event.target.value)}>
-            <option selected value="Debit">Debit</option>
+            <option defaultValue="Debit">Debit</option>
             <option value="Credit">Credit</option>
           </select>
 
