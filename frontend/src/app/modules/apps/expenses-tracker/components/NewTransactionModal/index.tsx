@@ -50,6 +50,7 @@ export function NewTransactionModal({
 
   var newtoday = yyyy + '-' + mm + '-' + dd;
 
+  console.log(transaction?.claim_date)
 
   // modal form initial state
   const [title, setTitle] = useState("");
@@ -73,13 +74,13 @@ export function NewTransactionModal({
     setTitle(transaction?.title ? transaction.title : "");
     setAmount(transaction?.amount? transaction.amount: 0);
     setCategory(transaction?.category? transaction.category: 'Regular Quotation');
-    setCardType('Debit');
-    setBank('Maybank 000111222111');
-    setType('deposit');
-    setNote('');
-    setLendUpfront('');
-    setRefund(0);
-    setClaimDate('');
+    setCardType(transaction?.card_type? transaction.card_type :'Debit');
+    setBank(transaction?.bank? transaction.bank:'Maybank 000111222111');
+    setType(transaction?.type?transaction.type:'deposit');
+    setNote(transaction?.note?transaction.note:'');
+    setLendUpfront(transaction?.lent_upfronted?transaction.lent_upfronted:'');
+    setRefund(transaction?.refund?transaction.refund: 0);
+    setClaimDate(transaction?.claim_date?(transaction.claim_date).split('T')[0]:'');
   }
 
 
@@ -227,7 +228,7 @@ export function NewTransactionModal({
           />
 
 
-          <input className="form-control" type="date" value={transaction?.claim_date} onChange={(event) => setClaimDate(event.target.value)}
+          <input className="form-control" type="date" value={claim_date} onChange={(event) => setClaimDate(event.target.value)}
           />
 
         </TransactionTypeContainer> : <></>}
