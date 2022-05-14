@@ -33,18 +33,22 @@ const expensesSchema = mongoose.Schema({
         type: String,
         required: false
     },
+    isDebt: {
+        type: Boolean,
+        required: false
+    },
     lent_upfronted: {
         type: String,
         required: false
     },
-    refund: {
-        type: String,
-        required: false
-    },
-    claim_date:{
-        type: Date,
-        required: false
-    }
+    // refund: {
+    //     type: String,
+    //     required: false
+    // },
+    // claim_date:{
+    //     type: Date,
+    //     required: false
+    // }
 },{
     timestamps: true
 })
@@ -61,9 +65,10 @@ expensesSchema.methods.toJSON = function () {
       createdAt: this.createdAt,
       amount: this.amount,
       note: this.note,
+      isDebt: this.isDebt,
       lent_upfronted: this.lent_upfronted,
-      refund: this.refund,
-      claim_date: this.claim_date,
+    //   refund: this.refund,
+    //   claim_date: this.claim_date,
     }
   }
 

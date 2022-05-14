@@ -20,6 +20,15 @@ export function Summary() {
         acc.total -= transaction.amount;
       }
 
+      if (transaction.isDebt) {
+        if (transaction.type === "deposit") {
+          acc.debtTotal += transaction.amount;
+        } else {
+          acc.debtTotal -= transaction.amount;
+        }
+
+      }
+
       // return acc with deposits, withdraws and total
       return acc;
     },
@@ -27,6 +36,7 @@ export function Summary() {
       // starter
       deposits: 0,
       withdraws: 0,
+      debtTotal: 0,
       total: 0,
     }
   );
@@ -58,9 +68,22 @@ export function Summary() {
           }).format(summary.withdraws)}
         </strong>
       </div>
+      <div className="highlight-background-red">
+        <header>
+          <p>Debt Balance</p>
+          <img src={totalImg} alt="Total" />
+        </header>
+        <strong>
+          {" "}
+          {new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "MYR",
+          }).format(summary.debtTotal)}
+        </strong>
+      </div>
       <div className="highlight-background">
         <header>
-          <p>Balance</p>
+          <p>Total Balance</p>
           <img src={totalImg} alt="Total" />
         </header>
         <strong>

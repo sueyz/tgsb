@@ -21,9 +21,10 @@ interface Transaction {
   bank: string;
   card_type: string,
   note: string;
+  isDebt: boolean;
   lent_upfronted: string;
-  refund: number;
-  claim_date: string;
+  // refund: number;
+  // claim_date: string;
 }
 
 interface NewTransactionModalProps {
@@ -34,6 +35,7 @@ interface NewTransactionModalProps {
 
 var holder = false
 var current: Transaction | undefined = undefined
+var editing = false
 
 
 export function NewTransactionModal({
@@ -41,14 +43,7 @@ export function NewTransactionModal({
   onRequestClose,
   transaction
 }: NewTransactionModalProps) {
-  const { createTransaction } = useTransactions();
-
-  var today = new Date();
-  var dd = String(today.getDate()).padStart(2, '0');
-  var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-  var yyyy = today.getFullYear();
-
-  console.log(transaction?.claim_date)
+  const { createTransaction, updateTransaction } = useTransactions();
 
   // modal form initial state
   const [title, setTitle] = useState("");
@@ -59,44 +54,81 @@ export function NewTransactionModal({
   const [card_type, setCardType] = useState("Debit");
   const [note, setNote] = useState("");
   const [lent_upfronted, setLendUpfront] = useState("");
-  const [refund, setRefund] = useState(0);
-  const [claim_date, setClaimDate] = useState('');
-  
-  if((transaction !== undefined && holder === false )|| transaction !== current){
+  // const [refund, setRefund] = useState(0);
+  // const [claim_date, setClaimDate] = useState('');
+  const [isDebt, setIsDebt] = useState(false);
+
+  const handleChange = () => {
+    setIsDebt(!isDebt);
+  };
+
+
+  if ((transaction !== undefined && holder === false) || transaction !== current) {
     setStuff()
     holder = true
     current = transaction
   }
 
-  function setStuff(){
+  function setStuff() {
+
+    if (transaction !== undefined) {
+      editing = true
+    } else {
+      editing = false
+    }
+
+
+
+
     setTitle(transaction?.title ? transaction.title : "");
-    setAmount(transaction?.amount? transaction.amount: 0);
-    setCategory(transaction?.category? transaction.category: 'Regular Quotation');
-    setCardType(transaction?.card_type? transaction.card_type :'Debit');
-    setBank(transaction?.bank? transaction.bank:'Maybank 000111222111');
-    setType(transaction?.type?transaction.type:'deposit');
-    setNote(transaction?.note?transaction.note:'');
-    setLendUpfront(transaction?.lent_upfronted?transaction.lent_upfronted:'');
-    setRefund(transaction?.refund?transaction.refund: 0);
-    setClaimDate(transaction?.claim_date?(transaction.claim_date).split('T')[0]:'');
+    setAmount(transaction?.amount ? transaction.amount : 0);
+    setCategory(transaction?.category ? transaction.category : 'Regular Quotation');
+    setCardType(transaction?.card_type ? transaction.card_type : 'Debit');
+    setBank(transaction?.bank ? transaction.bank : 'Maybank 000111222111');
+    setType(transaction?.type ? transaction.type : 'deposit');
+    setNote(transaction?.note ? transaction.note : '');
+    setLendUpfront(transaction?.lent_upfronted ? transaction.lent_upfronted : '');
+    // setRefund(transaction?.refund ? transaction.refund : 0);
+    // setClaimDate(transaction?.claim_date ? (transaction.claim_date).split('T')[0] : '');
+    setIsDebt(transaction?.isDebt ? transaction.isDebt : false);
+
   }
 
 
   async function handleCreateNewTransaction(event: FormEvent) {
     event.preventDefault();
 
-    await createTransaction({
-      title,
-      amount,
-      category,
-      type,
-      bank,
-      card_type,
-      note,
-      lent_upfronted,
-      refund,
-      claim_date
-    });
+    if (!editing) {
+      await createTransaction({
+        title,
+        amount,
+        category,
+        type,
+        bank,
+        card_type,
+        note,
+        isDebt,
+        lent_upfronted,
+        // refund,
+        // claim_date
+      });
+    } else {
+      await updateTransaction({
+        title,
+        amount,
+        category,
+        type,
+        bank,
+        card_type,
+        note,
+        isDebt,
+        lent_upfronted,
+        // refund,
+        // claim_date
+      }, transaction?.id)
+    }
+
+
 
     // clean input data
     setTitle("");
@@ -107,8 +139,9 @@ export function NewTransactionModal({
     setType('deposit');
     setNote('');
     setLendUpfront('');
-    setRefund(0);
-    setClaimDate('');
+    setIsDebt(false);
+    // setRefund(0);
+    // setClaimDate('');
 
     // close modal after save the data (async await)
     onRequestClose();
@@ -118,7 +151,7 @@ export function NewTransactionModal({
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      ariaHideApp = {false}
+      ariaHideApp={false}
       overlayClassName="react-modal-overlay"
       className="react-modal-content"
     >
@@ -126,7 +159,8 @@ export function NewTransactionModal({
         type="button"
         onClick={() => {
           setStuff()
-          onRequestClose()}}
+          onRequestClose()
+        }}
         className="react-modal-close"
       >
         <img src={closeImg} alt="Fechar modal" />
@@ -212,13 +246,25 @@ export function NewTransactionModal({
 
         {category === 'Petty cash' ? <TransactionTypeContainer>
 
-          <input
+          <label style={{ display: 'flex', alignItems: 'center' }}>
+            Is a {type === 'withdraw' ? "Debt" : "Refund"}:
+            <input style={{ width: 20, marginTop: 0, marginLeft: 15 }}
+              type="checkbox"
+              checked={isDebt}
+              onChange={handleChange}
+            />
+          </label>
+
+          {isDebt === true ? <input
             placeholder="Lend / upfronted by"
             value={lent_upfronted}
+            style={{ marginTop: 0 }}
             onChange={(event) => setLendUpfront(event.target.value)}
-          />
+          /> : <></>}
 
-          <input
+
+
+          {/* <input
             type="number"
             placeholder="Refund"
             value={refund}
@@ -227,12 +273,12 @@ export function NewTransactionModal({
 
 
           <input className="form-control" type="date" value={claim_date} onChange={(event) => setClaimDate(event.target.value)}
-          />
+          /> */}
 
         </TransactionTypeContainer> : <></>}
 
 
-        <button type="submit">Save</button>
+        <button type="submit">{editing === false ? 'Save' : "Update"}</button>
       </Container>
     </Modal>
   );

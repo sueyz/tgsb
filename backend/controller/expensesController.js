@@ -7,7 +7,7 @@ const Expenses = require('../model/expensesModel')
 // @rout Post /api/registerCompany
 // @access Public
 const registerExpenses = asyncHandler( async (req, res) => {
-    const {category, type, bank, card_type, title, amount, note,lent_upfronted, refund, claim_date} = req.body
+    const {category, type, bank, card_type, title, amount, note, isDebt, lent_upfronted} = req.body
 
     if(!category || !type|| !bank|| !card_type || !title || !amount){
         res.status(400)
@@ -23,9 +23,10 @@ const registerExpenses = asyncHandler( async (req, res) => {
         title,
         amount,
         note,
+        isDebt,
         lent_upfronted,
-        refund,
-        claim_date
+        // refund,
+        // claim_date
     })
 
     if(expenses){
@@ -220,23 +221,27 @@ const getTransactions = asyncHandler (async (req, res) => {
 
 // @ desc Update something
 // @rout PUT /api/dashboard/:id
-const updateQuotation = asyncHandler (async (req, res) => {
+const updateTransaction = asyncHandler (async (req, res) => {
 
-    const quotation = await Quotation.findById(req.params.id)
+    const expenses = await Expenses.findById(req.params.id)
 
-    if(!quotation){
+    if(!expenses){
         res.status(400)
-        throw new Error('Quotation not found')
+        throw new Error('expenses not found')
     }
 
-    const updatedQuotation = await Quotation.findByIdAndUpdate(req.params.id, req.body, {new: true})
-    res.status(200).json(updatedQuotation)
+    await Expenses.findByIdAndUpdate(req.params.id, req.body, {new: true})
 
+    const leftover = await Expenses.find()
+
+    res.status(200).json({
+        transactions: leftover
+    })
 })
 
 // @ desc Delete something
 // @rout DELETE /api/dashboard
-const deleteTransactionn = asyncHandler (async (req, res) => {
+const deleteTransaction = asyncHandler (async (req, res) => {
     const expenses = await Expenses.findById(req.params.id)
 
     if(!expenses){
@@ -257,6 +262,6 @@ module.exports = {
     registerExpenses,
     // queryQuotation,
     getTransactions,
-    updateQuotation,
-    deleteTransactionn
+    updateTransaction,
+    deleteTransaction
 }

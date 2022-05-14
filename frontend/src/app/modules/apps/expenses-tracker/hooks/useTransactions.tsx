@@ -14,9 +14,10 @@ interface Transaction {
   bank: string;
   card_type: string,
   note: string;
+  isDebt: boolean,
   lent_upfronted: string;
-  refund: number;
-  claim_date: string;
+  // refund: number;
+  // claim_date: string;
 }
 
 const API_URL = process.env.REACT_APP_THEME_API_URL
@@ -35,6 +36,7 @@ interface TransactionsContextData {
   transactions: Transaction[];
   createTransaction: (transaction: TransactionInput) => Promise<void>;
   deleteTransaction: (transactionId: ID) => Promise<void>;
+  updateTransaction: (transaction: TransactionInput, transactionId: ID) => Promise<void>;
 }
 
 const TransactionsContext = createContext<TransactionsContextData>(
@@ -69,9 +71,15 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
     );
   }
 
+  async function updateTransaction(transaction: TransactionInput, transactionId: ID) {
+    await axios.put(`${TRANSACTION_URL}/${transactionId}`, transaction).then((response: any) => {
+      setTransactions(response.data.transactions)}
+    );
+  }
+
   // provide the context data for all children
   return (
-    <TransactionsContext.Provider value={{ transactions, createTransaction , deleteTransaction}}>
+    <TransactionsContext.Provider value={{ transactions, createTransaction , deleteTransaction, updateTransaction}}>
       {children}
     </TransactionsContext.Provider>
   );
