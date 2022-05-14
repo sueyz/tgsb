@@ -48,7 +48,7 @@ export function TransactionsTable({ clickHandler }: HeaderProps) {
               <React.Fragment key={transaction.id}>
                 <tr>
                   <td style={{ fontWeight: 900 }}><img style={{ cursor: 'pointer' }} src={toAbsoluteUrl('/media/icons/duotune/arrows/arr013.svg')} data-bs-toggle="collapse" data-bs-target={"#a" + transaction.id} aria-expanded="false" aria-controls={'a' + transaction.id} />
-                    {" " + count}
+                    {" " + (count-transactions.length - 1)*-1}
                   </td>
                   <td>
                     {"   " + transaction.title} </td>

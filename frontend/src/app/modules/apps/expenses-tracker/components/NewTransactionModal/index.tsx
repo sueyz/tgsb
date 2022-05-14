@@ -192,6 +192,7 @@ export function NewTransactionModal({
 
           <input
             type="number"
+            min={0}
             placeholder="Amount"
             value={amount}
             onChange={(event) => setAmount(Number(event.target.value))}

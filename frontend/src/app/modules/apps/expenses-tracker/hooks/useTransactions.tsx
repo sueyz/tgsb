@@ -51,7 +51,7 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
     axios
       .get(TRANSACTION_URL)
       .then((response: any) => {
-        setTransactions(response.data.transactions)}
+        setTransactions(response.data.transactions.reverse())}
       );
   }, []);
 
@@ -62,18 +62,18 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
     });
     const { transaction } = response.data; // saving transaction data from axios
 
-    setTransactions([...transactions, transaction]);
+    setTransactions([...transactions.reverse(), transaction].reverse());
   }
 
   async function deleteTransaction(transactionId: ID) {
     await axios.delete(`${TRANSACTION_URL}/${transactionId}`).then((response: any) => {
-      setTransactions(response.data.transactions)}
+      setTransactions(response.data.transactions.reverse())}
     );
   }
 
   async function updateTransaction(transaction: TransactionInput, transactionId: ID) {
     await axios.put(`${TRANSACTION_URL}/${transactionId}`, transaction).then((response: any) => {
-      setTransactions(response.data.transactions)}
+      setTransactions(response.data.transactions.reverse())}
     );
   }
 
