@@ -358,7 +358,7 @@ const Main: FC = () => {
                       <div data-kt-stepper-element='content'>
                         <div className='w-100'>
                           <div className='fv-row'>
-                            <label className='d-flex align-items-center fs-5 fw-bold mb-6'>
+                            <label className='d-flex align-items-center fs-5 fw-bold'>
                               <span className='required'>Select company</span>
                               {/* <i
                                 className='fas fa-exclamation-circle ms-2 fs-7'
@@ -366,6 +366,8 @@ const Main: FC = () => {
                                 title='Specify your project company'
                               ></i> */}
                             </label>
+                            <p className='fs-7 mb-6' ><i>If company is not in the list, please add first at the companies page</i></p>
+
 
                             <div style={{ height: 300, overflowY: 'scroll' }}>
                               {refCompany.current ?
