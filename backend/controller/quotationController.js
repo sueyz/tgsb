@@ -18,8 +18,13 @@ const registerQuotation = asyncHandler( async (req, res) => {
     //Check if Project exist
     const projectExists = await Quotation.findOne({invoiceNo}) 
 
+    console.log(company)
+
+
     if(projectExists){
         res.status(400)
+        console.log('vvvvvv')
+
         throw new Error('{Project already exists!')
     }
 

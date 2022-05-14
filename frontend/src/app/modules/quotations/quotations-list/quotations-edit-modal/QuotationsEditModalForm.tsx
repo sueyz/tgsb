@@ -52,7 +52,7 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
     projectSchedule: quotations.projectSchedule || initialQuotations.projectSchedule,
     note: quotations.note || initialQuotations.note,
     poc: quotations.poc || initialQuotations.poc,
-    contact: quotations.quotations || initialQuotations.contact,
+    contact: quotations.contact || initialQuotations.contact,
     isFinished: quotations.isFinished || initialQuotations.isFinished,
     workType: quotations.workType || initialQuotations.workType,
 

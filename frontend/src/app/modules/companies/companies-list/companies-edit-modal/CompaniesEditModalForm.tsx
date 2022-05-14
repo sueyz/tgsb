@@ -74,7 +74,7 @@ const CompaniesEditModalForm: FC<Props> = ({company, isUserLoading}) => {
         if (file !== undefined) {
           let fd = new FormData()
           fd.append('avatar', file)
-          values.avatar = `profile/${await uploadImage(fd)}`
+          values.avatar = `companies/${await uploadImage(fd)}`
         }
 
         if (isNotEmpty(values.id)) {

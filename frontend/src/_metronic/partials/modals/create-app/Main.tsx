@@ -1,52 +1,52 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, {FC, useEffect, useRef, useState} from 'react'
-import {KTSVG, toAbsoluteUrl} from '../../../helpers'
-import {Formik, Form, FormikValues, Field, ErrorMessage} from 'formik'
+import React, { FC, useEffect, useRef } from 'react'
+import useState from 'react-usestateref'
+import { KTSVG, toAbsoluteUrl } from '../../../helpers'
+import { Formik, Form, FormikValues, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
-import {StepperComponent} from '../../../assets/ts/components'
+import { StepperComponent } from '../../../assets/ts/components'
+import axios, { AxiosResponse } from 'axios'
+import { initialQuotations, Quotations } from '../../../../app/modules/quotations/quotations-list/core/_models'
+import { ID, Response } from '../../../../_metronic/helpers'
+import { Companies, CompaniesQueryResponse } from '../../../../app/modules/companies/companies-list/core/_models'
 
-interface ICreateAccount {
-  appName: string
-  category: string
-  framework: string
-  dbName: string
-  dbType: string
-  nameOnCard: string
-  cardNumber: string
-  cardExpiryMonth: string
-  cardExpiryYear: string
-  cardCvv: string
-  saveCard: string
+const API_URL = process.env.REACT_APP_THEME_API_URL
+const QUOTATIONS_URL = `${API_URL}/quotations/register`
+const GET_COMPANIES_URL = `${API_URL}/company/?`
+
+
+const createQuotations = (quotation: Quotations): Promise<Quotations | undefined> => {
+
+  return axios
+    .post(QUOTATIONS_URL, quotation)
+    .then((response: AxiosResponse<Response<Quotations>>) => response.data)
+    .then((response: Response<Quotations>) => {
+      console.log('wedssdsdsd')
+      return response.data
+    })
 }
 
-const inits: ICreateAccount = {
-  appName: '',
-  category: '1',
-  framework: '1',
-  dbName: '',
-  dbType: '1',
-  nameOnCard: 'Max Doe',
-  cardNumber: '4111 1111 1111 1111',
-  cardExpiryMonth: '1',
-  cardExpiryYear: '2025',
-  cardCvv: '123',
-  saveCard: '1',
+const getCompanies = (text: String): Promise<CompaniesQueryResponse> => {
+  return axios
+    .get(`${GET_COMPANIES_URL}${text}`)
+    .then((d: AxiosResponse<CompaniesQueryResponse>) => d.data)
 }
 
-const createAppSchema = [
+
+const createQuotationSchema = [
   Yup.object({
-    appName: Yup.string().required().label('App name'),
-    category: Yup.string().required().label('Category'),
+    name: Yup.string().required().label('Quotation name'),
+    type: Yup.string().required().label('Quotation type'),
   }),
   Yup.object({
-    framework: Yup.string().required().label('Framework'),
+    company: Yup.string().required().label('Company'),
   }),
   Yup.object({
-    dbName: Yup.string().required().label('Database name'),
-    dbType: Yup.string().required().label('Database engine'),
+    address: Yup.string().required().label('Project address'),
+    invoiceNo: Yup.string().required().label('Invoice number'),
   }),
   Yup.object({
-    nameOnCard: Yup.string().required().label('Name'),
+    workType: Yup.string().required().label('Work type'),
     cardNumber: Yup.string().required().label('Card Number'),
     cardExpiryMonth: Yup.string().required().label('Expiration Month'),
     cardExpiryYear: Yup.string().required().label('Expiration Year'),
@@ -54,11 +54,23 @@ const createAppSchema = [
   }),
 ]
 
+// quotations?: Array<Object>,
+// balancePaid?: String,
+// nextPaymentDate?: String,
+// finalPaymentDate?: String,
+// paymentTerm?: Array<Object>,
+// projectSchedule?: Array<Object>,
+// note?: String,
+// poc?: String,
+// contact?: String,
+// isFinished?: Boolean,
+
 const Main: FC = () => {
   const stepperRef = useRef<HTMLDivElement | null>(null)
   const stepper = useRef<StepperComponent | null>(null)
-  const [currentSchema, setCurrentSchema] = useState(createAppSchema[0])
-  const [initValues] = useState<ICreateAccount>(inits)
+  const [currentSchema, setCurrentSchema] = useState(createQuotationSchema[0])
+  const [company, setCompany, refCompany] = useState<Companies[]>()
+  const [initValues] = useState<Quotations>(initialQuotations)
 
   const loadStepper = () => {
     stepper.current = StepperComponent.createInsance(stepperRef.current as HTMLDivElement)
@@ -71,20 +83,56 @@ const Main: FC = () => {
 
     stepper.current.goPrev()
 
-    setCurrentSchema(createAppSchema[stepper.current.currentStepIndex - 1])
+    setCurrentSchema(createQuotationSchema[stepper.current.currentStepIndex - 1])
   }
 
-  const submitStep = (values: ICreateAccount, actions: FormikValues) => {
+  const submitStep = async (values: Quotations, actions: FormikValues) => {
+
     if (!stepper.current) {
       return
     }
 
-    setCurrentSchema(createAppSchema[stepper.current.currentStepIndex])
+    setCurrentSchema(createQuotationSchema[stepper.current.currentStepIndex])
+
+
+    if (stepper.current.currentStepIndex === 1) {
+      values.company = ""
+      var { data } = await getCompanies(values.type ? values.type : "")
+      setCompany(data)
+
+    }
 
     if (stepper.current.currentStepIndex !== stepper.current.totatStepsNumber) {
       stepper.current.goNext()
     } else {
-      stepper.current.goto(1)
+      // stepper.current.goto(1)
+
+
+      var nnew = {
+        company: "6277f498434b29f22cb97ce3", //must be companies id
+        type: values.type,
+        name: values.name,
+        invoiceNo: values.invoiceNo,
+        address: values.address,
+        quotations: values.quotations,
+        balancePaid: values.balancePaid,
+        nextPaymentDate: values.nextPaymentDate,
+        finalPaymentDate: values.finalPaymentDate,
+        paymentTerm: values.paymentTerm,
+        projectSchedule: values.projectSchedule,
+        note: values.note,
+        poc: values.poc,
+        contact: values.contact,
+        isFinished: values.isFinished,
+        workType: values.workType
+      }
+
+      console.log(nnew)
+
+
+
+      await createQuotations(nnew)
+
       actions.resetForm()
     }
   }
@@ -102,7 +150,7 @@ const Main: FC = () => {
       <div className='modal-dialog modal-dialog-centered mw-900px'>
         <div className='modal-content'>
           <div className='modal-header'>
-            <h2>Create App</h2>
+            <h2>Create Quotation</h2>
 
             <div className='btn btn-sm btn-icon btn-active-color-primary' data-bs-dismiss='modal'>
               <KTSVG path='/media/icons/duotune/arrows/arr061.svg' className='svg-icon-1' />
@@ -126,9 +174,9 @@ const Main: FC = () => {
                     </div>
 
                     <div className='stepper-label'>
-                      <h3 className='stepper-title'>Details</h3>
+                      <h3 className='stepper-title'>Name</h3>
 
-                      <div className='stepper-desc'>Name your App</div>
+                      <div className='stepper-desc'>Name your Quotation project</div>
                     </div>
                   </div>
 
@@ -141,9 +189,9 @@ const Main: FC = () => {
                     </div>
 
                     <div className='stepper-label'>
-                      <h3 className='stepper-title'>Frameworks</h3>
+                      <h3 className='stepper-title'>Companies</h3>
 
-                      <div className='stepper-desc'>Define your app framework</div>
+                      <div className='stepper-desc'>Select the company for this project</div>
                     </div>
                   </div>
 
@@ -156,7 +204,7 @@ const Main: FC = () => {
                     </div>
 
                     <div className='stepper-label'>
-                      <h3 className='stepper-title'>Database</h3>
+                      <h3 className='stepper-title'>Quotation Details</h3>
 
                       <div className='stepper-desc'>Select the app database type</div>
                     </div>
@@ -171,7 +219,7 @@ const Main: FC = () => {
                     </div>
 
                     <div className='stepper-label'>
-                      <h3 className='stepper-title'>Billing</h3>
+                      <h3 className='stepper-title'>Address and POC</h3>
 
                       <div className='stepper-desc'>Provide payment details</div>
                     </div>
@@ -206,34 +254,34 @@ const Main: FC = () => {
                         <div className='w-100'>
                           <div className='fv-row mb-10'>
                             <label className='d-flex align-items-center fs-5 fw-bold mb-2'>
-                              <span className='required'>App Name</span>
-                              <i
+                              <span className='required'>Quotation Name</span>
+                              {/* <i
                                 className='fas fa-exclamation-circle ms-2 fs-7'
                                 data-bs-toggle='tooltip'
-                                title='Specify your unique app name'
-                              ></i>
+                                title='Specify your unique quotation name'
+                              ></i> */}
                             </label>
 
                             <Field
                               type='text'
                               className='form-control form-control-lg form-control-solid'
-                              name='appName'
-                              placeholder=''
+                              name='name'
+                              placeholder='name'
                             />
                             <div className='text-danger'>
-                              <ErrorMessage name='appName' />
+                              <ErrorMessage name='name' />
                             </div>
                           </div>
 
                           <div className='fv-row'>
                             <label className='d-flex align-items-center fs-5 fw-bold mb-4'>
-                              <span className='required'>Category</span>
+                              <span className='required'>Quotation type</span>
 
-                              <i
+                              {/* <i
                                 className='fas fa-exclamation-circle ms-2 fs-7'
                                 data-bs-toggle='tooltip'
-                                title='Select your app category'
-                              ></i>
+                                title='Select your app type'
+                              ></i> */}
                             </label>
 
                             <div className='fv-row'>
@@ -249,10 +297,10 @@ const Main: FC = () => {
                                   </span>
 
                                   <span className='d-flex flex-column'>
-                                    <span className='fw-bolder fs-6'>Quick Online Courses</span>
+                                    <span className='fw-bolder fs-6'>Regular Quotation</span>
 
                                     <span className='fs-7 text-muted'>
-                                      Creating a clear text structure is just one SEO
+                                      A quotation from us to other companies
                                     </span>
                                   </span>
                                 </span>
@@ -261,8 +309,8 @@ const Main: FC = () => {
                                   <Field
                                     className='form-check-input'
                                     type='radio'
-                                    name='category'
-                                    value='1'
+                                    name='type'
+                                    value='Regular'
                                   />
                                 </span>
                               </label>
@@ -279,10 +327,10 @@ const Main: FC = () => {
                                   </span>
 
                                   <span className='d-flex flex-column'>
-                                    <span className='fw-bolder fs-6'>Face to Face Discussions</span>
+                                    <span className='fw-bolder fs-6'>Sub-Consultant Quotation</span>
 
                                     <span className='fs-7 text-muted'>
-                                      Creating a clear text structure is just one aspect
+                                      A quotation from other companies to us
                                     </span>
                                   </span>
                                 </span>
@@ -291,45 +339,17 @@ const Main: FC = () => {
                                   <Field
                                     className='form-check-input'
                                     type='radio'
-                                    name='category'
-                                    value='2'
+                                    name='type'
+                                    value='Sub-consultant'
                                   />
                                 </span>
                               </label>
 
-                              <label className='d-flex flex-stack cursor-pointer'>
-                                <span className='d-flex align-items-center me-2'>
-                                  <span className='symbol symbol-50px me-6'>
-                                    <span className='symbol-label bg-light-success'>
-                                      <KTSVG
-                                        path='/media/icons/duotune/general/gen013.svg'
-                                        className='svg-icon-1 svg-icon-success'
-                                      />
-                                    </span>
-                                  </span>
 
-                                  <span className='d-flex flex-column'>
-                                    <span className='fw-bolder fs-6'>Full Intro Training</span>
-
-                                    <span className='fs-7 text-muted'>
-                                      Creating a clear text structure copywriting
-                                    </span>
-                                  </span>
-                                </span>
-
-                                <span className='form-check form-check-custom form-check-solid'>
-                                  <Field
-                                    className='form-check-input'
-                                    type='radio'
-                                    name='category'
-                                    value='3'
-                                  />
-                                </span>
-                              </label>
                             </div>
 
                             <div className='text-danger'>
-                              <ErrorMessage name='category' />
+                              <ErrorMessage name='type' />
                             </div>
                           </div>
                         </div>
@@ -338,118 +358,64 @@ const Main: FC = () => {
                       <div data-kt-stepper-element='content'>
                         <div className='w-100'>
                           <div className='fv-row'>
-                            <label className='d-flex align-items-center fs-5 fw-bold mb-4'>
-                              <span className='required'>Select Framework</span>
-                              <i
+                            <label className='d-flex align-items-center fs-5 fw-bold mb-6'>
+                              <span className='required'>Select company</span>
+                              {/* <i
                                 className='fas fa-exclamation-circle ms-2 fs-7'
                                 data-bs-toggle='tooltip'
-                                title='Specify your apps framework'
-                              ></i>
+                                title='Specify your project company'
+                              ></i> */}
                             </label>
 
-                            <label className='d-flex flex-stack cursor-pointer mb-5'>
-                              <span className='d-flex align-items-center me-2'>
-                                <span className='symbol symbol-50px me-6'>
-                                  <span className='symbol-label bg-light-warning'>
-                                    <i className='fab fa-html5 text-warning fs-2x'></i>
-                                  </span>
-                                </span>
+                            <div style={{ height: 300, overflowY: 'scroll' }}>
+                              {refCompany.current ?
 
-                                <span className='d-flex flex-column'>
-                                  <span className='fw-bolder fs-6'>HTML5</span>
+                                refCompany.current.length > 0 ?
+                                  (
+                                    refCompany.current.map((company: Companies, i) => {
+                                      return <label key={i} className='d-flex flex-stack cursor-pointer mb-5'>
+                                        <span className='d-flex align-items-center me-2'>
+                                          <span className='symbol symbol-50px me-6'>
+                                            {company.avatar ? (
+                                              <div className='symbol-label'>
+                                                <img
+                                                  src={toAbsoluteUrl(`/media/${company.avatar}`)}
+                                                  className='h-100 w-100'
+                                                  style={{ objectFit: 'cover' }}
+                                                />
+                                              </div>
+                                            ) : (
+                                              <div className='symbol-label'>
+                                                <img src={toAbsoluteUrl('/media/avatars/blank.png')} className='w-100' />
+                                              </div>
+                                            )}
+                                          </span>
 
-                                  <span className='fs-7 text-muted'>Base Web Projec</span>
-                                </span>
-                              </span>
+                                          <span className='d-flex flex-column'>
+                                            <span className='fw-bolder fs-6'>{company.name}</span>
 
-                              <span className='form-check form-check-custom form-check-solid'>
-                                <Field
-                                  className='form-check-input'
-                                  type='radio'
-                                  name='framework'
-                                  value='1'
-                                />
-                              </span>
-                            </label>
+                                            <span className='fs-7 text-muted'>{company.type} Quotation</span>
+                                          </span>
+                                        </span>
 
-                            <label className='d-flex flex-stack cursor-pointer mb-5'>
-                              <span className='d-flex align-items-center me-2'>
-                                <span className='symbol symbol-50px me-6'>
-                                  <span className='symbol-label bg-light-success'>
-                                    <i className='fab fa-react text-success fs-2x'></i>
-                                  </span>
-                                </span>
+                                        <span className='form-check form-check-custom form-check-solid me-8'>
+                                          <Field
+                                            className='form-check-input'
+                                            type='radio'
+                                            name='company'
+                                            value={company.id}
+                                          />
+                                        </span>
+                                      </label>
+                                    })) : <></>
 
-                                <span className='d-flex flex-column'>
-                                  <span className='fw-bolder fs-6'>ReactJS</span>
-                                  <span className='fs-7 text-muted'>
-                                    Robust and flexible app framework
-                                  </span>
-                                </span>
-                              </span>
+                                : <></>
+                              }
 
-                              <span className='form-check form-check-custom form-check-solid'>
-                                <Field
-                                  className='form-check-input'
-                                  type='radio'
-                                  name='framework'
-                                  value='2'
-                                />
-                              </span>
-                            </label>
-
-                            <label className='d-flex flex-stack cursor-pointer mb-5'>
-                              <span className='d-flex align-items-center me-2'>
-                                <span className='symbol symbol-50px me-6'>
-                                  <span className='symbol-label bg-light-danger'>
-                                    <i className='fab fa-angular text-danger fs-2x'></i>
-                                  </span>
-                                </span>
-
-                                <span className='d-flex flex-column'>
-                                  <span className='fw-bolder fs-6'>Angular</span>
-                                  <span className='fs-7 text-muted'>Powerful data mangement</span>
-                                </span>
-                              </span>
-
-                              <span className='form-check form-check-custom form-check-solid'>
-                                <Field
-                                  className='form-check-input'
-                                  type='radio'
-                                  name='framework'
-                                  value='3'
-                                />
-                              </span>
-                            </label>
-
-                            <label className='d-flex flex-stack cursor-pointer'>
-                              <span className='d-flex align-items-center me-2'>
-                                <span className='symbol symbol-50px me-6'>
-                                  <span className='symbol-label bg-light-primary'>
-                                    <i className='fab fa-vuejs text-primary fs-2x'></i>
-                                  </span>
-                                </span>
-
-                                <span className='d-flex flex-column'>
-                                  <span className='fw-bolder fs-6'>Vue</span>
-                                  <span className='fs-7 text-muted'>
-                                    Lightweight and responsive framework
-                                  </span>
-                                </span>
-                              </span>
-
-                              <span className='form-check form-check-custom form-check-solid'>
-                                <Field
-                                  className='form-check-input'
-                                  type='radio'
-                                  name='framework'
-                                  value='4'
-                                />
-                              </span>
-                            </label>
+                            </div>
                           </div>
                           <div className='text-danger'>
-                            <ErrorMessage name='framework' />
+                            <ErrorMessage name='company' />
                           </div>
                         </div>
                       </div>
@@ -462,11 +428,11 @@ const Main: FC = () => {
                             <Field
                               type='text'
                               className='form-control form-control-lg form-control-solid'
-                              name='dbName'
+                              name='address'
                               placeholder=''
                             />
                             <div className='text-danger'>
-                              <ErrorMessage name='dbName' />
+                              <ErrorMessage name='address' />
                             </div>
                           </div>
 
@@ -500,7 +466,7 @@ const Main: FC = () => {
                                 <Field
                                   className='form-check-input'
                                   type='radio'
-                                  name='dbType'
+                                  name='invoiceNo'
                                   value='1'
                                 />
                               </span>
@@ -527,7 +493,7 @@ const Main: FC = () => {
                                 <Field
                                   className='form-check-input'
                                   type='radio'
-                                  name='dbType'
+                                  name='invoiceNo'
                                   value='2'
                                 />
                               </span>
@@ -554,7 +520,7 @@ const Main: FC = () => {
                                 <Field
                                   className='form-check-input'
                                   type='radio'
-                                  name='dbType'
+                                  name='invoiceNo'
                                   value='3'
                                 />
                               </span>
@@ -562,7 +528,7 @@ const Main: FC = () => {
                           </div>
 
                           <div className='text-danger'>
-                            <ErrorMessage name='dbType' />
+                            <ErrorMessage name='invoiceNo' />
                           </div>
                         </div>
                       </div>
@@ -594,10 +560,10 @@ const Main: FC = () => {
                               type='text'
                               className='form-control form-control-solid'
                               placeholder=''
-                              name='nameOnCard'
+                              name='workType'
                             />
                             <div className='text-danger'>
-                              <ErrorMessage name='nameOnCard' />
+                              <ErrorMessage name='workType' />
                             </div>
                           </div>
                           <div className='d-flex flex-column mb-7 fv-row'>
@@ -804,4 +770,4 @@ const Main: FC = () => {
   )
 }
 
-export {Main}
+export { Main }

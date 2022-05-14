@@ -21,8 +21,8 @@ const CompaniesActionsCell: FC<Props> = ({id}) => {
   }, [])
 
   const openEditModal = () => {
-    console.log('llllllll')
-    console.log(id)
+    // console.log('llllllll')
+    // console.log(id)
     setItemIdForUpdate(id)
   }
 

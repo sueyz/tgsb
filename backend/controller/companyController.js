@@ -199,6 +199,19 @@ const getCompanyById = asyncHandler (async (req, res) => {
 })
 
 
+// @ desc Get Company
+// @rout GET /api/company/:id
+// @access Public
+const getAllCompany = asyncHandler (async (req, res) => {
+
+    const company = await Company.find({type: Object.keys(req.query)[0]})
+
+    res.status(200).json({
+        data: company
+    })
+})
+
+
 // @ desc Update something
 // @rout PUT /api/dashboard/:id
 const updateCompany = asyncHandler (async (req, res) => {
@@ -296,5 +309,6 @@ module.exports = {
     queryCompany,
     updateCompany,
     deleteCompany,
-    uploadAvatar
+    uploadAvatar,
+    getAllCompany
 }
