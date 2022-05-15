@@ -14,9 +14,29 @@ const quotationsSchema = mongoose.Schema({
         type: String,
         required: [true, 'PLease add project name']
     },
-    address: {
+    address1: {
         type: String,
-        required: [true, 'PLease add project address']
+        required: [true, 'PLease add project address1']
+    },
+    address2: {
+        type: String,
+        required: false
+    },
+    address3: {
+        type: String,
+        required: false
+    },
+    zip: {
+        type: String,
+        required: [true, 'PLease add project zip']
+    },
+    city: {
+        type: String,
+        required: [true, 'PLease add project city']
+    },
+    state: {
+        type: String,
+        required: [true, 'PLease add project state']
     },
     invoiceNo: {
         type: String,
@@ -68,8 +88,8 @@ const quotationsSchema = mongoose.Schema({
         type: String,
         required: false
     },
-    isFinished: {
-        type: Boolean,
+    email: {
+        type: String,
         required: false
     },
 }, {
@@ -82,7 +102,12 @@ quotationsSchema.methods.toJSON = function () {
       company: this.company,
       type: this.type,
       name: this.name,
-      address: this.address,
+      address1: this.address1,
+      address2: this.address2,
+      address3: this.address3,
+      zip: this.zip,
+      city: this.city,
+      state: this.state,
       invoiceNo: this.invoiceNo,
       quotations: this.quotations,
       balancePaid: this.balancePaid,
@@ -93,7 +118,7 @@ quotationsSchema.methods.toJSON = function () {
       note: this.note,
       poc: this.poc,
       contact: this.contact,
-      isFinished: this.isFinished,
+      email: this.email,
       workType: this.workType
     }
   }

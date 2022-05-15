@@ -43,7 +43,7 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
     type: quotations.type || initialQuotations.type,
     name: quotations.name || initialQuotations.name,
     invoiceNo: quotations.invoiceNo || initialQuotations.invoiceNo,
-    address: quotations.address || initialQuotations.address,
+    address1: quotations.address1 || initialQuotations.address1,
     quotations: quotations.quotations || initialQuotations.quotations,
     balancePaid: quotations.balancePaid || initialQuotations.balancePaid,
     nextPaymentDate: quotations.nextPaymentDate || initialQuotations.nextPaymentDate,
@@ -53,7 +53,6 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
     note: quotations.note || initialQuotations.note,
     poc: quotations.poc || initialQuotations.poc,
     contact: quotations.contact || initialQuotations.contact,
-    isFinished: quotations.isFinished || initialQuotations.isFinished,
     workType: quotations.workType || initialQuotations.workType,
 
   })

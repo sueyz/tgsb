@@ -7,10 +7,17 @@ const Quotation = require('../model/quotationModel')
 // @rout Post /api/registerCompany
 // @access Public
 const registerQuotation = asyncHandler( async (req, res) => {
-    const {company, type, name, invoiceNo, address, quotations, balancePaid, nextPaymentDate,
+    const {company, type, name, invoiceNo, address1, address2, address3, zip, city, state, email, quotations, balancePaid, nextPaymentDate,
         finalPaymentDate, paymentTerm, projectSchedule, note, poc, contact, isFinished, workType} = req.body
 
-    if(!company || !type|| !name|| !address || !invoiceNo || !quotations ||!poc ||!contact){
+
+    if(!company || !type|| !name|| !address1 || !invoiceNo || !quotations || !zip || !city || !state ){
+
+        console.log(name)
+        console.log(address1)
+        console.log(invoiceNo)
+
+
         res.status(400)
         throw new Error('Please add all required fields')
     }
@@ -33,7 +40,13 @@ const registerQuotation = asyncHandler( async (req, res) => {
         type,
         name,
         invoiceNo,
-        address,
+        address1,
+        address2,
+        address3,
+        zip,
+        city,
+        state,
+        email,
         quotations,
         balancePaid,
         nextPaymentDate,
@@ -54,7 +67,13 @@ const registerQuotation = asyncHandler( async (req, res) => {
             type: quotation.type,
             name: quotation.name,
             invoiceNo: quotation.invoiceNo,
-            address: quotation.address,
+            address1: quotation.address1,
+            address2: quotation.address2,
+            address3: quotation.address3,
+            zip: quotation.zip,
+            city: quotation.city,
+            state: quotation.state,
+            email: quotation.email,
             quotations: quotation.quotations,
             balancePaid: quotation.balancePaid,
             nextPaymentDate: quotation.nextPaymentDate,
@@ -126,7 +145,13 @@ const queryQuotation = asyncHandler( async (req, res) => {
         type: 1,
         name: 1,
         invoiceNo: 1,
-        address: 1,
+        address1: 1,
+        address2: 1,
+        address3: 1,
+        zip: 1,
+        city: 1,
+        state: 1,
+        email: 1,
         quotations: 1,
         balancePaid: 1,
         nextPaymentDate: 1,

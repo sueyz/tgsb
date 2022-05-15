@@ -24,7 +24,7 @@ const usersColumns: ReadonlyArray<Column<Quotations>> = [
   },
   {
     Header: (props) => <QuotationsCustomHeader tableProps={props} title='Venue' className='min-w-125px cursor-pointer text-hover-primary' />,
-    accessor: 'address',
+    accessor: 'address1',
   },
   {
     Header: (props) => (

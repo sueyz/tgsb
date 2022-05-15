@@ -95,19 +95,13 @@ const createQuotationSchema = [
     ).min(1, 'Project schedule')
   }),
   Yup.object({
-    workType: Yup.string().required().label('Work type'),
-    cardNumber: Yup.string().required().label('Card Number'),
-    cardExpiryMonth: Yup.string().required().label('Expiration Month'),
-    cardExpiryYear: Yup.string().required().label('Expiration Year'),
-    cardCvv: Yup.string().required().label('CVV'),
-  }),
+    address1: Yup.string().required().label('Address 1'),
+    zip: Yup.string().required().label('Zip'),
+    city: Yup.string().required().label('City'),
+    state: Yup.string().required().label('State')
+  })
 ]
-//address
-// projectSchedule?: Array<Object>,
 // note?: String,
-// poc?: String,
-// contact?: String,
-// isFinished?: Boolean,
 
 const Main: FC = () => {
   const stepperRef = useRef<HTMLDivElement | null>(null)
@@ -164,7 +158,11 @@ const Main: FC = () => {
         type: values.type,
         name: values.name,
         invoiceNo: values.invoiceNo,
-        address: values.address,
+        address1: values.address1,
+        zip: values.zip,
+        city: values.city,
+        state: values.state,
+        email: values.email,
         quotations: values.quotations,
         balancePaid: values.balancePaid,
         nextPaymentDate: values.nextPaymentDate,
@@ -174,7 +172,6 @@ const Main: FC = () => {
         note: values.note,
         poc: values.poc,
         contact: values.contact,
-        isFinished: values.isFinished,
         workType: values.workType
       }
 
@@ -300,9 +297,9 @@ const Main: FC = () => {
                     </div>
 
                     <div className='stepper-label'>
-                      <h3 className='stepper-title'>Address and POC</h3>
+                      <h3 className='stepper-title'>Address and Contact</h3>
 
-                      <div className='stepper-desc'>Provide payment details</div>
+                      <div className='stepper-desc'>project adress, poc, contact</div>
                     </div>
                   </div>
 
@@ -875,54 +872,114 @@ const Main: FC = () => {
 
                       <div data-kt-stepper-element='content'>
                         <div className='w-100'>
-                          <div className='pb-10 pb-lg-15'>
-                            <h2 className='fw-bolder text-dark'>Billing Details</h2>
-
-                            <div className='text-gray-400 fw-bold fs-6'>
-                              If you need more info, please check out
-                              <a href='#' className='text-primary fw-bolder'>
-                                Help Page
-                              </a>
-                              .
-                            </div>
+                          <div className='pb-lg-3'>
+                            <label className='required fs-6 fw-bold form-label'>
+                              Venue Address
+                            </label>
                           </div>
-                          <div className='d-flex flex-column mb-7 fv-row'>
-                            <label className='d-flex align-items-center fs-6 fw-bold form-label mb-2'>
+                          <div className='d-flex flex-column fv-row mb-3'>
+                            {/* <label className='d-flex align-items-center fs-6 fw-bold form-label mb-2'>
                               <span className='required'>Name On Card</span>
                               <i
                                 className='fas fa-exclamation-circle ms-2 fs-7'
                                 data-bs-toggle='tooltip'
                                 title="Specify a card holder's name"
                               ></i>
-                            </label>
+                            </label> */}
 
                             <Field
                               type='text'
-                              className='form-control form-control-solid'
-                              placeholder=''
-                              name='workType'
+                              className='form-control form-control-solid mb-3'
+                              placeholder='Address#1'
+                              name='address1'
                             />
                             <div className='text-danger'>
-                              <ErrorMessage name='workType' />
+                              <ErrorMessage name='address1' />
+                            </div>
+                            <Field
+                              type='text'
+                              className='form-control form-control-solid mb-3'
+                              placeholder='Address#2'
+                              name='address2'
+                            />
+                            <Field
+                              type='text'
+                              className='form-control form-control-solid'
+                              placeholder='Address#3'
+                              name='address3'
+                            />
+                          </div>
+                          <div className='d-flex mb-3 fv-row' style={{ justifyContent: 'space-between' }}>
+                            <Field
+                              type='text'
+                              onKeyPress={(event: any) => {
+                                if (!/[0-9]/.test(event.key)) {
+                                  event.preventDefault();
+                                }
+                              }}
+                              maxlength="5"
+                              style={{ width: '30%' }}
+                              className='form-control form-control-solid'
+                              placeholder='Zip'
+                              name='zip'
+                            />
+                            <Field
+                              type='text'
+                              style={{ width: '30%' }}
+                              className='form-control form-control-solid'
+                              placeholder='City'
+                              name='city'
+                            />
+
+                            <Field
+                              as='select'
+                              style={{ width: '30%' }}
+                              className='form-select form-select-solid'
+                              placeholder='State'
+                              name='state'
+                            >
+                              <option></option>
+                              <option value='Kelantan'>Kelantan</option>
+                              <option value='Johor'>Johor</option>
+                              <option value='Terengganu'>Terengganu</option>
+                              <option value='Pahang'>Pahang</option>
+                              <option value='Perak'>Perak</option>
+                              <option value='Perlis'>Perlis</option>
+                              <option value='Kedah'>Kedah</option>
+                              <option value='KL'>WP Kuala Lumpur</option>
+                              <option value='Selangor'>Selangor</option>
+                              <option value='N9'>Negeri Sembilan</option>
+                              <option value='Labuan'>WP Labuan</option>
+                              <option value='Sabah'>Sabah</option>
+                              <option value='Melaka'>Melaka</option>
+                              <option value='Sarawak'>Sarawak</option>
+                            </Field>
+
+                          </div>
+                          <div className='d-flex mb-10 fv-row' style={{ justifyContent: 'space-between' }}>
+                            <div className='text-danger' style={{ width: '30%' }}>
+                              <ErrorMessage name='zip' />
+                            </div>
+                            <div className='text-danger' style={{ width: '30%' }}>
+                              <ErrorMessage name='city' />
+                            </div>
+                            <div className='text-danger' style={{ width: '30%' }}>
+                              <ErrorMessage name='state' />
                             </div>
                           </div>
-                          <div className='d-flex flex-column mb-7 fv-row'>
-                            <label className='required fs-6 fw-bold form-label mb-2'>
-                              Card Number
+                          <div className='d-flex flex-column mb-3 fv-row'>
+                            <label className='fs-6 fw-bold form-label mb-2'>
+                              Person in charge
                             </label>
 
                             <div className='position-relative'>
                               <Field
                                 type='text'
                                 className='form-control form-control-solid'
-                                placeholder='Enter card number'
-                                name='cardNumber'
+                                placeholder='Poc'
+                                name='poc'
                               />
-                              <div className='text-danger'>
-                                <ErrorMessage name='cardNumber' />
-                              </div>
-
-                              <div className='position-absolute translate-middle-y top-50 end-0 me-5'>
+                              {/* <div className='position-absolute translate-middle-y top-50 end-0 me-5'>
                                 <img
                                   src={toAbsoluteUrl('/media/svg/card-logos/visa.svg')}
                                   alt=''
@@ -938,113 +995,41 @@ const Main: FC = () => {
                                   alt=''
                                   className='h-25px'
                                 />
-                              </div>
+                              </div> */}
                             </div>
                           </div>
-                          <div className='row mb-10'>
-                            <div className='col-md-8 fv-row'>
-                              <label className='required fs-6 fw-bold form-label mb-2'>
-                                Expiration Date
-                              </label>
 
-                              <div className='row fv-row'>
-                                <div className='col-6'>
-                                  <Field
-                                    as='select'
-                                    name='cardExpiryMonth'
-                                    className='form-select form-select-solid'
-                                  >
-                                    <option></option>
-                                    <option value='1'>1</option>
-                                    <option value='2'>2</option>
-                                    <option value='3'>3</option>
-                                    <option value='4'>4</option>
-                                    <option value='5'>5</option>
-                                    <option value='6'>6</option>
-                                    <option value='7'>7</option>
-                                    <option value='8'>8</option>
-                                    <option value='9'>9</option>
-                                    <option value='10'>10</option>
-                                    <option value='11'>11</option>
-                                    <option value='12'>12</option>
-                                  </Field>
-                                  <div className='text-danger'>
-                                    <ErrorMessage name='cardExpiryMonth' />
-                                  </div>
-                                </div>
-
-                                <div className='col-6'>
-                                  <Field
-                                    as='select'
-                                    name='cardExpiryYear'
-                                    className='form-select form-select-solid'
-                                  >
-                                    <option></option>
-                                    <option value='2021'>2021</option>
-                                    <option value='2022'>2022</option>
-                                    <option value='2023'>2023</option>
-                                    <option value='2024'>2024</option>
-                                    <option value='2025'>2025</option>
-                                    <option value='2026'>2026</option>
-                                    <option value='2027'>2027</option>
-                                    <option value='2028'>2028</option>
-                                    <option value='2029'>2029</option>
-                                    <option value='2030'>2030</option>
-                                    <option value='2031'>2031</option>
-                                  </Field>
-                                  <div className='text-danger'>
-                                    <ErrorMessage name='cardExpiryYear' />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className='col-md-4 fv-row'>
-                              <label className='d-flex align-items-center fs-6 fw-bold form-label mb-2'>
-                                <span className='required'>CVV</span>
-                                <i
-                                  className='fas fa-exclamation-circle ms-2 fs-7'
-                                  data-bs-toggle='tooltip'
-                                  title='Enter a card CVV code'
-                                ></i>
+                          <div className='mb-7 fv-row' style={{display: 'flex', justifyContent: 'space-between'}}>
+                            <div style={{ width: '40%' }}>
+                              <label className='fs-6 fw-bold form-label mb-2'>
+                                E-mail
                               </label>
 
                               <div className='position-relative'>
                                 <Field
                                   type='text'
                                   className='form-control form-control-solid'
-                                  placeholder='CVV'
-                                  name='cardCvv'
+                                  placeholder='E-mail'
+                                  name='email'
                                 />
-                                <div className='text-danger'>
-                                  <ErrorMessage name='cardCvv' />
-                                </div>
 
-                                <div className='position-absolute translate-middle-y top-50 end-0 me-3'>
-                                  <KTSVG
-                                    path='/media/icons/duotune/finance/fin002.svg'
-                                    className='svg-icon-2hx'
-                                  />
-                                </div>
                               </div>
                             </div>
-                          </div>
-                          <div className='d-flex flex-stack'>
-                            <div className='me-5'>
-                              <label className='fs-6 fw-bold form-label'>
-                                Save Card for further billing?
+                            <div style={{ width: '40%' }}>
+                              <label className='fs-6 fw-bold form-label mb-2'>
+                                Contact
                               </label>
-                              <div className='fs-7 fw-bold text-gray-400'>
-                                If you need more info, please check budget planning
+
+                              <div className='position-relative'>
+                                <Field
+                                  type='text'
+                                  className='form-control form-control-solid'
+                                  placeholder='Contact'
+                                  name='contact'
+                                />
+
                               </div>
                             </div>
-
-                            <label className='form-check form-switch form-check-custom form-check-solid'>
-                              <Field className='form-check-input' type='checkbox' />
-                              <span className='form-check-label fw-bold text-gray-400'>
-                                Save Card
-                              </span>
-                            </label>
                           </div>
                         </div>
                       </div>

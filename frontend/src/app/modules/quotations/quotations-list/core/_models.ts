@@ -5,7 +5,12 @@ export type Quotations = {
   type?: String,
   name?: String,
   invoiceNo?: String,
-  address?: String,
+  address1?: String,
+  address2?: String,
+  address3?: String,
+  zip?: String,
+  city?: String,
+  state?: String,
   quotations?: Array<Object>,
   balancePaid?: Number,
   nextPaymentDate?: String,
@@ -15,7 +20,7 @@ export type Quotations = {
   note?: String,
   poc?: String,
   contact?: String,
-  isFinished?: Boolean,
+  email?: String,
   workType?: String
   // online?: boolean
   // initials?: {
@@ -30,7 +35,12 @@ export const initialQuotations: Quotations = {
   type: 'Regular',
   name: '',
   invoiceNo: '',
-  address: '',
+  address1: '',
+  address2: '',
+  address3: '',
+  zip: '',
+  city: '',
+  state: '',
   quotations: [{
     desc: '',
     amount: 0
@@ -50,8 +60,8 @@ export const initialQuotations: Quotations = {
   }
   ],
   note: '',
-  poc: 'Aqil',
-  contact: '01999898899',
-  isFinished: false,
+  poc: '',
+  contact: '',
+  email: '',
   workType: 'EIT'
 }
