@@ -1,4 +1,4 @@
-import {ID, Response} from '../../../../../_metronic/helpers'
+import { ID, Response } from '../../../../../_metronic/helpers'
 export type Quotations = {
   id?: ID
   company?: String,
@@ -43,7 +43,12 @@ export const initialQuotations: Quotations = {
     desc: '',
     amount: 0
   }],
-  projectSchedule: [],
+  projectSchedule: [{
+    desc: '',
+    week: '',
+    remark: ''
+  }
+  ],
   note: '',
   poc: 'Aqil',
   contact: '01999898899',

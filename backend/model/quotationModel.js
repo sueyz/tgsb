@@ -53,7 +53,7 @@ const quotationsSchema = mongoose.Schema({
     },
     projectSchedule: {
         type: Array,
-        default : [{desc: 'ex', week: 0, remark: 'ex'}],
+        default : [{desc: 'ex', week: '0-2', remark: 'ex'}],
         required: false
     },
     note: {

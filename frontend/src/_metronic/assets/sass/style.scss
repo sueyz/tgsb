@@ -12,6 +12,25 @@ $mode: default;
 @import "./core/components/components";
 @import "components/components";
 
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #c2c2c2;
+
+  &::before,
+  &::after {
+      content: "";
+      flex: 1;
+      border-bottom: 2px solid #c2c2c2;
+  }
+  &::before {
+      margin-right: 0.25em;
+  }
+  &::after {
+      margin-left: 0.25em;
+  }
+}
 
 // companies card
 .flip-card-outer {

@@ -68,7 +68,7 @@ const createQuotationSchema = [
           .required()
           .label('Amount')
       })
-    ).min(1, 'Quotations'),
+    ).min(1, 'Payment Term'),
     balancePaid: Yup.number()
       .required()
       .label('Balance paid'),
@@ -80,6 +80,21 @@ const createQuotationSchema = [
       .label('Final date')
   }),
   Yup.object({
+    projectSchedule: Yup.array().of(
+      Yup.object({
+        desc: Yup.string()
+          .required()
+          .label('Description'),
+        week: Yup.string()
+          .required()
+          .label('Week'),
+        remark: Yup.string()
+          .required()
+          .label('Remark')
+      })
+    ).min(1, 'Project schedule')
+  }),
+  Yup.object({
     workType: Yup.string().required().label('Work type'),
     cardNumber: Yup.string().required().label('Card Number'),
     cardExpiryMonth: Yup.string().required().label('Expiration Month'),
@@ -88,8 +103,6 @@ const createQuotationSchema = [
   }),
 ]
 //address
-// nextPaymentDate?: Date,
-// finalPaymentDate?: Date,
 // projectSchedule?: Array<Object>,
 // note?: String,
 // poc?: String,
@@ -272,6 +285,21 @@ const Main: FC = () => {
                     </div>
 
                     <div className='stepper-label'>
+                      <h3 className='stepper-title'>Quotation Details (3)</h3>
+
+                      <div className='stepper-desc'>project schedule</div>
+                    </div>
+                  </div>
+
+                  <div className='stepper-item' data-kt-stepper-element='nav'>
+                    <div className='stepper-line w-40px'></div>
+
+                    <div className='stepper-icon w-40px h-40px'>
+                      <i className='stepper-check fas fa-check'></i>
+                      <span className='stepper-number'>6</span>
+                    </div>
+
+                    <div className='stepper-label'>
                       <h3 className='stepper-title'>Address and POC</h3>
 
                       <div className='stepper-desc'>Provide payment details</div>
@@ -283,7 +311,7 @@ const Main: FC = () => {
 
                     <div className='stepper-icon w-40px h-40px'>
                       <i className='stepper-check fas fa-check'></i>
-                      <span className='stepper-number'>6</span>
+                      <span className='stepper-number'>7</span>
                     </div>
 
                     <div className='stepper-label'>
@@ -604,7 +632,7 @@ const Main: FC = () => {
                       <div data-kt-stepper-element='content'>
                         <div className='w-100'>
 
-                          <div className='fv-row mb-10'>
+                          <div className='fv-row'>
                             <label className='required fs-5 fw-bold mb-2'>Payment Schedule</label>
 
                             <FieldArray name="paymentTerm">
@@ -665,7 +693,7 @@ const Main: FC = () => {
                             </FieldArray>
                           </div>
 
-                          <div className='fv-row'>
+                          <div className='fv-row mb-10'>
 
                             {formikProps.values.paymentTerm ?
                               formikProps.values.paymentTerm.map((value: any, index) => {
@@ -749,6 +777,101 @@ const Main: FC = () => {
                           </div>
                         </div>
                       </div>
+
+                      {/* 5 */}
+                      <div data-kt-stepper-element='content'>
+                        <div className='w-100'>
+
+                          <div className='fv-row mb-10'>
+                            <label className='required fs-5 fw-bold mb-2'>Proposed project schedule</label>
+
+
+                            <FieldArray name="projectSchedule">
+                              {(arrayHelpers) => {
+
+                                return (
+                                  <div>
+                                    {formikProps.values.projectSchedule ?
+                                      formikProps.values.projectSchedule.map((value: any, index) => {
+
+                                        return (
+                                          <div className='mb-10' key={index}>
+                                            <Field
+                                              style={{ width: '100%' }}
+                                              component="textarea" rows="3"
+                                              className='form-control form-control-lg form-control-solid mb-5'
+                                              name={`projectSchedule.${index}.desc`}
+                                              placeholder='Description'
+                                            />
+
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                              <Field
+                                                style={{ width: '30%' }}
+                                                type="text"
+                                                className='form-control form-control-lg form-control-solid'
+                                                name={`projectSchedule.${index}.week`}
+                                                placeholder='Week'
+                                              />
+
+                                              <div style={{ width: '60%', display: 'flex', alignItems: 'center' }}>
+
+                                                <Field
+                                                  component="textarea" rows="2"
+                                                  className='form-control form-control-lg form-control-solid'
+                                                  name={`projectSchedule.${index}.remark`}
+                                                  placeholder='Remark'
+                                                />
+
+                                                {index >= 1 ?
+                                                  <img style={{ cursor: 'pointer', position: 'absolute', right: 0, marginRight: '5%' }} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
+                                                  : <></>}
+                                              </div>
+
+                                            </div>
+
+                                            <div className="divider mt-3">{index + 1}</div>
+
+                                            <></>
+
+                                          </div>
+                                        );
+                                      }) : <></>}
+                                    <button type='button' onClick={() => arrayHelpers.push({ desc: '', week: '', remark: '' })}>Add more fields</button>
+                                  </div>
+
+                                )
+                              }}
+                            </FieldArray>
+                          </div>
+
+                          <div className='fv-row'>
+
+                            {formikProps.values.projectSchedule ?
+                              formikProps.values.projectSchedule.map((value: any, index) => {
+
+                                return (
+
+                                  <div key={index}>
+                                    <div className='text-danger'>
+                                      <ErrorMessage name={`projectSchedule.${index}.desc`} />
+                                    </div>
+                                    <div className='text-danger'>
+                                      <ErrorMessage name={`projectSchedule.${index}.week`} />
+                                    </div>
+                                    <div className='text-danger'>
+                                      <ErrorMessage name={`projectSchedule.${index}.remark`} />
+                                    </div>
+                                  </div>
+
+                                );
+                              }) : <></>}
+
+                          </div>
+
+
+                        </div>
+                      </div>
+
 
                       <div data-kt-stepper-element='content'>
                         <div className='w-100'>
