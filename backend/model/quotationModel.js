@@ -48,7 +48,7 @@ const quotationsSchema = mongoose.Schema({
     //ex: 40,40,20 
     paymentTerm: {
         type: Array,
-        default : [{percentage: 0, desc: 0}],
+        default : [{percentage: 0, desc: 'ex', amount: 0}],
         required: false
     },
     projectSchedule: {

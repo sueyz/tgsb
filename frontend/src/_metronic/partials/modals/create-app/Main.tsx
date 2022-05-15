@@ -2,7 +2,7 @@
 import React, { FC, useEffect, useRef } from 'react'
 import useState from 'react-usestateref'
 import { KTSVG, toAbsoluteUrl } from '../../../helpers'
-import { Formik, Form, FormikValues, Field, ErrorMessage } from 'formik'
+import { Formik, Form, FormikValues, Field, ErrorMessage, FieldArray } from 'formik'
 import * as Yup from 'yup'
 import { StepperComponent } from '../../../assets/ts/components'
 import axios, { AxiosResponse } from 'axios'
@@ -36,14 +36,26 @@ const getCompanies = (text: String): Promise<CompaniesQueryResponse> => {
 const createQuotationSchema = [
   Yup.object({
     name: Yup.string().required().label('Quotation name'),
+    invoiceNo: Yup.string().required().label('Invoice number'),
     type: Yup.string().required().label('Quotation type'),
   }),
   Yup.object({
     company: Yup.string().required().label('Company'),
   }),
   Yup.object({
-    address: Yup.string().required().label('Project address'),
-    invoiceNo: Yup.string().required().label('Invoice number'),
+    workType: Yup.string().required().label('Work type'),
+    quotations: Yup.array().of(
+      Yup.object({
+        desc: Yup.string()
+          .required()
+          .label('Description'),
+        amount: Yup.number()
+          .required()
+          .label('Amount')
+      })
+    ).min(1, 'Quotations')
+    // quotations: Yup.array()
+    //   .min(1).required().label('Quotations'),
   }),
   Yup.object({
     workType: Yup.string().required().label('Work type'),
@@ -94,6 +106,7 @@ const Main: FC = () => {
 
     setCurrentSchema(createQuotationSchema[stepper.current.currentStepIndex])
 
+    console.log(values)
 
     if (stepper.current.currentStepIndex === 1) {
       values.company = ""
@@ -147,7 +160,7 @@ const Main: FC = () => {
 
   return (
     <div className='modal fade' id='kt_modal_create_app' aria-hidden='true'>
-      <div className='modal-dialog modal-dialog-centered mw-900px'>
+      <div className='modal-dialog modal-dialog-centered mw-1000px'>
         <div className='modal-content'>
           <div className='modal-header'>
             <h2>Create Quotation</h2>
@@ -174,7 +187,7 @@ const Main: FC = () => {
                     </div>
 
                     <div className='stepper-label'>
-                      <h3 className='stepper-title'>Name</h3>
+                      <h3 className='stepper-title'>Name & Invoice number</h3>
 
                       <div className='stepper-desc'>Name your Quotation project</div>
                     </div>
@@ -248,10 +261,26 @@ const Main: FC = () => {
                   initialValues={initValues}
                   onSubmit={submitStep}
                 >
-                  {() => (
+                  {(formikProps) => (
                     <Form className='form' noValidate id='kt_modal_create_app_form'>
                       <div className='current' data-kt-stepper-element='content'>
                         <div className='w-100'>
+                          <div className='fv-row mb-10'>
+                            <label className='d-flex align-items-center fs-5 fw-bold mb-2'>
+                              <span className='required'>Invoice Number</span>
+                            </label>
+
+                            <Field
+                              type='text'
+                              className='form-control form-control-lg form-control-solid'
+                              name='invoiceNo'
+                              placeholder='Invoice no'
+                            />
+                            <div className='text-danger'>
+                              <ErrorMessage name='invoiceNo' />
+                            </div>
+                          </div>
+
                           <div className='fv-row mb-10'>
                             <label className='d-flex align-items-center fs-5 fw-bold mb-2'>
                               <span className='required'>Quotation Name</span>
@@ -424,114 +453,115 @@ const Main: FC = () => {
 
                       <div data-kt-stepper-element='content'>
                         <div className='w-100'>
-                          <div className='fv-row mb-10'>
-                            <label className='required fs-5 fw-bold mb-2'>Database Name</label>
-
-                            <Field
-                              type='text'
-                              className='form-control form-control-lg form-control-solid'
-                              name='address'
-                              placeholder=''
-                            />
-                            <div className='text-danger'>
-                              <ErrorMessage name='address' />
-                            </div>
-                          </div>
-
-                          <div className='fv-row'>
+                          <div className='fv-row mb-3'>
                             <label className='d-flex align-items-center fs-5 fw-bold mb-4'>
-                              <span className='required'>Select Database Engine</span>
+                              <span className='required'>Select Work Type</span>
 
-                              <i
+                              {/* <i
                                 className='fas fa-exclamation-circle ms-2 fs-7'
                                 data-bs-toggle='tooltip'
                                 title='Select your app database engine'
-                              ></i>
+                              ></i> */}
                             </label>
 
                             <label className='d-flex flex-stack cursor-pointer mb-5'>
                               <span className='d-flex align-items-center me-2'>
-                                <span className='symbol symbol-50px me-6'>
+                                {/* <span className='symbol symbol-50px me-6'>
                                   <span className='symbol-label bg-light-success'>
                                     <i className='fas fa-database text-success fs-2x'></i>
                                   </span>
-                                </span>
+                                </span> */}
 
-                                <span className='d-flex flex-column'>
-                                  <span className='fw-bolder fs-6'>MySQL</span>
+                                <Field as='select' name='workType' style={{ textOverflow: 'ellipsis' }} className="form-select" aria-label="Default select example">
+                                  <option value="EIT">Environmental Impact Asssesment</option>
+                                  <option value="EMT">Environmental Mark Assesment</option>
+                                  <option value="DSR">Dynamic Search Rescue</option>
+                                </Field>
 
-                                  <span className='fs-7 text-muted'>Basic MySQL database</span>
-                                </span>
-                              </span>
-
-                              <span className='form-check form-check-custom form-check-solid'>
-                                <Field
-                                  className='form-check-input'
-                                  type='radio'
-                                  name='invoiceNo'
-                                  value='1'
-                                />
-                              </span>
-                            </label>
-
-                            <label className='d-flex flex-stack cursor-pointer mb-5'>
-                              <span className='d-flex align-items-center me-2'>
-                                <span className='symbol symbol-50px me-6'>
-                                  <span className='symbol-label bg-light-danger'>
-                                    <i className='fab fa-google text-danger fs-2x'></i>
-                                  </span>
-                                </span>
-
-                                <span className='d-flex flex-column'>
-                                  <span className='fw-bolder fs-6'>Firebase</span>
-
-                                  <span className='fs-7 text-muted'>
-                                    Google based app data management
-                                  </span>
-                                </span>
-                              </span>
-
-                              <span className='form-check form-check-custom form-check-solid'>
-                                <Field
-                                  className='form-check-input'
-                                  type='radio'
-                                  name='invoiceNo'
-                                  value='2'
-                                />
-                              </span>
-                            </label>
-
-                            <label className='d-flex flex-stack cursor-pointer'>
-                              <span className='d-flex align-items-center me-2'>
-                                <span className='symbol symbol-50px me-6'>
-                                  <span className='symbol-label bg-light-warning'>
-                                    <i className='fab fa-amazon text-warning fs-2x'></i>
-                                  </span>
-                                </span>
-
-                                <span className='d-flex flex-column'>
-                                  <span className='fw-bolder fs-6'>DynamoDB</span>
-
-                                  <span className='fs-7 text-muted'>
-                                    Amazon Fast NoSQL Database
-                                  </span>
-                                </span>
-                              </span>
-
-                              <span className='form-check form-check-custom form-check-solid'>
-                                <Field
-                                  className='form-check-input'
-                                  type='radio'
-                                  name='invoiceNo'
-                                  value='3'
-                                />
                               </span>
                             </label>
                           </div>
-
-                          <div className='text-danger'>
-                            <ErrorMessage name='invoiceNo' />
+                          <div className='text-danger mb-10'>
+                            <ErrorMessage name='workType' />
                           </div>
+
+                          <div className='fv-row mb-10'>
+                            <label className='required fs-5 fw-bold mb-2'>Proposed Fee</label>
+
+
+                            <FieldArray name="quotations">
+                              {(arrayHelpers) => {
+
+                                return (
+                                  <div>
+                                    {formikProps.values.quotations ?
+                                      formikProps.values.quotations.map((quotations: any, index) => {
+
+
+                                        return (
+                                          // <div key={index}>
+                                          //   <Field name={`quotations.${index}.desc`} />
+                                          // <div className='text-danger'>
+                                          //   <ErrorMessage name={`quotations.${index}.desc`} />
+                                          // </div>
+                                          //   <Field type="number" name={`quotations.${index}.amount`}/>
+                                          //   <div className='text-danger'>
+                                          //     <ErrorMessage name={`quotations.${index}.amount`} />
+                                          //   </div>
+                                          // </div>
+
+                                          <div className='mb-10' key={index} style={{ display: 'flex', alignItems: 'center' }}>
+                                            <Field
+                                              style={{ width: '60%' }}
+                                              component="textarea" rows="3"
+                                              className='form-control form-control-lg form-control-solid'
+                                              name={`quotations.${index}.desc`}
+                                              placeholder='Description'
+                                            />
+                                            
+                                            <div style={{width: '30%' ,margin: 'auto',  marginRight: 0, display: 'flex', alignItems: 'center'}}>
+                                            <b style={{marginRight: 7}}>RM</b>
+                                            <Field
+                                              type="number"
+                                              rows="1"
+                                              className='form-control form-control-lg form-control-solid'
+                                              name={`quotations.${index}.amount`}
+                                              placeholder='Amount'
+                                            />
+                                            </div>
+                                            <></>
+
+                                          </div>
+                                        );
+                                      }) : <></>}
+                                    <div>
+                                      <button type='button' onClick={() => arrayHelpers.push({ desc: '', amount: 0 })}>Add more fields</button>
+                                    </div>
+                                  </div>
+                                )
+                              }}
+                            </FieldArray>
+                          </div>
+
+                          <div className='fv-row'>
+
+                            {formikProps.values.quotations ?
+                              formikProps.values.quotations.map((quotations: any, index) => {
+
+                                return (
+
+                                  <div><div className='text-danger'>
+                                    <ErrorMessage name={`quotations.${index}.desc`} />
+                                  </div><div className='text-danger'>
+                                      <ErrorMessage name={`quotations.${index}.amount`} />
+                                    </div></div>
+
+                                );
+                              }) : <></>}
+
+                          </div>
+
+
                         </div>
                       </div>
 

@@ -31,7 +31,10 @@ export const initialQuotations: Quotations = {
   name: '',
   invoiceNo: '',
   address: '',
-  quotations: [],
+  quotations: [{
+    desc: '',
+    amount: 0
+  }],
   balancePaid: '',
   nextPaymentDate: '',
   finalPaymentDate: '',
@@ -41,5 +44,5 @@ export const initialQuotations: Quotations = {
   poc: 'Aqil',
   contact: '01999898899',
   isFinished: false,
-  workType: ''
+  workType: 'EIT'
 }
