@@ -34,7 +34,7 @@ const quotationsSchema = mongoose.Schema({
     },
     //get time updated from timestamps updated everytime change balance paid only
     balancePaid: {
-        type: String,
+        type: Number,
         required: false
     },
     nextPaymentDate: {

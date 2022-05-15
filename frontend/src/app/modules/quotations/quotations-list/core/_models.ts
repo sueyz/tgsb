@@ -7,7 +7,7 @@ export type Quotations = {
   invoiceNo?: String,
   address?: String,
   quotations?: Array<Object>,
-  balancePaid?: String,
+  balancePaid?: Number,
   nextPaymentDate?: String,
   finalPaymentDate?: String,
   paymentTerm?: Array<Object>,
@@ -35,10 +35,14 @@ export const initialQuotations: Quotations = {
     desc: '',
     amount: 0
   }],
-  balancePaid: '',
+  balancePaid: 0,
   nextPaymentDate: '',
   finalPaymentDate: '',
-  paymentTerm: [],
+  paymentTerm: [{
+    percentage: 0,
+    desc: '',
+    amount: 0
+  }],
   projectSchedule: [],
   note: '',
   poc: 'Aqil',

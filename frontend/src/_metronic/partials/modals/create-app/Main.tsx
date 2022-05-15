@@ -54,8 +54,21 @@ const createQuotationSchema = [
           .label('Amount')
       })
     ).min(1, 'Quotations')
-    // quotations: Yup.array()
-    //   .min(1).required().label('Quotations'),
+  }),
+  Yup.object({
+    paymentTerm: Yup.array().of(
+      Yup.object({
+        percentage: Yup.number()
+          .required()
+          .label('Percentage'),
+        desc: Yup.string()
+          .required()
+          .label('Description'),
+        amount: Yup.number()
+          .required()
+          .label('Amount')
+      })
+    ).min(1, 'Quotations')
   }),
   Yup.object({
     workType: Yup.string().required().label('Work type'),
@@ -65,12 +78,10 @@ const createQuotationSchema = [
     cardCvv: Yup.string().required().label('CVV'),
   }),
 ]
-
-// quotations?: Array<Object>,
-// balancePaid?: String,
+//address
+// balancePaid?: Number,
 // nextPaymentDate?: String,
 // finalPaymentDate?: String,
-// paymentTerm?: Array<Object>,
 // projectSchedule?: Array<Object>,
 // note?: String,
 // poc?: String,
@@ -100,6 +111,10 @@ const Main: FC = () => {
 
   const submitStep = async (values: Quotations, actions: FormikValues) => {
 
+
+    console.log("values")
+
+
     if (!stepper.current) {
       return
     }
@@ -107,6 +122,8 @@ const Main: FC = () => {
     setCurrentSchema(createQuotationSchema[stepper.current.currentStepIndex])
 
     console.log(values)
+    console.log(stepper.current)
+
 
     if (stepper.current.currentStepIndex === 1) {
       values.company = ""
@@ -217,7 +234,7 @@ const Main: FC = () => {
                     </div>
 
                     <div className='stepper-label'>
-                      <h3 className='stepper-title'>Quotation Details</h3>
+                      <h3 className='stepper-title'>Quotation Details (1)</h3>
 
                       <div className='stepper-desc'>Select the app database type</div>
                     </div>
@@ -232,6 +249,21 @@ const Main: FC = () => {
                     </div>
 
                     <div className='stepper-label'>
+                      <h3 className='stepper-title'>Quotation Details (2)</h3>
+
+                      <div className='stepper-desc'>Select the app database type</div>
+                    </div>
+                  </div>
+
+                  <div className='stepper-item' data-kt-stepper-element='nav'>
+                    <div className='stepper-line w-40px'></div>
+
+                    <div className='stepper-icon w-40px h-40px'>
+                      <i className='stepper-check fas fa-check'></i>
+                      <span className='stepper-number'>5</span>
+                    </div>
+
+                    <div className='stepper-label'>
                       <h3 className='stepper-title'>Address and POC</h3>
 
                       <div className='stepper-desc'>Provide payment details</div>
@@ -243,7 +275,7 @@ const Main: FC = () => {
 
                     <div className='stepper-icon w-40px h-40px'>
                       <i className='stepper-check fas fa-check'></i>
-                      <span className='stepper-number'>5</span>
+                      <span className='stepper-number'>6</span>
                     </div>
 
                     <div className='stepper-label'>
@@ -512,12 +544,13 @@ const Main: FC = () => {
                                               <Field
                                                 type="number"
                                                 rows="1"
+                                                min="0"
                                                 className='form-control form-control-lg form-control-solid'
                                                 name={`quotations.${index}.amount`}
                                                 placeholder='Amount'
                                               />
                                               {index >= 1 ?
-                                                <img style={{cursor: 'pointer', position: 'absolute' , right: 0, marginRight: '5%'}} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
+                                                <img style={{ cursor: 'pointer', position: 'absolute', right: 0, marginRight: '5%' }} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
                                                 : <></>}
                                             </div>
                                             <></>
@@ -525,8 +558,11 @@ const Main: FC = () => {
                                           </div>
                                         );
                                       }) : <></>}
-                                    <div>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
                                       <button type='button' onClick={() => arrayHelpers.push({ desc: '', amount: 0 })}>Add more fields</button>
+
+                                      <p style={{ display: 'flex', margin: 'auto', alignItems: 'center', marginRight: 0, width: '30%' }}><b>Total RM: </b>
+                                        <span style={{ marginLeft: 10 }}>{formikProps.values.quotations!.reduce((sum, item: any) => sum + item.amount, 0)}</span></p>
                                     </div>
                                   </div>
                                 )
@@ -550,6 +586,125 @@ const Main: FC = () => {
                                 );
                               }) : <></>}
 
+                          </div>
+
+
+                        </div>
+                      </div>
+
+                      {/* 4 */}
+                      <div data-kt-stepper-element='content'>
+                        <div className='w-100'>
+
+                          <div className='fv-row mb-10'>
+                            <label className='required fs-5 fw-bold mb-2'>Payment Schedule</label>
+
+
+                            <FieldArray name="paymentTerm">
+                              {(arrayHelpers) => {
+
+                                return (
+                                  <div>
+                                    {formikProps.values.paymentTerm ?
+                                      formikProps.values.paymentTerm.map((value: any, index) => {
+
+                                        return (
+                                          <div className='mb-10' key={index} style={{ display: 'flex', alignItems: 'center' }}>
+                                            <div style={{ width: '20%', display: 'flex', alignItems: 'center' }}>
+                                              <b style={{ marginRight: 7 }}>%</b>
+                                              <Field
+                                                type="number"
+                                                rows="1"
+                                                className='form-control form-control-lg form-control-solid'
+                                                name={`paymentTerm.${index}.percentage`}
+                                                placeholder=''
+                                              />
+                                            </div>
+
+                                            <Field
+                                              style={{ width: '40%', marginLeft: 20 }}
+                                              component="textarea" rows="1"
+                                              className='form-control form-control-lg form-control-solid'
+                                              name={`paymentTerm.${index}.desc`}
+                                              placeholder='Description'
+                                            />
+
+                                            <div style={{ width: '30%', margin: 'auto', marginRight: 0, display: 'flex', alignItems: 'center' }}>
+                                              <b style={{ marginRight: 7 }}>RM</b>
+                                              <Field
+                                                type="number"
+                                                className='form-control form-control-lg form-control-solid'
+                                                name={`paymentTerm.${index}.amount`}
+                                                placeholder='Amount'
+                                              />
+                                              {index >= 1 ?
+                                                <img style={{ cursor: 'pointer', position: 'absolute', right: 0, marginRight: '5%' }} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
+                                                : <></>}
+                                            </div>
+                                            <></>
+
+                                          </div>
+                                        );
+                                      }) : <></>}
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                      <button type='button' onClick={() => arrayHelpers.push({ percentage: 0, desc: '', amount: 0 })}>Add more fields</button>
+
+                                      <p style={{ display: 'flex', margin: 'auto', alignItems: 'center', marginRight: 0, width: '30%' }}><b>Total RM: </b>
+                                        <span style={{ marginLeft: 10 }}>{formikProps.values.paymentTerm!.reduce((sum, item: any) => sum + item.amount, 0)}</span></p>
+                                    </div>
+                                  </div>
+                                )
+                              }}
+                            </FieldArray>
+                          </div>
+
+                          <div className='fv-row'>
+
+                            {formikProps.values.quotations ?
+                              formikProps.values.quotations.map((quotations: any, index) => {
+
+                                return (
+
+                                  <div key={index}><div className='text-danger'>
+                                    <ErrorMessage name={`quotations.${index}.desc`} />
+                                  </div><div className='text-danger'>
+                                      <ErrorMessage name={`quotations.${index}.amount`} />
+                                    </div></div>
+
+                                );
+                              }) : <></>}
+
+                          </div>
+                          <div className='fv-row mb-3'>
+                            <label className='d-flex align-items-center fs-5 fw-bold mb-4'>
+                              <span className='required'>Balance Paid</span>
+
+                              {/* <i
+                                className='fas fa-exclamation-circle ms-2 fs-7'
+                                data-bs-toggle='tooltip'
+                                title='Select your app database engine'
+                              ></i> */}
+                            </label>
+
+                            <label className='d-flex flex-stack cursor-pointer mb-5'>
+                              <span className='d-flex align-items-center me-2'>
+                                {/* <span className='symbol symbol-50px me-6'>
+                                  <span className='symbol-label bg-light-success'>
+                                    <i className='fas fa-database text-success fs-2x'></i>
+                                  </span>
+                                </span> */}
+
+                                <Field as='select' name='workType' style={{ textOverflow: 'ellipsis' }} className="form-select" aria-label="Default select example">
+                                  <option value="EIT">Environmental Impact Asssesment</option>
+                                  <option value="EMT">Environmental Mark Assesment</option>
+                                  <option value="DSR">Dynamic Search Rescue</option>
+                                </Field>
+
+                              </span>
+                            </label>
+                          </div>
+                          <div className='text-danger mb-10'>
+                            <ErrorMessage name='workType' />
                           </div>
 
 
