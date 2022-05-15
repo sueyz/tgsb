@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { FC, useEffect, useRef } from 'react'
 import useState from 'react-usestateref'
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { KTSVG, toAbsoluteUrl } from '../../../helpers'
 import { Formik, Form, FormikValues, Field, ErrorMessage, FieldArray } from 'formik'
 import * as Yup from 'yup'
@@ -14,6 +15,17 @@ const API_URL = process.env.REACT_APP_THEME_API_URL
 const QUOTATIONS_URL = `${API_URL}/quotations/register`
 const GET_COMPANIES_URL = `${API_URL}/company/?`
 
+const styles = StyleSheet.create({
+  page: {
+    flexDirection: 'row',
+    backgroundColor: '#E4E4E4'
+  },
+  section: {
+    margin: 10,
+    padding: 10,
+    flexGrow: 1
+  }
+});
 
 const createQuotations = (quotation: Quotations): Promise<Quotations | undefined> => {
 
@@ -312,7 +324,7 @@ const Main: FC = () => {
                     </div>
 
                     <div className='stepper-label'>
-                      <h3 className='stepper-title'>Release</h3>
+                      <h3 className='stepper-title'>Review</h3>
 
                       <div className='stepper-desc'>Review and Submit</div>
                     </div>
@@ -1036,11 +1048,22 @@ const Main: FC = () => {
 
                       <div data-kt-stepper-element='content'>
                         <div className='w-100 text-center'>
-                          <h1 className='fw-bolder text-dark mb-3'>Release!</h1>
+                          <h1 className='fw-bolder text-dark mb-3'>Review!</h1>
 
                           <div className='text-muted fw-bold fs-3'>
-                            Submit your app to kickstart your project.
+                            Review the generated pdf.
                           </div>
+
+                          <Document>
+                            <Page size="A4" style={styles.page}>
+                              <View style={styles.section}>
+                                <Text>Section #1</Text>
+                              </View>
+                              <View style={styles.section}>
+                                <Text>Section #2</Text>
+                              </View>
+                            </Page>
+                          </Document>
 
                           <div className='text-center px-4 py-15'>
                             <img
