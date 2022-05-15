@@ -68,7 +68,16 @@ const createQuotationSchema = [
           .required()
           .label('Amount')
       })
-    ).min(1, 'Quotations')
+    ).min(1, 'Quotations'),
+    balancePaid: Yup.number()
+      .required()
+      .label('Balance paid'),
+    nextPaymentDate: Yup.date()
+      .required()
+      .label('Next date'),
+    finalPaymentDate: Yup.date()
+      .required()
+      .label('Final date')
   }),
   Yup.object({
     workType: Yup.string().required().label('Work type'),
@@ -79,9 +88,8 @@ const createQuotationSchema = [
   }),
 ]
 //address
-// balancePaid?: Number,
-// nextPaymentDate?: String,
-// finalPaymentDate?: String,
+// nextPaymentDate?: Date,
+// finalPaymentDate?: Date,
 // projectSchedule?: Array<Object>,
 // note?: String,
 // poc?: String,
@@ -221,7 +229,7 @@ const Main: FC = () => {
                     <div className='stepper-label'>
                       <h3 className='stepper-title'>Companies</h3>
 
-                      <div className='stepper-desc'>Select the company for this project</div>
+                      <div className='stepper-desc'>Select company</div>
                     </div>
                   </div>
 
@@ -236,7 +244,7 @@ const Main: FC = () => {
                     <div className='stepper-label'>
                       <h3 className='stepper-title'>Quotation Details (1)</h3>
 
-                      <div className='stepper-desc'>Select the app database type</div>
+                      <div className='stepper-desc'>Work type & proposed fee</div>
                     </div>
                   </div>
 
@@ -251,7 +259,7 @@ const Main: FC = () => {
                     <div className='stepper-label'>
                       <h3 className='stepper-title'>Quotation Details (2)</h3>
 
-                      <div className='stepper-desc'>Select the app database type</div>
+                      <div className='stepper-desc'>schedule, balance, dates</div>
                     </div>
                   </div>
 
@@ -599,7 +607,6 @@ const Main: FC = () => {
                           <div className='fv-row mb-10'>
                             <label className='required fs-5 fw-bold mb-2'>Payment Schedule</label>
 
-
                             <FieldArray name="paymentTerm">
                               {(arrayHelpers) => {
 
@@ -660,22 +667,27 @@ const Main: FC = () => {
 
                           <div className='fv-row'>
 
-                            {formikProps.values.quotations ?
-                              formikProps.values.quotations.map((quotations: any, index) => {
+                            {formikProps.values.paymentTerm ?
+                              formikProps.values.paymentTerm.map((value: any, index) => {
 
                                 return (
 
-                                  <div key={index}><div className='text-danger'>
-                                    <ErrorMessage name={`quotations.${index}.desc`} />
-                                  </div><div className='text-danger'>
-                                      <ErrorMessage name={`quotations.${index}.amount`} />
+                                  <div key={index}>
+                                    <div className='text-danger'>
+                                      <ErrorMessage name={`paymentTerm.${index}.percentage`} />
+                                    </div>
+                                    <div className='text-danger'>
+                                      <ErrorMessage name={`paymentTerm.${index}.desc`} />
+                                    </div>
+                                    <div className='text-danger'>
+                                      <ErrorMessage name={`paymentTerm.${index}.amount`} />
                                     </div></div>
 
                                 );
                               }) : <></>}
 
                           </div>
-                          <div className='fv-row mb-3'>
+                          <div className='fv-row mb-7'>
                             <label className='d-flex align-items-center fs-5 fw-bold mb-4'>
                               <span className='required'>Balance Paid</span>
 
@@ -686,28 +698,55 @@ const Main: FC = () => {
                               ></i> */}
                             </label>
 
-                            <label className='d-flex flex-stack cursor-pointer mb-5'>
-                              <span className='d-flex align-items-center me-2'>
-                                {/* <span className='symbol symbol-50px me-6'>
-                                  <span className='symbol-label bg-light-success'>
-                                    <i className='fas fa-database text-success fs-2x'></i>
-                                  </span>
-                                </span> */}
-
-                                <Field as='select' name='workType' style={{ textOverflow: 'ellipsis' }} className="form-select" aria-label="Default select example">
-                                  <option value="EIT">Environmental Impact Asssesment</option>
-                                  <option value="EMT">Environmental Mark Assesment</option>
-                                  <option value="DSR">Dynamic Search Rescue</option>
-                                </Field>
-
-                              </span>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                              <b style={{ marginRight: 7 }}>RM</b>
+                              <Field
+                                type='number'
+                                className='form-control form-control-lg form-control-solid'
+                                name='balancePaid'
+                                min="0"
+                                placeholder='Balance paid'
+                              />
+                              <div className='text-danger'>
+                                <ErrorMessage name='balancePaid' />
+                              </div>
+                            </div>
+                          </div>
+                          <div className='fv-row'>
+                            <label style={{ justifyContent: 'space-between' }} className='d-flex align-items-center fs-5 fw-bold mb-4'>
+                              <span style={{ width: "40%" }}
+                                className='required'>Next payment date:</span>
+                              <span style={{ width: "40%" }}
+                                className='required'>Final payment date:</span>
                             </label>
-                          </div>
-                          <div className='text-danger mb-10'>
-                            <ErrorMessage name='workType' />
-                          </div>
 
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                              <div style={{ width: "40%" }}>
+                                <Field
+                                  type='date'
+                                  className='form-control form-control-lg form-control-solid'
+                                  name='nextPaymentDate'
+                                />
+                                <div className='text-danger'>
+                                  <ErrorMessage name='nextPaymentDate' />
+                                </div>
 
+                              </div>
+
+                              <div style={{ width: "40%" }}>
+                                <Field
+                                  type='date'
+                                  className='form-control form-control-lg form-control-solid'
+                                  name='finalPaymentDate'
+                                />
+                                <div className='text-danger'>
+                                  <ErrorMessage name='finalPaymentDate' />
+                                </div>
+
+                              </div>
+
+                            </div>
+                          </div>
                         </div>
                       </div>
 
