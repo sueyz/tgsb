@@ -495,21 +495,9 @@ const Main: FC = () => {
                                 return (
                                   <div>
                                     {formikProps.values.quotations ?
-                                      formikProps.values.quotations.map((quotations: any, index) => {
-
+                                      formikProps.values.quotations.map((value: any, index) => {
 
                                         return (
-                                          // <div key={index}>
-                                          //   <Field name={`quotations.${index}.desc`} />
-                                          // <div className='text-danger'>
-                                          //   <ErrorMessage name={`quotations.${index}.desc`} />
-                                          // </div>
-                                          //   <Field type="number" name={`quotations.${index}.amount`}/>
-                                          //   <div className='text-danger'>
-                                          //     <ErrorMessage name={`quotations.${index}.amount`} />
-                                          //   </div>
-                                          // </div>
-
                                           <div className='mb-10' key={index} style={{ display: 'flex', alignItems: 'center' }}>
                                             <Field
                                               style={{ width: '60%' }}
@@ -518,16 +506,19 @@ const Main: FC = () => {
                                               name={`quotations.${index}.desc`}
                                               placeholder='Description'
                                             />
-                                            
-                                            <div style={{width: '30%' ,margin: 'auto',  marginRight: 0, display: 'flex', alignItems: 'center'}}>
-                                            <b style={{marginRight: 7}}>RM</b>
-                                            <Field
-                                              type="number"
-                                              rows="1"
-                                              className='form-control form-control-lg form-control-solid'
-                                              name={`quotations.${index}.amount`}
-                                              placeholder='Amount'
-                                            />
+
+                                            <div style={{ width: '30%', margin: 'auto', marginRight: 0, display: 'flex', alignItems: 'center' }}>
+                                              <b style={{ marginRight: 7 }}>RM</b>
+                                              <Field
+                                                type="number"
+                                                rows="1"
+                                                className='form-control form-control-lg form-control-solid'
+                                                name={`quotations.${index}.amount`}
+                                                placeholder='Amount'
+                                              />
+                                              {index >= 1 ?
+                                                <img style={{cursor: 'pointer', position: 'absolute' , right: 0, marginRight: '5%'}} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
+                                                : <></>}
                                             </div>
                                             <></>
 
@@ -550,7 +541,7 @@ const Main: FC = () => {
 
                                 return (
 
-                                  <div><div className='text-danger'>
+                                  <div key={index}><div className='text-danger'>
                                     <ErrorMessage name={`quotations.${index}.desc`} />
                                   </div><div className='text-danger'>
                                       <ErrorMessage name={`quotations.${index}.amount`} />
