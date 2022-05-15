@@ -999,7 +999,7 @@ const Main: FC = () => {
                             </div>
                           </div>
 
-                          <div className='mb-7 fv-row' style={{display: 'flex', justifyContent: 'space-between'}}>
+                          <div className='mb-7 fv-row' style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div style={{ width: '40%' }}>
                               <label className='fs-6 fw-bold form-label mb-2'>
                                 E-mail
@@ -1071,10 +1071,8 @@ const Main: FC = () => {
                         <div>
                           <button type='submit' className='btn btn-lg btn-primary me-3'>
                             <span className='indicator-label'>
-                              {stepper.current?.currentStepIndex !==
-                                stepper.current?.totatStepsNumber! - 1 && 'Continue'}
-                              {stepper.current?.currentStepIndex ===
-                                stepper.current?.totatStepsNumber! - 1 && 'Submit'}
+                              {stepper.current?.currentStepIndex !== 7 && 'Continue'}
+                              {stepper.current?.currentStepIndex === 7 && 'Submit'}
                               <KTSVG
                                 path='/media/icons/duotune/arrows/arr064.svg'
                                 className='svg-icon-3 ms-2 me-0'
