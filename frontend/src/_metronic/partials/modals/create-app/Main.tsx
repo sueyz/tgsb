@@ -1,7 +1,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { FC, useEffect, useRef } from 'react'
 import useState from 'react-usestateref'
-import { Document, Page, Text, View, StyleSheet, PDFViewer, Font } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
+import ReactPDF from '@react-pdf/renderer';
 // import { Document, Page } from 'react-pdf';
 import { KTSVG, toAbsoluteUrl } from '../../../helpers'
 import { Formik, Form, FormikValues, Field, ErrorMessage, FieldArray } from 'formik'
@@ -11,10 +12,12 @@ import axios, { AxiosResponse } from 'axios'
 import { initialQuotations, Quotations } from '../../../../app/modules/quotations/quotations-list/core/_models'
 import { ID, Response } from '../../../../_metronic/helpers'
 import { Companies, CompaniesQueryResponse } from '../../../../app/modules/companies/companies-list/core/_models'
+import path from 'path';
 
 const API_URL = process.env.REACT_APP_THEME_API_URL
 const QUOTATIONS_URL = `${API_URL}/quotations/register`
 const GET_COMPANIES_URL = `${API_URL}/company/?`
+const ATTACHMENTS_UPLOAD_URL = `${API_URL}/quotations/upload`
 
 var totalProposed = 0
 var totalTerm = 0
@@ -35,6 +38,18 @@ const getCompanies = (text: String): Promise<CompaniesQueryResponse> => {
   return axios
     .get(`${GET_COMPANIES_URL}${text}`)
     .then((d: AxiosResponse<CompaniesQueryResponse>) => d.data)
+}
+
+const uploadAttachements = (file: FormData) => {
+  return axios
+    .post(ATTACHMENTS_UPLOAD_URL, file, {
+      headers: {
+        'content-type': 'multipart/form-data',
+      },
+    })
+    .then((response) => {
+      return response.data.files
+    })
 }
 
 
@@ -110,6 +125,13 @@ const Main: FC = () => {
   const [company, setCompany, refCompany] = useState<Companies[]>()
   const [initValues] = useState<Quotations>(initialQuotations)
 
+  const [file, setFile] = useState<File[]>()
+
+  const onChangeFiles = (e: any) => {
+    console.log(e.target.files)
+    setFile(e.target.files)
+  }
+
   const loadStepper = () => {
     stepper.current = StepperComponent.createInsance(stepperRef.current as HTMLDivElement)
   }
@@ -146,7 +168,25 @@ const Main: FC = () => {
     if (stepper.current.currentStepIndex !== stepper.current.totatStepsNumber) {
       stepper.current.goNext()
     } else {
+      if (file !== undefined) {
+        let fd = new FormData()
+
+        Array.from(file).forEach(async (file) => {
+          fd.append("attachments", file);
+
+        });
+        const results = await uploadAttachements(fd)
+        Array.from(results).forEach((element: any) => {
+          values.attachments?.push(`quotations/${element.filename}`)
+        });
+      }
+
       await createQuotations(values)
+      // const docs = path.join(__dirname, '../../../../../public/documents', 'example.pdf');
+      // ReactPDF.render(<MyDocument />,`${__dirname}/example.pdf`);
+
+
+
       stepper.current.goto(1)
       actions.resetForm()
     }
@@ -999,119 +1039,18 @@ const Main: FC = () => {
                       </div>
 
                       <div data-kt-stepper-element='content'>
-                        <div className='w-100 text-center'>
+                        <div className='w-100'>
                           <h1 className='fw-bolder text-dark mb-3'>Review!</h1>
 
                           <div className='text-muted fw-bold fs-3 mb-5'>
                             Review the generated pdf.
                           </div>
-                          <PDFViewer style={{ height: 500, width: 500 }}>
-                            <Document>
-                              <Page style={styles.page} size="A4">
-                                <View style={styles.table}>
-                                  <Text style={{ fontSize: 11, fontWeight: 1000, marginBottom: 15 }}>Table 1.0: Proposed Fee for Preparing the {formikProps.values.workType}</Text>
-                                  <View style={[styles.row]}>
-                                    <Text style={[styles.headerText, styles.cell, { width: '5%', borderRight: 0, borderBottom: 0 }]}>#</Text>
-                                    <Text style={[styles.headerText, styles.cell, { width: '70%', borderRight: 0, borderBottom: 0, paddingLeft: "7%" }]}>Description</Text>
-                                    <Text style={[styles.headerText, styles.cell, { width: '25%', borderBottom: 0 }]}>Amount (RM)</Text>
-                                  </View>
-                                  {formikProps.values.quotations ?
-                                    formikProps.values.quotations.map((value: any, index) => {
-                                      totalProposed += value.amount
-                                      return (
-                                        <div key={index}><View style={[styles.row]}>
-                                          <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
-                                          <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.desc}</Text>
-                                          <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.amount}</Text>
-                                        </View>
-                                          <View style={[styles.row]}>
-                                            {formikProps.values.quotations?.length === index + 1 &&
-                                              <>
-                                                <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 2}</Text>
-                                                <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>Total</Text>
-                                                <Text style={[styles.cell, { width: '25%', fontWeight: 'bold' }]}>{totalProposed}</Text></>
-                                            }
-                                          </View></div>
-                                      );
-                                    }) : <></>}
+                          <PDFViewer style={{ height: 500, width: 500, marginBottom: 10 }}>
+                            <MyDocument formikProps={formikProps} />
 
-                                  <Text style={{ fontSize: 11, fontWeight: 1000, marginBottom: 15, marginTop: 50 }}>Table 2.0: Schedule of Payment for Preparing the {formikProps.values.workType}</Text>
-                                  <View style={[styles.row]}>
-                                    <Text style={[styles.headerText, styles.cell, { width: '5%', borderRight: 0, borderBottom: 0 }]}>#</Text>
-                                    <Text style={[styles.headerText, styles.cell, { width: '70%', borderRight: 0, borderBottom: 0, paddingLeft: "7%" }]}>Term of Payment</Text>
-                                    <Text style={[styles.headerText, styles.cell, { width: '25%', borderBottom: 0 }]}>Amount (RM)</Text>
-                                  </View>
-                                  {formikProps.values.paymentTerm ?
-                                    formikProps.values.paymentTerm.map((value: any, index) => {
-                                      totalTerm += value.amount
-                                      return (
-                                        <div key={index}><View style={[styles.row]}>
-                                          <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
-                                          <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.percentage}% {value.desc}</Text>
-                                          <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.amount}</Text>
-                                        </View>
-                                          <View style={[styles.row]}>
-                                            {formikProps.values.paymentTerm?.length === index + 1 &&
-                                              <>
-                                                <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 2}</Text>
-                                                <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>Total</Text>
-                                                <Text style={[styles.cell, { width: '25%', fontWeight: 'bold' }]}>{totalTerm}</Text></>
-                                            }
-                                          </View>
-                                        </div>
-                                      );
-                                    }) : <></>}
-                                  <View style={{ display: 'flex', flexDirection: 'row', fontSize: 9, marginTop: 5, textAlign: 'left', lineHeight: 1.5, paddingRight: 30 }}>
-                                    <Text>Note: </Text>
-                                    <Text> - </Text>
-                                    <Text> Make all cheque payable to TROPICAL GROWTH (M) SDN BHD or kindly bank in to TROPICAL GROWTH (M) SDN BHD (Maybank Account no: 553038601340)</Text>
-
-                                  </View>
-                                </View>
-                              </Page>
-
-                              <Page style={styles.page} size="A4">
-                                <View style={styles.table}>
-                                  <Text style={{ fontSize: 11, fontWeight: 1000, marginBottom: 15 }}>Table 3.0: Proposed Project Schedule</Text>
-                                  <View style={[styles.row]}>
-                                    <Text style={[styles.headerText, styles.cell, { width: '5%', borderRight: 0, borderBottom: 0 }]}>#</Text>
-                                    <Text style={[styles.headerText, styles.cell, { width: '55%', borderRight: 0, borderBottom: 0 }]}>Description</Text>
-                                    <Text style={[styles.headerText, styles.cell, { width: '15%', borderRight: 0, borderBottom: 0 }]}>Week No</Text>
-                                    <Text style={[styles.headerText, styles.cell, { width: '25%', borderBottom: 0 }]}>Remarks</Text>
-                                  </View>
-                                  {formikProps.values.projectSchedule ?
-                                    formikProps.values.projectSchedule.map((value: any, index) => {
-                                      return (
-                                        <div key={index}><View style={[styles.row]}>
-                                          {formikProps.values.projectSchedule?.length !== index + 1 ? <>
-
-                                            <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
-                                            <Text style={[styles.cell, { width: '55%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.desc}</Text>
-                                            <Text style={[styles.cell, { width: '15%', borderBottom: 0, borderRight: 0, }]}>{value.week}</Text>
-                                            <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.remark}</Text></> :
-                                            <>
-                                              <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 1}</Text>
-                                              <Text style={[styles.cell, { width: '55%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>{value.desc}</Text>
-                                              <Text style={[styles.cell, { width: '15%', borderRight: 0, }]}>{value.week}</Text>
-                                              <Text style={[styles.cell, { width: '25%' }]}>{value.remark}</Text></>
-                                          }
-
-                                        </View>
-
-                                        </div>
-                                      );
-                                    }) : <></>}
-                                  <View style={{ display: 'flex', flexDirection: 'row', fontSize: 9, marginTop: 5, textAlign: 'left', lineHeight: 1.5, paddingRight: 30 }}>
-                                    <Text>Note: </Text>
-                                    <Text> - </Text>
-                                    <Text> This proposed schedule however, will be very much depending on delivery of requested information, payment made by project proponent on every stage of claim. Any delay may affect the overall schedule of {formikProps.values.workType} preparation and submission.</Text>
-                                  </View>
-                                </View>
-                              </Page>
-                            </Document>
                           </PDFViewer>
 
-                          <div className='d-flex flex-column mb-3 fv-row'>
+                          <div className='d-flex flex-column mb-7 fv-row'>
                             <label className='fs-6 fw-bold form-label mb-2'>
                               Additional note
                             </label>
@@ -1124,9 +1063,24 @@ const Main: FC = () => {
                               />
                             </div>
                           </div>
+                          <div className='d-flex flex-column mb-3 fv-row'>
+                            <label className='fs-6 fw-bold form-label mb-4'>
+                              Additional attachments/files
+                            </label>
+                            <div className='position-relative'>
+                              <Field
+                                type="file"
+                                name='files'
+                                multiple
+                                onChange={(e: any) => {
+                                  onChangeFiles(e)
+                                }}
+                              />
+                            </div>
+                          </div>
+
                         </div>
                       </div>
-
                       <div className='d-flex flex-stack pt-10'>
                         <div className='me-2'>
                           <button
@@ -1178,6 +1132,112 @@ const Main: FC = () => {
     </div>
   )
 }
+
+const MyDocument = (props: any) => (
+  <Document>
+    <Page style={styles.page} size="A4">
+      <View style={styles.table}>
+        <Text style={{ fontSize: 11, fontWeight: 1000, marginBottom: 15 }}>Table 1.0: Proposed Fee for Preparing the {props.formikProps.values.workType}</Text>
+        <View style={[styles.row]}>
+          <Text style={[styles.headerText, styles.cell, { width: '5%', borderRight: 0, borderBottom: 0 }]}>#</Text>
+          <Text style={[styles.headerText, styles.cell, { width: '70%', borderRight: 0, borderBottom: 0, paddingLeft: "7%" }]}>Description</Text>
+          <Text style={[styles.headerText, styles.cell, { width: '25%', borderBottom: 0 }]}>Amount (RM)</Text>
+        </View>
+        {props.formikProps.values.quotations ?
+          props.formikProps.values.quotations.map((value: any, index: number) => {
+            totalProposed += value.amount
+            return (
+              <div key={index}><View style={[styles.row]}>
+                <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
+                <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.desc}</Text>
+                <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.amount}</Text>
+              </View>
+                <View style={[styles.row]}>
+                  {props.formikProps.values.quotations?.length === index + 1 &&
+                    <>
+                      <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 2}</Text>
+                      <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>Total</Text>
+                      <Text style={[styles.cell, { width: '25%', fontWeight: 'bold' }]}>{totalProposed}</Text></>
+                  }
+                </View></div>
+            );
+          }) : <></>}
+
+        <Text style={{ fontSize: 11, fontWeight: 1000, marginBottom: 15, marginTop: 50 }}>Table 2.0: Schedule of Payment for Preparing the {props.formikProps.values.workType}</Text>
+        <View style={[styles.row]}>
+          <Text style={[styles.headerText, styles.cell, { width: '5%', borderRight: 0, borderBottom: 0 }]}>#</Text>
+          <Text style={[styles.headerText, styles.cell, { width: '70%', borderRight: 0, borderBottom: 0, paddingLeft: "7%" }]}>Term of Payment</Text>
+          <Text style={[styles.headerText, styles.cell, { width: '25%', borderBottom: 0 }]}>Amount (RM)</Text>
+        </View>
+        {props.formikProps.values.paymentTerm ?
+          props.formikProps.values.paymentTerm.map((value: any, index: number) => {
+            totalTerm += value.amount
+            return (
+              <div key={index}><View style={[styles.row]}>
+                <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
+                <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.percentage}% {value.desc}</Text>
+                <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.amount}</Text>
+              </View>
+                <View style={[styles.row]}>
+                  {props.formikProps.values.paymentTerm?.length === index + 1 &&
+                    <>
+                      <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 2}</Text>
+                      <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>Total</Text>
+                      <Text style={[styles.cell, { width: '25%', fontWeight: 'bold' }]}>{totalTerm}</Text></>
+                  }
+                </View>
+              </div>
+            );
+          }) : <></>}
+        <View style={{ display: 'flex', flexDirection: 'row', fontSize: 9, marginTop: 5, textAlign: 'left', lineHeight: 1.5, paddingRight: 30 }}>
+          <Text>Note: </Text>
+          <Text> - </Text>
+          <Text> Make all cheque payable to TROPICAL GROWTH (M) SDN BHD or kindly bank in to TROPICAL GROWTH (M) SDN BHD (Maybank Account no: 553038601340)</Text>
+
+        </View>
+      </View>
+    </Page>
+
+    <Page style={styles.page} size="A4">
+      <View style={styles.table}>
+        <Text style={{ fontSize: 11, fontWeight: 1000, marginBottom: 15 }}>Table 3.0: Proposed Project Schedule</Text>
+        <View style={[styles.row]}>
+          <Text style={[styles.headerText, styles.cell, { width: '5%', borderRight: 0, borderBottom: 0 }]}>#</Text>
+          <Text style={[styles.headerText, styles.cell, { width: '55%', borderRight: 0, borderBottom: 0 }]}>Description</Text>
+          <Text style={[styles.headerText, styles.cell, { width: '15%', borderRight: 0, borderBottom: 0 }]}>Week No</Text>
+          <Text style={[styles.headerText, styles.cell, { width: '25%', borderBottom: 0 }]}>Remarks</Text>
+        </View>
+        {props.formikProps.values.projectSchedule ?
+          props.formikProps.values.projectSchedule.map((value: any, index: number) => {
+            return (
+              <div key={index}><View style={[styles.row]}>
+                {props.formikProps.values.projectSchedule?.length !== index + 1 ? <>
+
+                  <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
+                  <Text style={[styles.cell, { width: '55%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.desc}</Text>
+                  <Text style={[styles.cell, { width: '15%', borderBottom: 0, borderRight: 0, }]}>{value.week}</Text>
+                  <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.remark}</Text></> :
+                  <>
+                    <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 1}</Text>
+                    <Text style={[styles.cell, { width: '55%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>{value.desc}</Text>
+                    <Text style={[styles.cell, { width: '15%', borderRight: 0, }]}>{value.week}</Text>
+                    <Text style={[styles.cell, { width: '25%' }]}>{value.remark}</Text></>
+                }
+
+              </View>
+
+              </div>
+            );
+          }) : <></>}
+        <View style={{ display: 'flex', flexDirection: 'row', fontSize: 9, marginTop: 5, textAlign: 'left', lineHeight: 1.5, paddingRight: 30 }}>
+          <Text>Note: </Text>
+          <Text> - </Text>
+          <Text> This proposed schedule however, will be very much depending on delivery of requested information, payment made by project proponent on every stage of claim. Any delay may affect the overall schedule of {props.formikProps.values.workType} preparation and submission.</Text>
+        </View>
+      </View>
+    </Page>
+  </Document>
+);
 
 const styles = StyleSheet.create({
   page: { flexDirection: "column", padding: 25, textAlign: 'center', marginTop: 30 },

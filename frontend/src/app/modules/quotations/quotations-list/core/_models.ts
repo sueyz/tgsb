@@ -21,7 +21,8 @@ export type Quotations = {
   poc?: String,
   contact?: String,
   email?: String,
-  workType?: String
+  workType?: String,
+  attachments?: Array<String>
   // online?: boolean
   // initials?: {
   //   label: string
@@ -63,5 +64,6 @@ export const initialQuotations: Quotations = {
   poc: '',
   contact: '',
   email: '',
-  workType: 'EIT'
+  workType: 'EIT',
+  attachments: ['']
 }

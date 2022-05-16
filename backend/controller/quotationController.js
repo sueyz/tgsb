@@ -8,7 +8,7 @@ const Quotation = require('../model/quotationModel')
 // @access Public
 const registerQuotation = asyncHandler( async (req, res) => {
     const {company, type, name, invoiceNo, address1, address2, address3, zip, city, state, email, quotations, balancePaid, nextPaymentDate,
-        finalPaymentDate, paymentTerm, projectSchedule, note, poc, contact, isFinished, workType} = req.body
+        finalPaymentDate, paymentTerm, projectSchedule, note, poc, contact, attachments, workType} = req.body
 
 
     if(!company || !type|| !name|| !address1 || !invoiceNo || !quotations || !zip || !city || !state ){
@@ -47,8 +47,8 @@ const registerQuotation = asyncHandler( async (req, res) => {
         note,
         poc,
         contact,
-        isFinished,
-        workType
+        workType,
+        attachments
     })
 
     if(quotation){
@@ -74,14 +74,26 @@ const registerQuotation = asyncHandler( async (req, res) => {
             note: quotation.note,
             poc: quotation.poc,
             contact: quotation.contact,
-            isFinished: quotation.isFinished,
-            workType: quotation.workType
+            workType: quotation.workType,
+            attachments: quotation.attachments
         })
     } else{
         res.status(400)
         throw new Error('Invalid quotation data')
     }
 })
+
+const uploadAttachments =(req, res) => {
+
+    if(!req.files ){
+        res.status(400)
+        throw new Error('Please choose an item')
+    }
+
+    res.status(200).json({
+        files: req.files
+    })
+}
 
 // @desc get Projec 
 // @rout GEt /api/user/query
@@ -295,5 +307,6 @@ module.exports = {
     queryQuotation,
     getQuotationById,
     updateQuotation,
-    deleteQuotation
+    deleteQuotation,
+    uploadAttachments
 }

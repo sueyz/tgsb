@@ -92,6 +92,11 @@ const quotationsSchema = mongoose.Schema({
         type: String,
         required: false
     },
+    attachments: {
+        type: Array,
+        default : [],
+        required: false
+    },
 }, {
     timestamps: true
 })
@@ -119,7 +124,8 @@ quotationsSchema.methods.toJSON = function () {
       poc: this.poc,
       contact: this.contact,
       email: this.email,
-      workType: this.workType
+      workType: this.workType,
+      attachments: this.attachments
     }
   }
 
