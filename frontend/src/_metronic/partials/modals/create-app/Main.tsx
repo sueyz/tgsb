@@ -1,7 +1,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { FC, useEffect, useRef } from 'react'
 import useState from 'react-usestateref'
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
+// import { Document, Page } from 'react-pdf';
 import { KTSVG, toAbsoluteUrl } from '../../../helpers'
 import { Formik, Form, FormikValues, Field, ErrorMessage, FieldArray } from 'formik'
 import * as Yup from 'yup'
@@ -15,17 +16,6 @@ const API_URL = process.env.REACT_APP_THEME_API_URL
 const QUOTATIONS_URL = `${API_URL}/quotations/register`
 const GET_COMPANIES_URL = `${API_URL}/company/?`
 
-const styles = StyleSheet.create({
-  page: {
-    flexDirection: 'row',
-    backgroundColor: '#E4E4E4'
-  },
-  section: {
-    margin: 10,
-    padding: 10,
-    flexGrow: 1
-  }
-});
 
 const createQuotations = (quotation: Quotations): Promise<Quotations | undefined> => {
 
@@ -121,6 +111,13 @@ const Main: FC = () => {
   const [currentSchema, setCurrentSchema] = useState(createQuotationSchema[0])
   const [company, setCompany, refCompany] = useState<Companies[]>()
   const [initValues] = useState<Quotations>(initialQuotations)
+
+  // const [numPages, setNumPages] = useState(null);
+  // const [pageNumber, setPageNumber] = useState(1);
+
+  // function onDocumentLoadSuccess({ numPages }) {
+  //   setNumPages(numPages);
+  // }
 
   const loadStepper = () => {
     stepper.current = StepperComponent.createInsance(stepperRef.current as HTMLDivElement)
@@ -1050,27 +1047,36 @@ const Main: FC = () => {
                         <div className='w-100 text-center'>
                           <h1 className='fw-bolder text-dark mb-3'>Review!</h1>
 
-                          <div className='text-muted fw-bold fs-3'>
+                          <div className='text-muted fw-bold fs-3 mb-5'>
                             Review the generated pdf.
                           </div>
+                          <PDFViewer style={{ height: 500, marginBottom: 10 }}>
 
-                          <Document>
-                            <Page size="A4" style={styles.page}>
-                              <View style={styles.section}>
-                                <Text>Section #1</Text>
-                              </View>
-                              <View style={styles.section}>
-                                <Text>Section #2</Text>
-                              </View>
-                            </Page>
-                          </Document>
+                            <Document>
+                              <Page wrap={false} size="A4" style={{ marginTop: 50, backgroundColor: '#ffffff', flexDirection: 'row', justifyContent: 'center' }}>
+                                <View >
+                                  <Text>Table 1.0: Proposed Fee for Preparing the {formikProps.values.workType}</Text>
+                                </View>
+                                <View>
+                                </View>
+                              </Page>
+                            </Document>
 
-                          <div className='text-center px-4 py-15'>
-                            <img
-                              src={toAbsoluteUrl('/media/illustrations/sketchy-1/9.png')}
-                              alt=''
-                              className='w-100 mh-300px'
-                            />
+                          </PDFViewer>
+
+                          <div className='d-flex flex-column mb-3 fv-row'>
+                            <label className='fs-6 fw-bold form-label mb-2'>
+                              Additional note
+                            </label>
+
+                            <div className='position-relative'>
+                              <Field
+                                component="textarea" rows="4"
+                                className='form-control form-control-solid'
+                                placeholder='Note'
+                                name='note'
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
