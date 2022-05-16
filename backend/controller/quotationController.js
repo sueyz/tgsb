@@ -12,21 +12,12 @@ const registerQuotation = asyncHandler( async (req, res) => {
 
 
     if(!company || !type|| !name|| !address1 || !invoiceNo || !quotations || !zip || !city || !state ){
-
-        console.log(name)
-        console.log(address1)
-        console.log(invoiceNo)
-
-
         res.status(400)
         throw new Error('Please add all required fields')
     }
 
     //Check if Project exist
     const quotationExists = await Quotation.findOne({invoiceNo}) 
-
-    console.log(company)
-
 
     if(quotationExists){
         res.status(400)

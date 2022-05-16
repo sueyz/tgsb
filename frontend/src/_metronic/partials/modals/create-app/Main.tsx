@@ -16,6 +16,9 @@ const API_URL = process.env.REACT_APP_THEME_API_URL
 const QUOTATIONS_URL = `${API_URL}/quotations/register`
 const GET_COMPANIES_URL = `${API_URL}/company/?`
 
+var totalProposed = 0
+var totalTerm = 0
+
 
 const createQuotations = (quotation: Quotations): Promise<Quotations | undefined> => {
 
@@ -89,10 +92,7 @@ const createQuotationSchema = [
           .label('Description'),
         week: Yup.string()
           .required()
-          .label('Week'),
-        remark: Yup.string()
-          .required()
-          .label('Remark')
+          .label('Week')
       })
     ).min(1, 'Project schedule')
   }),
@@ -135,10 +135,6 @@ const Main: FC = () => {
 
   const submitStep = async (values: Quotations, actions: FormikValues) => {
 
-
-    console.log("values")
-
-
     if (!stepper.current) {
       return
     }
@@ -159,37 +155,8 @@ const Main: FC = () => {
     if (stepper.current.currentStepIndex !== stepper.current.totatStepsNumber) {
       stepper.current.goNext()
     } else {
-      // stepper.current.goto(1)
-
-
-      var nnew = {
-        company: "6277f498434b29f22cb97ce3", //must be companies id
-        type: values.type,
-        name: values.name,
-        invoiceNo: values.invoiceNo,
-        address1: values.address1,
-        zip: values.zip,
-        city: values.city,
-        state: values.state,
-        email: values.email,
-        quotations: values.quotations,
-        balancePaid: values.balancePaid,
-        nextPaymentDate: values.nextPaymentDate,
-        finalPaymentDate: values.finalPaymentDate,
-        paymentTerm: values.paymentTerm,
-        projectSchedule: values.projectSchedule,
-        note: values.note,
-        poc: values.poc,
-        contact: values.contact,
-        workType: values.workType
-      }
-
-      console.log(nnew)
-
-
-
-      await createQuotations(nnew)
-
+      await createQuotations(values)
+      stepper.current.goto(1)
       actions.resetForm()
     }
   }
@@ -547,7 +514,7 @@ const Main: FC = () => {
                                 </span> */}
 
                                 <Field as='select' name='workType' style={{ textOverflow: 'ellipsis' }} className="form-select" aria-label="Default select example">
-                                  <option value="EIT">Environmental Impact Asssesment</option>
+                                  <option value="EIA">Environmental Impact Asssesment</option>
                                   <option value="EMT">Environmental Mark Assesment</option>
                                   <option value="DSR">Dynamic Search Rescue</option>
                                 </Field>
@@ -572,16 +539,14 @@ const Main: FC = () => {
                                       formikProps.values.quotations.map((value: any, index) => {
 
                                         return (
-                                          <div className='mb-10' key={index} style={{ display: 'flex', alignItems: 'center' }}>
+                                          <div key={index}><div className='mb-10' style={{ display: 'flex', alignItems: 'center' }}>
                                             <Field
-                                              style={{ width: '60%' }}
                                               component="textarea" rows="3"
                                               className='form-control form-control-lg form-control-solid'
                                               name={`quotations.${index}.desc`}
-                                              placeholder='Description'
-                                            />
-
-                                            <div style={{ width: '30%', margin: 'auto', marginRight: 0, display: 'flex', alignItems: 'center' }}>
+                                              placeholder='Description' />
+                                          </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 25 }}>
                                               <b style={{ marginRight: 7 }}>RM</b>
                                               <Field
                                                 type="number"
@@ -589,13 +554,12 @@ const Main: FC = () => {
                                                 min="0"
                                                 className='form-control form-control-lg form-control-solid'
                                                 name={`quotations.${index}.amount`}
-                                                placeholder='Amount'
-                                              />
+                                                placeholder='Amount' />
                                               {index >= 1 ?
                                                 <img style={{ cursor: 'pointer', position: 'absolute', right: 0, marginRight: '5%' }} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
                                                 : <></>}
                                             </div>
-                                            <></>
+                                            <div className="divider mb-5">{index + 1}</div>
 
                                           </div>
                                         );
@@ -926,7 +890,7 @@ const Main: FC = () => {
                                   event.preventDefault();
                                 }
                               }}
-                              maxlength="5"
+                              maxLength={5}
                               style={{ width: '30%' }}
                               className='form-control form-control-solid'
                               placeholder='Zip'
@@ -1062,26 +1026,25 @@ const Main: FC = () => {
                                   </View>
                                   {formikProps.values.quotations ?
                                     formikProps.values.quotations.map((value: any, index) => {
-                                      var total = 0
-                                      total += value.amount
+                                      totalProposed += value.amount
                                       return (
-                                        <><View style={[styles.row]}>
+                                        <div key={index}><View style={[styles.row]}>
                                           <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
                                           <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.desc}</Text>
                                           <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.amount}</Text>
                                         </View>
-                                          <View style={[styles.row, { marginBottom: 50 }]}>
+                                          <View style={[styles.row]}>
                                             {formikProps.values.quotations?.length === index + 1 &&
                                               <>
                                                 <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 2}</Text>
                                                 <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>Total</Text>
-                                                <Text style={[styles.cell, { width: '25%', fontWeight: 'bold' }]}>{total}</Text></>
+                                                <Text style={[styles.cell, { width: '25%', fontWeight: 'bold' }]}>{totalProposed}</Text></>
                                             }
-                                          </View></>
+                                          </View></div>
                                       );
                                     }) : <></>}
 
-                                  <Text style={{ fontSize: 11, fontWeight: 1000, marginBottom: 15 }}>Table 2.0: Schedule of Payment for Preparing the {formikProps.values.workType}</Text>
+                                  <Text style={{ fontSize: 11, fontWeight: 1000, marginBottom: 15, marginTop: 50 }}>Table 2.0: Schedule of Payment for Preparing the {formikProps.values.workType}</Text>
                                   <View style={[styles.row]}>
                                     <Text style={[styles.headerText, styles.cell, { width: '5%', borderRight: 0, borderBottom: 0 }]}>#</Text>
                                     <Text style={[styles.headerText, styles.cell, { width: '70%', borderRight: 0, borderBottom: 0, paddingLeft: "7%" }]}>Term of Payment</Text>
@@ -1089,10 +1052,9 @@ const Main: FC = () => {
                                   </View>
                                   {formikProps.values.paymentTerm ?
                                     formikProps.values.paymentTerm.map((value: any, index) => {
-                                      var total = 0
-                                      total += value.amount
+                                      totalTerm += value.amount
                                       return (
-                                        <><View style={[styles.row]}>
+                                        <div key={index}><View style={[styles.row]}>
                                           <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
                                           <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.percentage}% {value.desc}</Text>
                                           <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.amount}</Text>
@@ -1102,19 +1064,57 @@ const Main: FC = () => {
                                               <>
                                                 <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 2}</Text>
                                                 <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>Total</Text>
-                                                <Text style={[styles.cell, { width: '25%', fontWeight: 'bold' }]}>{total}</Text></>
+                                                <Text style={[styles.cell, { width: '25%', fontWeight: 'bold' }]}>{totalTerm}</Text></>
                                             }
                                           </View>
-                                          <View style={{display: 'flex', flexDirection: 'row', fontSize: 9, marginTop: 5, textAlign:'left', lineHeight:1.5, paddingRight:30}}>
-                                            <Text>Note: </Text>
-                                            <Text> - </Text>
-                                            <Text> Make all cheque payable to TROPICAL GROWTH (M) SDN BHD or kindly bank in to TROPICAL GROWTH (M) SDN BHD (Maybank Account no: 553038601340)</Text>
-
-                                          </View>
-
-                                        </>
+                                        </div>
                                       );
                                     }) : <></>}
+                                  <View style={{ display: 'flex', flexDirection: 'row', fontSize: 9, marginTop: 5, textAlign: 'left', lineHeight: 1.5, paddingRight: 30 }}>
+                                    <Text>Note: </Text>
+                                    <Text> - </Text>
+                                    <Text> Make all cheque payable to TROPICAL GROWTH (M) SDN BHD or kindly bank in to TROPICAL GROWTH (M) SDN BHD (Maybank Account no: 553038601340)</Text>
+
+                                  </View>
+                                </View>
+                              </Page>
+
+                              <Page style={styles.page} size="A4">
+                                <View style={styles.table}>
+                                  <Text style={{ fontSize: 11, fontWeight: 1000, marginBottom: 15 }}>Table 3.0: Proposed Project Schedule</Text>
+                                  <View style={[styles.row]}>
+                                    <Text style={[styles.headerText, styles.cell, { width: '5%', borderRight: 0, borderBottom: 0 }]}>#</Text>
+                                    <Text style={[styles.headerText, styles.cell, { width: '55%', borderRight: 0, borderBottom: 0 }]}>Description</Text>
+                                    <Text style={[styles.headerText, styles.cell, { width: '15%', borderRight: 0, borderBottom: 0 }]}>Week No</Text>
+                                    <Text style={[styles.headerText, styles.cell, { width: '25%', borderBottom: 0 }]}>Remarks</Text>
+                                  </View>
+                                  {formikProps.values.projectSchedule ?
+                                    formikProps.values.projectSchedule.map((value: any, index) => {
+                                      return (
+                                        <div key={index}><View style={[styles.row]}>
+                                          {formikProps.values.projectSchedule?.length !== index + 1 ? <>
+
+                                            <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
+                                            <Text style={[styles.cell, { width: '55%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.desc}</Text>
+                                            <Text style={[styles.cell, { width: '15%', borderBottom: 0, borderRight: 0, }]}>{value.week}</Text>
+                                            <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.remark}</Text></> :
+                                            <>
+                                              <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 1}</Text>
+                                              <Text style={[styles.cell, { width: '55%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>{value.desc}</Text>
+                                              <Text style={[styles.cell, { width: '15%', borderRight: 0, }]}>{value.week}</Text>
+                                              <Text style={[styles.cell, { width: '25%' }]}>{value.remark}</Text></>
+                                          }
+
+                                        </View>
+
+                                        </div>
+                                      );
+                                    }) : <></>}
+                                  <View style={{ display: 'flex', flexDirection: 'row', fontSize: 9, marginTop: 5, textAlign: 'left', lineHeight: 1.5, paddingRight: 30 }}>
+                                    <Text>Note: </Text>
+                                    <Text> - </Text>
+                                    <Text> This proposed schedule however, will be very much depending on delivery of requested information, payment made by project proponent on every stage of claim. Any delay may affect the overall schedule of {formikProps.values.workType} preparation and submission.</Text>
+                                  </View>
                                 </View>
                               </Page>
                             </Document>
@@ -1124,11 +1124,10 @@ const Main: FC = () => {
                             <label className='fs-6 fw-bold form-label mb-2'>
                               Additional note
                             </label>
-
                             <div className='position-relative'>
                               <Field
                                 component="textarea" rows="4"
-                                className='form-control form-control-solid'
+                                className='form-control form-control-lg form-control-solid'
                                 placeholder='Note'
                                 name='note'
                               />
@@ -1154,16 +1153,27 @@ const Main: FC = () => {
                         </div>
 
                         <div>
-                          <button type='submit' className='btn btn-lg btn-primary me-3'>
-                            <span className='indicator-label'>
-                              {stepper.current?.currentStepIndex !== 7 && 'Continue'}
-                              {stepper.current?.currentStepIndex === 7 && 'Submit'}
-                              <KTSVG
-                                path='/media/icons/duotune/arrows/arr064.svg'
-                                className='svg-icon-3 ms-2 me-0'
-                              />
-                            </span>
-                          </button>
+                          {stepper.current?.currentStepIndex !== 7 &&
+                            <button type='submit' className='btn btn-lg btn-primary me-3'>
+                              <span className='indicator-label'>
+                                Continue
+                                <KTSVG
+                                  path='/media/icons/duotune/arrows/arr064.svg'
+                                  className='svg-icon-3 ms-2 me-0'
+                                />
+                              </span>
+                            </button>}
+                          {stepper.current?.currentStepIndex === 7 &&
+                            <button type='submit' data-bs-dismiss='modal' className='btn btn-lg btn-primary me-3'>
+                              <span className='indicator-label'>
+                                Submit
+                                <KTSVG
+                                  path='/media/icons/duotune/arrows/arr064.svg'
+                                  className='svg-icon-3 ms-2 me-0'
+                                />
+                              </span>
+                            </button>}
+
                         </div>
                       </div>
                     </Form>
@@ -1179,7 +1189,7 @@ const Main: FC = () => {
 }
 
 const styles = StyleSheet.create({
-  page: { flexDirection: "column", padding: 25, textAlign: 'center' },
+  page: { flexDirection: "column", padding: 25, textAlign: 'center', marginTop: 30 },
   table: {
     fontSize: 10,
     // alignItems: 'stretch'
