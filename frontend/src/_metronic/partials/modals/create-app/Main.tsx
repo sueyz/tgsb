@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { FC, useEffect, useRef } from 'react'
 import useState from 'react-usestateref'
-import { Document, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, PDFViewer, Font } from '@react-pdf/renderer';
 // import { Document, Page } from 'react-pdf';
 import { KTSVG, toAbsoluteUrl } from '../../../helpers'
 import { Formik, Form, FormikValues, Field, ErrorMessage, FieldArray } from 'formik'
@@ -1050,18 +1050,74 @@ const Main: FC = () => {
                           <div className='text-muted fw-bold fs-3 mb-5'>
                             Review the generated pdf.
                           </div>
-                          <PDFViewer style={{ height: 500, marginBottom: 10 }}>
-
+                          <PDFViewer style={{ height: 500, width: 500 }}>
                             <Document>
-                              <Page wrap={false} size="A4" style={{ marginTop: 50, backgroundColor: '#ffffff', flexDirection: 'row', justifyContent: 'center' }}>
-                                <View >
-                                  <Text>Table 1.0: Proposed Fee for Preparing the {formikProps.values.workType}</Text>
-                                </View>
-                                <View>
+                              <Page style={styles.page} size="A4">
+                                <View style={styles.table}>
+                                  <Text style={{ fontSize: 11, fontWeight: 1000, marginBottom: 15 }}>Table 1.0: Proposed Fee for Preparing the {formikProps.values.workType}</Text>
+                                  <View style={[styles.row]}>
+                                    <Text style={[styles.headerText, styles.cell, { width: '5%', borderRight: 0, borderBottom: 0 }]}>#</Text>
+                                    <Text style={[styles.headerText, styles.cell, { width: '70%', borderRight: 0, borderBottom: 0, paddingLeft: "7%" }]}>Description</Text>
+                                    <Text style={[styles.headerText, styles.cell, { width: '25%', borderBottom: 0 }]}>Amount (RM)</Text>
+                                  </View>
+                                  {formikProps.values.quotations ?
+                                    formikProps.values.quotations.map((value: any, index) => {
+                                      var total = 0
+                                      total += value.amount
+                                      return (
+                                        <><View style={[styles.row]}>
+                                          <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
+                                          <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.desc}</Text>
+                                          <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.amount}</Text>
+                                        </View>
+                                          <View style={[styles.row, { marginBottom: 50 }]}>
+                                            {formikProps.values.quotations?.length === index + 1 &&
+                                              <>
+                                                <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 2}</Text>
+                                                <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>Total</Text>
+                                                <Text style={[styles.cell, { width: '25%', fontWeight: 'bold' }]}>{total}</Text></>
+                                            }
+                                          </View></>
+                                      );
+                                    }) : <></>}
+
+                                  <Text style={{ fontSize: 11, fontWeight: 1000, marginBottom: 15 }}>Table 2.0: Schedule of Payment for Preparing the {formikProps.values.workType}</Text>
+                                  <View style={[styles.row]}>
+                                    <Text style={[styles.headerText, styles.cell, { width: '5%', borderRight: 0, borderBottom: 0 }]}>#</Text>
+                                    <Text style={[styles.headerText, styles.cell, { width: '70%', borderRight: 0, borderBottom: 0, paddingLeft: "7%" }]}>Term of Payment</Text>
+                                    <Text style={[styles.headerText, styles.cell, { width: '25%', borderBottom: 0 }]}>Amount (RM)</Text>
+                                  </View>
+                                  {formikProps.values.paymentTerm ?
+                                    formikProps.values.paymentTerm.map((value: any, index) => {
+                                      var total = 0
+                                      total += value.amount
+                                      return (
+                                        <><View style={[styles.row]}>
+                                          <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
+                                          <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.percentage}% {value.desc}</Text>
+                                          <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.amount}</Text>
+                                        </View>
+                                          <View style={[styles.row]}>
+                                            {formikProps.values.paymentTerm?.length === index + 1 &&
+                                              <>
+                                                <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 2}</Text>
+                                                <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>Total</Text>
+                                                <Text style={[styles.cell, { width: '25%', fontWeight: 'bold' }]}>{total}</Text></>
+                                            }
+                                          </View>
+                                          <View style={{display: 'flex', flexDirection: 'row', fontSize: 9, marginTop: 5, textAlign:'left', lineHeight:1.5, paddingRight:30}}>
+                                            <Text>Note: </Text>
+                                            <Text> - </Text>
+                                            <Text> Make all cheque payable to TROPICAL GROWTH (M) SDN BHD or kindly bank in to TROPICAL GROWTH (M) SDN BHD (Maybank Account no: 553038601340)</Text>
+
+                                          </View>
+
+                                        </>
+                                      );
+                                    }) : <></>}
                                 </View>
                               </Page>
                             </Document>
-
                           </PDFViewer>
 
                           <div className='d-flex flex-column mb-3 fv-row'>
@@ -1121,5 +1177,34 @@ const Main: FC = () => {
     </div>
   )
 }
+
+const styles = StyleSheet.create({
+  page: { flexDirection: "column", padding: 25, textAlign: 'center' },
+  table: {
+    fontSize: 10,
+    // alignItems: 'stretch'
+  },
+  row: {
+    display: "flex",
+    flexDirection: "row",
+    width: '100%',
+  },
+  cell: {
+    borderStyle: "solid",
+    borderWidth: 1.5,
+    paddingTop: 9,
+    // flexShrink: 1,
+    // flexGrow: 1,
+    // alignSelf: "stretch"
+
+
+  },
+  headerText: {
+    fontSize: 11,
+    justifyContent: 'center',
+    fontWeight: 'bold',
+    paddingBottom: 5
+  }
+});
 
 export { Main }
