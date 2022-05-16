@@ -39,7 +39,6 @@ const UserActionsCell: FC<Props> = ({id}) => {
         className='btn btn-light btn-active-light-primary btn-sm'
         data-kt-menu-trigger='click'
         data-kt-menu-placement='bottom-end'
-        style={{display: 'flex', alignItems: 'center', marginLeft:15}}
       >
         Actions
         <KTSVG path='/media/icons/duotune/arrows/arr072.svg' className='svg-icon-5 m-0' />
