@@ -19,6 +19,8 @@ const GET_COMPANIES_URL = `${API_URL}/company/?`
 const ATTACHMENTS_UPLOAD_URL = `${API_URL}/quotations/upload`
 const PDF_UPLOAD_URL = `${API_URL}/quotations/pdf`
 
+var allTotal = 0
+
 const createQuotations = (quotation: Quotations): Promise<Quotations | undefined> => {
 
   return axios
@@ -82,7 +84,7 @@ const createQuotationSchema = [
     ).min(1, 'Quotations')
   }),
   Yup.object({
-    paymentTerm: Yup.array().of(
+    payment_term: Yup.array().of(
       Yup.object({
         percentage: Yup.number()
           .required()
@@ -92,18 +94,15 @@ const createQuotationSchema = [
           .label('Description'),
         amount: Yup.number()
           .required()
-          .label('Amount')
+          .label('Amount'),
+        date: Yup.date()
+          .required()
+          .label('Date'),
       })
     ).min(1, 'Payment Term'),
     balancePaid: Yup.number()
       .required()
-      .label('Balance paid'),
-    next_payment_date: Yup.date()
-      .required()
-      .label('Next date'),
-    finalPaymentDate: Yup.date()
-      .required()
-      .label('Final date')
+      .label('Balance paid')
   }),
   Yup.object({
     projectSchedule: Yup.array().of(
@@ -659,59 +658,75 @@ const Main: FC = () => {
                           <div className='fv-row'>
                             <label className='required fs-5 fw-bold mb-2'>Payment Schedule</label>
 
-                            <FieldArray name="paymentTerm">
+                            <FieldArray name="payment_term">
                               {(arrayHelpers) => {
 
                                 return (
                                   <div>
-                                    {formikProps.values.paymentTerm ?
-                                      formikProps.values.paymentTerm.map((value: any, index) => {
+                                    {formikProps.values.payment_term ?
+                                      formikProps.values.payment_term.map((value: any, index) => {
 
                                         return (
-                                          <div className='mb-10' key={index} style={{ display: 'flex', alignItems: 'center' }}>
-                                            <div style={{ width: '20%', display: 'flex', alignItems: 'center' }}>
-                                              <b style={{ marginRight: 7 }}>%</b>
+                                          <div className='mb-10' key={index} style={{ alignItems: 'center' }}>
+                                            <div style={{ display: 'flex' }}>
+                                              <div style={{ width: '22%', display: 'flex', alignItems: 'center' }}>
+                                                <b style={{ marginRight: 7, marginLeft: 10 }}>%</b>
+                                                <Field
+                                                  type="number"
+                                                  min={0}
+                                                  max={100}
+                                                  rows="1"
+                                                  className='form-control form-control-lg form-control-solid'
+                                                  name={`payment_term.${index}.percentage`}
+                                                  placeholder=''
+                                                />
+                                              </div>
+
                                               <Field
-                                                type="number"
-                                                min={0}
-                                                rows="1"
+                                                style={{ width: '78%', marginLeft: 20 }}
+                                                component="textarea" rows="1"
                                                 className='form-control form-control-lg form-control-solid'
-                                                name={`paymentTerm.${index}.percentage`}
-                                                placeholder=''
+                                                name={`payment_term.${index}.desc`}
+                                                placeholder='Description'
                                               />
+
                                             </div>
 
-                                            <Field
-                                              style={{ width: '40%', marginLeft: 20 }}
-                                              component="textarea" rows="1"
-                                              className='form-control form-control-lg form-control-solid'
-                                              name={`paymentTerm.${index}.desc`}
-                                              placeholder='Description'
-                                            />
-
-                                            <div style={{ width: '30%', margin: 'auto', marginRight: 0, display: 'flex', alignItems: 'center' }}>
-                                              <b style={{ marginRight: 7 }}>RM</b>
+                                            <div style={{ display: 'flex', marginTop: 20 }}>
+                                              <div style={{ width: '22%', margin: 'auto', marginRight: 0, display: 'flex', alignItems: 'center' }}>
+                                                <b style={{ marginRight: 7 }}>RM</b>
+                                                <Field
+                                                  type="number"
+                                                  min={0}
+                                                  disabled
+                                                  className='form-control form-control-lg form-control-solid'
+                                                  name={`payment_term.${index}.amount`}
+                                                  value={value.amount = allTotal * (value.percentage/100)}
+                                                  placeholder='Amount'
+                                                />
+                                                {index >= 1 ?
+                                                  <img style={{ cursor: 'pointer', position: 'absolute', right: 0, marginRight: '5%' }} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
+                                                  : <></>}
+                                              </div>
                                               <Field
-                                                type="number"
-                                                min={0}
+                                                style={{ width: '78%', marginLeft: 20 }}
+                                                type='date'
                                                 className='form-control form-control-lg form-control-solid'
-                                                name={`paymentTerm.${index}.amount`}
-                                                placeholder='Amount'
+                                                name={`payment_term.${index}.date`}
                                               />
-                                              {index >= 1 ?
-                                                <img style={{ cursor: 'pointer', position: 'absolute', right: 0, marginRight: '5%' }} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
-                                                : <></>}
                                             </div>
                                             <></>
 
+                                            <div className="divider mt-5">{index + 1}</div>
+
                                           </div>
+
                                         );
                                       }) : <></>}
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
                                       <button type='button' onClick={() => arrayHelpers.push({ percentage: 0, desc: '', amount: 0 })}>Add more fields</button>
 
-                                      <p style={{ display: 'flex', margin: 'auto', alignItems: 'center', marginRight: 0, width: '30%' }}><b>Total RM: </b>
-                                        <span style={{ marginLeft: 10 }}>{formikProps.values.paymentTerm!.reduce((sum, item: any) => sum + item.amount, 0)}</span></p>
+                                      <b style={{ margin: 'auto', marginRight: 0, width: '30%' }}>Total RM: {allTotal} </b>
                                     </div>
                                   </div>
                                 )
@@ -721,21 +736,23 @@ const Main: FC = () => {
 
                           <div className='fv-row mb-10'>
 
-                            {formikProps.values.paymentTerm ?
-                              formikProps.values.paymentTerm.map((value: any, index) => {
-
+                            {formikProps.values.payment_term ?
+                              formikProps.values.payment_term.map((value: any, index) => {
                                 return (
-
                                   <div key={index}>
                                     <div className='text-danger'>
-                                      <ErrorMessage name={`paymentTerm.${index}.percentage`} />
+                                      <ErrorMessage name={`payment_term.${index}.percentage`} />
                                     </div>
                                     <div className='text-danger'>
-                                      <ErrorMessage name={`paymentTerm.${index}.desc`} />
+                                      <ErrorMessage name={`payment_term.${index}.desc`} />
                                     </div>
                                     <div className='text-danger'>
-                                      <ErrorMessage name={`paymentTerm.${index}.amount`} />
-                                    </div></div>
+                                      <ErrorMessage name={`payment_term.${index}.amount`} />
+                                    </div>
+                                    <div className='text-danger'>
+                                      <ErrorMessage name={`payment_term.${index}.date`} />
+                                    </div>
+                                  </div>
 
                                 );
                               }) : <></>}
@@ -764,41 +781,6 @@ const Main: FC = () => {
                               <div className='text-danger'>
                                 <ErrorMessage name='balancePaid' />
                               </div>
-                            </div>
-                          </div>
-                          <div className='fv-row'>
-                            <label style={{ justifyContent: 'space-between' }} className='d-flex align-items-center fs-5 fw-bold mb-4'>
-                              <span style={{ width: "40%" }}
-                                className='required'>Next payment date:</span>
-                              <span style={{ width: "40%" }}
-                                className='required'>Final payment date:</span>
-                            </label>
-
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                              <div style={{ width: "40%" }}>
-                                <Field
-                                  type='date'
-                                  className='form-control form-control-lg form-control-solid'
-                                  name='next_payment_date'
-                                />
-                                <div className='text-danger'>
-                                  <ErrorMessage name='next_payment_date' />
-                                </div>
-
-                              </div>
-
-                              <div style={{ width: "40%" }}>
-                                <Field
-                                  type='date'
-                                  className='form-control form-control-lg form-control-solid'
-                                  name='finalPaymentDate'
-                                />
-                                <div className='text-danger'>
-                                  <ErrorMessage name='finalPaymentDate' />
-                                </div>
-
-                              </div>
-
                             </div>
                           </div>
                         </div>
@@ -1165,6 +1147,8 @@ const Proposed = (fee: any) => {
     fee.props.formikProps.values.quotations.map((value: any, index: number) => {
 
       totalProposed += Number(value.amount)
+
+      allTotal = totalProposed
       return (
         <div key={index}><View style={[styles.row]}>
           <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
@@ -1186,8 +1170,8 @@ const Proposed = (fee: any) => {
 const Term = (term: any) => {
   var totalTerm = 0
 
-  return term.props.formikProps.values.paymentTerm ?
-    term.props.formikProps.values.paymentTerm.map((value: any, index: number) => {
+  return term.props.formikProps.values.payment_term ?
+    term.props.formikProps.values.payment_term.map((value: any, index: number) => {
       totalTerm += Number(value.amount)
       return (
         <div key={index}><View style={[styles.row]}>
@@ -1196,7 +1180,7 @@ const Term = (term: any) => {
           <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.amount}</Text>
         </View>
           <View style={[styles.row]}>
-            {term.props.formikProps.values.paymentTerm?.length === index + 1 &&
+            {term.props.formikProps.values.payment_term?.length === index + 1 &&
               <>
                 <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 2}</Text>
                 <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>Total</Text>

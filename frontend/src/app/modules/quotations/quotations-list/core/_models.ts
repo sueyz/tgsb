@@ -13,9 +13,7 @@ export type Quotations = {
   state?: string,
   quotations?: Array<Object>,
   balancePaid?: number,
-  next_payment_date?: string,
-  finalPaymentDate?: string,
-  paymentTerm?: Array<Object>,
+  payment_term?: Array<Object>,
   projectSchedule?: Array<Object>,
   note?: string,
   poc?: string,
@@ -48,12 +46,11 @@ export const initialQuotations: Quotations = {
     amount: 0
   }],
   balancePaid: 0,
-  next_payment_date: '',
-  finalPaymentDate: '',
-  paymentTerm: [{
+  payment_term: [{
     percentage: 0,
     desc: '',
-    amount: 0
+    amount: 0,
+    date: ''
   }],
   projectSchedule: [{
     desc: '',

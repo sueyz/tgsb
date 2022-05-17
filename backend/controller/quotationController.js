@@ -10,7 +10,7 @@ const Quotation = require('../model/quotationModel')
 // @access Public
 const registerQuotation = asyncHandler(async (req, res) => {
     const { company, type, name, invoiceNo, address1, address2, address3, zip, city, state, email, quotations, balancePaid, next_payment_date,
-        finalPaymentDate, paymentTerm, projectSchedule, note, poc, contact, attachments, workType, lock } = req.body
+        finalPaymentDate, payment_term, projectSchedule, note, poc, contact, attachments, workType, lock } = req.body
 
 
     if (!company || !type || !name || !address1 || !invoiceNo || !quotations || !zip || !city || !state) {
@@ -44,7 +44,7 @@ const registerQuotation = asyncHandler(async (req, res) => {
         balancePaid,
         next_payment_date,
         finalPaymentDate,
-        paymentTerm,
+        payment_term,
         projectSchedule,
         note,
         poc,
@@ -72,7 +72,7 @@ const registerQuotation = asyncHandler(async (req, res) => {
             balancePaid: quotation.balancePaid,
             next_payment_date: quotation.next_payment_date,
             finalPaymentDate: quotation.finalPaymentDate,
-            paymentTerm: quotation.paymentTerm,
+            payment_term: quotation.payment_term,
             projectSchedule: quotation.projectSchedule,
             note: quotation.note,
             poc: quotation.poc,
@@ -175,7 +175,7 @@ const queryQuotation = asyncHandler(async (req, res) => {
             balancePaid: 1,
             next_payment_date: 1,
             finalPaymentDate: 1,
-            paymentTerm: 1,
+            payment_term: 1,
             projectSchedule: 1,
             note: 1,
             poc: 1,

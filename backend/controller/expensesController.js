@@ -97,7 +97,7 @@ const registerExpenses = asyncHandler( async (req, res) => {
 //         balancePaid: 1,
 //         next_payment_date: 1,
 //         finalPaymentDate: 1,
-//         paymentTerm: 1,
+//         payment_term: 1,
 //         projectSchedule: 1,
 //         note: 1,
 //         poc: 1,

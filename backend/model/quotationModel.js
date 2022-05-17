@@ -57,18 +57,10 @@ const quotationsSchema = mongoose.Schema({
         type: Number,
         required: false
     },
-    next_payment_date: {
-        type: Date,
-        required: false
-    },
-    finalPaymentDate: {
-        type: Date,
-        required: false
-    },
     //ex: 40,40,20 
-    paymentTerm: {
+    payment_term: {
         type: Array,
-        default : [{percentage: 0, desc: 'ex', amount: 0}],
+        default : [{percentage: 0, desc: 'ex', amount: 0, date: Date}],
         required: false
     },
     projectSchedule: {
@@ -120,9 +112,7 @@ quotationsSchema.methods.toJSON = function () {
       invoiceNo: this.invoiceNo,
       quotations: this.quotations,
       balancePaid: this.balancePaid,
-      next_payment_date: this.next_payment_date,
-      finalPaymentDate: this.finalPaymentDate,
-      paymentTerm: this.paymentTerm,
+      payment_term: this.payment_term,
       projectSchedule: this.projectSchedule,
       note: this.note,
       poc: this.poc,

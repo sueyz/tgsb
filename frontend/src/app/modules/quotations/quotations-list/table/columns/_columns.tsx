@@ -1,17 +1,18 @@
-import {Column} from 'react-table'
-import {QuotationsInfoCell} from './QuotationsInfoCell'
-import {QuotationsStatusCell} from './QuotationsStatusCell'
-import {UserActionsCell} from './QuotationsActionsCell'
-import {QuotationsSelectionCell} from './QuotationsSelectionCell'
-import {QuotationsSelectionHeader} from './QuotationsSelectionHeader'
-import {QuotationsCustomHeader} from './QuotationsCustomHeader'
-import {Quotations} from '../../core/_models'
+import { Column } from 'react-table'
+import { QuotationsInfoCell } from './QuotationsInfoCell'
+import { QuotationsStatusCell } from './QuotationsStatusCell'
+import { UserActionsCell } from './QuotationsActionsCell'
+import { QuotationsSelectionCell } from './QuotationsSelectionCell'
+import { QuotationsSelectionHeader } from './QuotationsSelectionHeader'
+import { QuotationsCustomHeader } from './QuotationsCustomHeader'
+import { Quotations } from '../../core/_models'
+import _ from 'lodash'
 
 const usersColumns: ReadonlyArray<Column<Quotations>> = [
   {
-    Header: (props) => <QuotationsSelectionHeader tableProps={props}/>,
+    Header: (props) => <QuotationsSelectionHeader tableProps={props} />,
     id: 'finalize',
-    Cell: ({...props}) => <QuotationsSelectionCell id={props.data[props.row.index].id} />,
+    Cell: ({ ...props }) => <QuotationsSelectionCell id={props.data[props.row.index].id} />,
   },
   {
     Header: (props) => <QuotationsCustomHeader tableProps={props} title='Quotation' className='min-w-150px cursor-pointer text-hover-primary' />,
@@ -20,7 +21,7 @@ const usersColumns: ReadonlyArray<Column<Quotations>> = [
   {
     Header: (props) => <QuotationsCustomHeader tableProps={props} title='Name' className='min-w-125px cursor-pointer text-hover-primary' />,
     id: 'name',
-    Cell: ({...props}) => <QuotationsInfoCell quotations={props.data[props.row.index]} />,
+    Cell: ({ ...props }) => <QuotationsInfoCell quotations={props.data[props.row.index]} />,
   },
   {
     Header: (props) => <QuotationsCustomHeader tableProps={props} title='Venue' className='min-w-125px cursor-pointer text-hover-primary' />,
@@ -28,14 +29,22 @@ const usersColumns: ReadonlyArray<Column<Quotations>> = [
   },
   {
     Header: (props) => (
-      <QuotationsCustomHeader tableProps={props} title='Status' className='min-w-150px' />
+      <QuotationsCustomHeader tableProps={props} title='Status' className='min-w-150px cursor-pointer text-hover-primary' />
     ),
-    accessor: 'next_payment_date',
-    Cell: ({...props}) => (
+    id: 'payment_term',
+    accessor: data => {
+      let output: any[] = [];
+      _.map(data.payment_term, (pay: any) => {
+        output.push(pay.date);
+      });
+      console.log(output.join(', '))
+      return output.join(', ');
+    },
+    Cell: ({ ...props }) => (
       <QuotationsStatusCell
-        quotations= {props.data[props.row.index].quotations}
+        quotations={props.data[props.row.index].quotations}
+        payment_term={props.data[props.row.index].payment_term}
         balancePaid={props.data[props.row.index].balancePaid}
-        next_payment_date={props.data[props.row.index].next_payment_date}
       />
     ),
   },
@@ -44,8 +53,8 @@ const usersColumns: ReadonlyArray<Column<Quotations>> = [
       <QuotationsCustomHeader tableProps={props} title='Actions' className='text-end min-w-100px' />
     ),
     id: 'actions',
-    Cell: ({...props}) => <UserActionsCell id={props.data[props.row.index].id} />,
+    Cell: ({ ...props }) => <UserActionsCell id={props.data[props.row.index].id} />,
   },
 ]
 
-export {usersColumns}
+export { usersColumns }

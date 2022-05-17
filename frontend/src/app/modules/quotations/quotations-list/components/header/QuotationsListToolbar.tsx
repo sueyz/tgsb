@@ -20,10 +20,10 @@ const QuotationsListToolbar = () => {
       {/* end::Export */}
 
       {/* begin::Add user */}
-      <button type='button' className='btn btn-primary' onClick={openAddUserModal}>
+      {/* <button style={{display: 'none'}} type='button' className='btn btn-primary' onClick={openAddUserModal}>
         <KTSVG path='/media/icons/duotune/arrows/arr075.svg' className='svg-icon-2' />
         Add Quote
-      </button>
+      </button> */}
       {/* end::Add user */}
     </div>
   )
