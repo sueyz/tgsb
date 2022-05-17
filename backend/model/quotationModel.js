@@ -57,7 +57,7 @@ const quotationsSchema = mongoose.Schema({
         type: Number,
         required: false
     },
-    nextPaymentDate: {
+    next_payment_date: {
         type: Date,
         required: false
     },
@@ -97,6 +97,10 @@ const quotationsSchema = mongoose.Schema({
         default : [],
         required: false
     },
+    lock: {
+        type: Boolean,
+        required: false
+    },
 }, {
     timestamps: true
 })
@@ -116,7 +120,7 @@ quotationsSchema.methods.toJSON = function () {
       invoiceNo: this.invoiceNo,
       quotations: this.quotations,
       balancePaid: this.balancePaid,
-      nextPaymentDate: this.nextPaymentDate,
+      next_payment_date: this.next_payment_date,
       finalPaymentDate: this.finalPaymentDate,
       paymentTerm: this.paymentTerm,
       projectSchedule: this.projectSchedule,
@@ -125,7 +129,8 @@ quotationsSchema.methods.toJSON = function () {
       contact: this.contact,
       email: this.email,
       workType: this.workType,
-      attachments: this.attachments
+      attachments: this.attachments,
+      lock: this.lock
     }
   }
 

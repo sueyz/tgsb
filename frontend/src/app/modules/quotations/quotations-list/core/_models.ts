@@ -1,28 +1,29 @@
 import { ID, Response } from '../../../../../_metronic/helpers'
 export type Quotations = {
   id?: ID
-  company?: String,
-  type?: String,
-  name?: String,
-  invoiceNo?: String,
-  address1?: String,
-  address2?: String,
-  address3?: String,
-  zip?: String,
-  city?: String,
-  state?: String,
+  company?: string,
+  type?: string,
+  name?: string,
+  invoiceNo?: string,
+  address1?: string,
+  address2?: string,
+  address3?: string,
+  zip?: string,
+  city?: string,
+  state?: string,
   quotations?: Array<Object>,
-  balancePaid?: Number,
-  nextPaymentDate?: String,
-  finalPaymentDate?: String,
+  balancePaid?: number,
+  next_payment_date?: string,
+  finalPaymentDate?: string,
   paymentTerm?: Array<Object>,
   projectSchedule?: Array<Object>,
-  note?: String,
-  poc?: String,
-  contact?: String,
-  email?: String,
-  workType?: String,
-  attachments?: Array<String>
+  note?: string,
+  poc?: string,
+  contact?: string,
+  email?: string,
+  workType?: string,
+  attachments?: Array<String>,
+  lock?: boolean,
   // online?: boolean
   // initials?: {
   //   label: string
@@ -47,7 +48,7 @@ export const initialQuotations: Quotations = {
     amount: 0
   }],
   balancePaid: 0,
-  nextPaymentDate: '',
+  next_payment_date: '',
   finalPaymentDate: '',
   paymentTerm: [{
     percentage: 0,
@@ -65,5 +66,6 @@ export const initialQuotations: Quotations = {
   contact: '',
   email: '',
   workType: 'EIT',
-  attachments: []
+  attachments: [],
+  lock: false
 }

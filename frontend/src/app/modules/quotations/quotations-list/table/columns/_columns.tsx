@@ -30,14 +30,12 @@ const usersColumns: ReadonlyArray<Column<Quotations>> = [
     Header: (props) => (
       <QuotationsCustomHeader tableProps={props} title='Status' className='min-w-150px' />
     ),
-    id: 'status',
-
+    accessor: 'next_payment_date',
     Cell: ({...props}) => (
       <QuotationsStatusCell
         quotations= {props.data[props.row.index].quotations}
-        balancePaid={
-          props.data[props.row.index].balancePaid
-        }
+        balancePaid={props.data[props.row.index].balancePaid}
+        next_payment_date={props.data[props.row.index].next_payment_date}
       />
     ),
   },

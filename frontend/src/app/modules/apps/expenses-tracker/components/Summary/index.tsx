@@ -49,7 +49,7 @@ export function Summary() {
           <img src={incomeImg} alt="Entradas" />
         </header>
         <strong>
-          {new Intl.NumberFormat("en-US", {
+          {new Intl.NumberFormat("en-GB", {
             style: "currency",
             currency: "MYR",
           }).format(summary.deposits)}
@@ -62,7 +62,7 @@ export function Summary() {
         </header>
         <strong>
           -{" "}
-          {new Intl.NumberFormat("en-US", {
+          {new Intl.NumberFormat("en-GB", {
             style: "currency",
             currency: "MYR",
           }).format(summary.withdraws)}
@@ -75,7 +75,7 @@ export function Summary() {
         </header>
         <strong>
           {" "}
-          {new Intl.NumberFormat("en-US", {
+          {new Intl.NumberFormat("en-GB", {
             style: "currency",
             currency: "MYR",
           }).format(summary.debtTotal)}
@@ -88,7 +88,7 @@ export function Summary() {
         </header>
         <strong>
           {" "}
-          {new Intl.NumberFormat("en-US", {
+          {new Intl.NumberFormat("en-GB", {
             style: "currency",
             currency: "MYR",
           }).format(summary.total)}

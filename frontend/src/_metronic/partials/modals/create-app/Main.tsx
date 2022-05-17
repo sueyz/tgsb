@@ -25,7 +25,6 @@ const createQuotations = (quotation: Quotations): Promise<Quotations | undefined
     .post(QUOTATIONS_URL, quotation)
     .then((response: AxiosResponse<Response<Quotations>>) => response.data)
     .then((response: Response<Quotations>) => {
-      console.log('wedssdsdsd')
       return response.data
     })
 }
@@ -99,7 +98,7 @@ const createQuotationSchema = [
     balancePaid: Yup.number()
       .required()
       .label('Balance paid'),
-    nextPaymentDate: Yup.date()
+    next_payment_date: Yup.date()
       .required()
       .label('Next date'),
     finalPaymentDate: Yup.date()
@@ -194,8 +193,6 @@ const Main: FC = () => {
           values.attachments?.push(`quotations/${element.filename}`)
         });
       }
-
-      console.log("result2")
 
       let fd2 = new FormData()
       const newFormat = {
@@ -782,10 +779,10 @@ const Main: FC = () => {
                                 <Field
                                   type='date'
                                   className='form-control form-control-lg form-control-solid'
-                                  name='nextPaymentDate'
+                                  name='next_payment_date'
                                 />
                                 <div className='text-danger'>
-                                  <ErrorMessage name='nextPaymentDate' />
+                                  <ErrorMessage name='next_payment_date' />
                                 </div>
 
                               </div>

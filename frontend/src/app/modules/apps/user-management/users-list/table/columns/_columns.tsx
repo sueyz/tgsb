@@ -33,7 +33,7 @@ const usersColumns: ReadonlyArray<Column<User>> = [
       <UserLastLoginCell
         last_login={
           props.data[props.row.index].last_login
-            ? new Intl.DateTimeFormat('en-US', {
+            ? new Intl.DateTimeFormat('en-GB', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',

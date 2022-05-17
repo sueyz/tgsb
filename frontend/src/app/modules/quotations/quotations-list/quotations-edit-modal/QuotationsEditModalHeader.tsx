@@ -10,7 +10,7 @@ const QuotationEditModalHeader = (props: any) => {
       style={{paddingLeft: 0, paddingRight: 0, paddingTop: 0, paddingBottom: 20, marginBottom: 20}}
     >
       {/* begin::Modal title */}
-      <h2 className='fw-bolder'>Update Balance</h2>
+      <h2 className='fw-bolder'>Update Paid</h2>
       {/* end::Modal title */}
 
       {/* begin::Close */}

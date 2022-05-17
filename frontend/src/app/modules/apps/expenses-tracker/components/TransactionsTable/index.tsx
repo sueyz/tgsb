@@ -53,7 +53,7 @@ export function TransactionsTable({ clickHandler }: HeaderProps) {
                   <td>
                     {"   " + transaction.title} </td>
                   <td className={transaction.type}>
-                    {new Intl.NumberFormat("en-US", {
+                    {new Intl.NumberFormat("en-GB", {
                       style: "currency",
                       currency: "MYR",
                     }).format(transaction.amount)}
@@ -61,7 +61,7 @@ export function TransactionsTable({ clickHandler }: HeaderProps) {
                   <td>{transaction.category} {
                   (transaction.isDebt && transaction.type.includes('withdraw'))? "(Debt)" : (transaction.isDebt && transaction.type.includes('deposit')) ? "(Refund)" : ""}</td>
                   <td>
-                    {new Intl.DateTimeFormat('en-US', {}).format(new Date(transaction.createdAt))}
+                    {new Intl.DateTimeFormat('en-GB', {}).format(new Date(transaction.createdAt))}
                   </td>
                   <td><img style={{ cursor: 'pointer', marginRight: 15 }} src={toAbsoluteUrl('/media/icons/duotune/general/pencil.png')} onClick={() =>
 
@@ -82,7 +82,7 @@ export function TransactionsTable({ clickHandler }: HeaderProps) {
                       <p><b>Note: </b>{transaction.note} </p>
                       {transaction.category === 'Petty cash' ? <p><b>Lend/Upfronted by: </b>{transaction.lent_upfronted} </p> : <></>}
                       {/* {transaction.category === 'Petty cash' ? <p><b>Refund: </b>{transaction.refund} </p> : <></>}
-                      {transaction.category === 'Petty cash' ? <p><b>Claim date: </b>{new Intl.DateTimeFormat('en-US', {}).format(new Date(transaction.claim_date))} </p> : <></>} */}
+                      {transaction.category === 'Petty cash' ? <p><b>Claim date: </b>{new Intl.DateTimeFormat('en-GB', {}).format(new Date(transaction.claim_date))} </p> : <></>} */}
 
 
                     </div>

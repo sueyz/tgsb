@@ -9,8 +9,8 @@ const Quotation = require('../model/quotationModel')
 // @rout Post /api/registerCompany
 // @access Public
 const registerQuotation = asyncHandler(async (req, res) => {
-    const { company, type, name, invoiceNo, address1, address2, address3, zip, city, state, email, quotations, balancePaid, nextPaymentDate,
-        finalPaymentDate, paymentTerm, projectSchedule, note, poc, contact, attachments, workType } = req.body
+    const { company, type, name, invoiceNo, address1, address2, address3, zip, city, state, email, quotations, balancePaid, next_payment_date,
+        finalPaymentDate, paymentTerm, projectSchedule, note, poc, contact, attachments, workType, lock } = req.body
 
 
     if (!company || !type || !name || !address1 || !invoiceNo || !quotations || !zip || !city || !state) {
@@ -42,7 +42,7 @@ const registerQuotation = asyncHandler(async (req, res) => {
         email,
         quotations,
         balancePaid,
-        nextPaymentDate,
+        next_payment_date,
         finalPaymentDate,
         paymentTerm,
         projectSchedule,
@@ -50,7 +50,8 @@ const registerQuotation = asyncHandler(async (req, res) => {
         poc,
         contact,
         workType,
-        attachments
+        attachments,
+        lock
     })
 
     if (quotation) {
@@ -69,7 +70,7 @@ const registerQuotation = asyncHandler(async (req, res) => {
             email: quotation.email,
             quotations: quotation.quotations,
             balancePaid: quotation.balancePaid,
-            nextPaymentDate: quotation.nextPaymentDate,
+            next_payment_date: quotation.next_payment_date,
             finalPaymentDate: quotation.finalPaymentDate,
             paymentTerm: quotation.paymentTerm,
             projectSchedule: quotation.projectSchedule,
@@ -77,7 +78,8 @@ const registerQuotation = asyncHandler(async (req, res) => {
             poc: quotation.poc,
             contact: quotation.contact,
             workType: quotation.workType,
-            attachments: quotation.attachments
+            attachments: quotation.attachments,
+            lock: quotation.lock
         })
     } else {
         res.status(400)
@@ -171,7 +173,7 @@ const queryQuotation = asyncHandler(async (req, res) => {
             email: 1,
             quotations: 1,
             balancePaid: 1,
-            nextPaymentDate: 1,
+            next_payment_date: 1,
             finalPaymentDate: 1,
             paymentTerm: 1,
             projectSchedule: 1,
@@ -179,7 +181,8 @@ const queryQuotation = asyncHandler(async (req, res) => {
             poc: 1,
             contact: 1,
             isFinished: 1,
-            workType: 1
+            workType: 1,
+            lock: 1
         })
         .collation({ locale: "en" })
         .match(queryMatch)
@@ -189,7 +192,9 @@ const queryQuotation = asyncHandler(async (req, res) => {
             if (err) throw err;
 
             Quotation.aggregate()
-                .project({ name: 1, type: 1, workType: 1 }) //for filter + search
+                .project({
+                    name: 1, type: 1, workType: 1, lock: 1
+                }) //for filter + search
                 .match(queryMatch)
                 .count('finalCount')
                 .exec((count_error, valueCount) => {
