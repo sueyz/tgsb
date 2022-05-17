@@ -13,7 +13,7 @@ const QuotationsListGrouping = () => {
     // 💡 response of the mutation is passed to onSuccess
     onSuccess: () => {
       // ✅ update detail view directly
-      queryClient.invalidateQueries([`${QUERIES.USERS_LIST}-${query}`])
+      queryClient.invalidateQueries([`${QUERIES.QUOTATION_LIST}-${query}`])
       clearSelected()
     },
   })

@@ -12,7 +12,7 @@ const QuotationsEditModalFormWrapper = () => {
     data: quotations,
     error,
   } = useQuery(
-    `${QUERIES.USERS_LIST}-user-${itemIdForUpdate}`,
+    `${QUERIES.QUOTATION_LIST}-user-${itemIdForUpdate}`,
     () => {
       return getUserById(itemIdForUpdate)
     },

@@ -10,7 +10,6 @@ import axios, { AxiosResponse } from 'axios'
 import { initialQuotations, Quotations } from '../../../../app/modules/quotations/quotations-list/core/_models'
 import { ID, Response } from '../../../../_metronic/helpers'
 import { Companies, CompaniesQueryResponse } from '../../../../app/modules/companies/companies-list/core/_models'
-import path from 'path';
 
 const API_URL = process.env.REACT_APP_THEME_API_URL
 const QUOTATIONS_URL = `${API_URL}/quotations/register`
@@ -211,6 +210,7 @@ const Main: FC = () => {
 
       stepper.current.goto(1)
       actions.resetForm()
+      window.location.reload() // temp solutiom
     }
   }
 
@@ -354,9 +354,10 @@ const Main: FC = () => {
                   validationSchema={currentSchema}
                   initialValues={initValues}
                   onSubmit={submitStep}
+                  enableReinitialize
                 >
                   {(formikProps) => (
-                    <Form className='form' noValidate id='kt_modal_create_app_form'>
+                    <Form className='form' id='kt_modal_create_app_form' onSubmit={formikProps.handleSubmit}>
                       <div className='current' data-kt-stepper-element='content'>
                         <div className='w-100'>
                           <div className='fv-row mb-10'>
@@ -1131,7 +1132,7 @@ const Main: FC = () => {
                               </span>
                             </button>}
                           {stepper.current?.currentStepIndex === 7 &&
-                            <button type='submit' data-bs-dismiss='modal' className='btn btn-lg btn-primary me-3'>
+                            <button disabled={formikProps.isSubmitting}   type='submit' data-bs-dismiss='modal' className='btn btn-lg btn-primary me-3'>
                               <span className='indicator-label'>
                                 Submit
                                 <KTSVG

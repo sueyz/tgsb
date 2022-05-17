@@ -98,7 +98,7 @@ const CompaniesEditModalForm: FC<Props> = ({company, isUserLoading}) => {
       <ToastContainer position='bottom-center' />
       <UserEditModalHeader checkUser={company.email} />
 
-      <form id='kt_modal_add_user_form' className='form' onSubmit={formik.handleSubmit} noValidate>
+      <form id='kt_modal_add_user_form' className='form' onSubmit={formik.handleSubmit}>
         {/* begin::Scroll */}
 
         <div

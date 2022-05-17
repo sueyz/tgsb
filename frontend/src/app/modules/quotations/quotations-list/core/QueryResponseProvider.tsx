@@ -30,7 +30,7 @@ const QueryResponseProvider: FC = ({children}) => {
     refetch,
     data: response,
   } = useQuery(
-    `${QUERIES.USERS_LIST}-${query}`,
+    `${QUERIES.QUOTATION_LIST}-${query}`,
     () => {
       return getQuotations(query)
     },
