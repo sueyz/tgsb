@@ -18,10 +18,6 @@ const GET_COMPANIES_URL = `${API_URL}/company/?`
 const ATTACHMENTS_UPLOAD_URL = `${API_URL}/quotations/upload`
 const PDF_UPLOAD_URL = `${API_URL}/quotations/pdf`
 
-var totalProposed = 0
-var totalTerm = 0
-
-
 const createQuotations = (quotation: Quotations): Promise<Quotations | undefined> => {
 
   return axios
@@ -198,15 +194,15 @@ const Main: FC = () => {
 
       console.log("result2")
 
-        let fd2 = new FormData()
-        const newFormat = {
-          values : values
-        }
+      let fd2 = new FormData()
+      const newFormat = {
+        values: values
+      }
 
-        fd2.append('pdf', await ReactPDF.pdf(<MyDocument formikProps={newFormat} />).toBlob())
+      fd2.append('pdf', await ReactPDF.pdf(<MyDocument formikProps={newFormat} />).toBlob())
 
-        const result2 = await uploadPdf(fd2)
-        values.attachments?.push(`quotations/${result2}`)
+      const result2 = await uploadPdf(fd2)
+      values.attachments?.push(`quotations/${result2}`)
 
 
       await createQuotations(values)
@@ -609,7 +605,7 @@ const Main: FC = () => {
                                               <Field
                                                 type="number"
                                                 rows="1"
-                                                min="0"
+                                                min={0}
                                                 className='form-control form-control-lg form-control-solid'
                                                 name={`quotations.${index}.amount`}
                                                 placeholder='Amount' />
@@ -677,6 +673,7 @@ const Main: FC = () => {
                                               <b style={{ marginRight: 7 }}>%</b>
                                               <Field
                                                 type="number"
+                                                min={0}
                                                 rows="1"
                                                 className='form-control form-control-lg form-control-solid'
                                                 name={`paymentTerm.${index}.percentage`}
@@ -696,6 +693,7 @@ const Main: FC = () => {
                                               <b style={{ marginRight: 7 }}>RM</b>
                                               <Field
                                                 type="number"
+                                                min={0}
                                                 className='form-control form-control-lg form-control-solid'
                                                 name={`paymentTerm.${index}.amount`}
                                                 placeholder='Amount'
@@ -1136,7 +1134,7 @@ const Main: FC = () => {
                               </span>
                             </button>}
                           {stepper.current?.currentStepIndex === 7 &&
-                            <button disabled={formikProps.isSubmitting}   type='submit' data-bs-dismiss='modal' className='btn btn-lg btn-primary me-3'>
+                            <button disabled={formikProps.isSubmitting} type='submit' data-bs-dismiss='modal' className='btn btn-lg btn-primary me-3'>
                               <span className='indicator-label'>
                                 Submit
                                 <KTSVG
@@ -1160,6 +1158,56 @@ const Main: FC = () => {
   )
 }
 
+const Proposed = (fee: any) => {
+  var totalProposed = 0
+
+  return fee.props.formikProps.values.quotations ?
+    fee.props.formikProps.values.quotations.map((value: any, index: number) => {
+
+      totalProposed += Number(value.amount)
+      return (
+        <div key={index}><View style={[styles.row]}>
+          <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
+          <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.desc}</Text>
+          <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.amount}</Text>
+        </View>
+          <View style={[styles.row]}>
+            {fee.props.formikProps.values.quotations?.length === index + 1 &&
+              <>
+                <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 2}</Text>
+                <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>Total</Text>
+                <Text style={[styles.cell, { width: '25%', fontWeight: 'bold' }]}>{totalProposed}</Text></>
+            }
+          </View></div>
+      );
+    }) : <></>
+}
+
+const Term = (term: any) => {
+  var totalTerm = 0
+
+  return term.props.formikProps.values.paymentTerm ?
+    term.props.formikProps.values.paymentTerm.map((value: any, index: number) => {
+      totalTerm += Number(value.amount)
+      return (
+        <div key={index}><View style={[styles.row]}>
+          <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
+          <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.percentage}% {value.desc}</Text>
+          <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.amount}</Text>
+        </View>
+          <View style={[styles.row]}>
+            {term.props.formikProps.values.paymentTerm?.length === index + 1 &&
+              <>
+                <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 2}</Text>
+                <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>Total</Text>
+                <Text style={[styles.cell, { width: '25%', fontWeight: 'bold' }]}>{totalTerm}</Text></>
+            }
+          </View>
+        </div>
+      );
+    }) : <></>
+}
+
 const MyDocument = (props: any) => (
   <Document>
     <Page style={styles.page} size="A4">
@@ -1170,25 +1218,7 @@ const MyDocument = (props: any) => (
           <Text style={[styles.headerText, styles.cell, { width: '70%', borderRight: 0, borderBottom: 0, paddingLeft: "7%" }]}>Description</Text>
           <Text style={[styles.headerText, styles.cell, { width: '25%', borderBottom: 0 }]}>Amount (RM)</Text>
         </View>
-        {props.formikProps.values.quotations ?
-          props.formikProps.values.quotations.map((value: any, index: number) => {
-            totalProposed += value.amount
-            return (
-              <div key={index}><View style={[styles.row]}>
-                <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
-                <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.desc}</Text>
-                <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.amount}</Text>
-              </View>
-                <View style={[styles.row]}>
-                  {props.formikProps.values.quotations?.length === index + 1 &&
-                    <>
-                      <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 2}</Text>
-                      <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>Total</Text>
-                      <Text style={[styles.cell, { width: '25%', fontWeight: 'bold' }]}>{totalProposed}</Text></>
-                  }
-                </View></div>
-            );
-          }) : <></>}
+        <Proposed props={props} />
 
         <Text style={{ fontSize: 11, fontWeight: 1000, marginBottom: 15, marginTop: 50 }}>Table 2.0: Schedule of Payment for Preparing the {props.formikProps.values.workType}</Text>
         <View style={[styles.row]}>
@@ -1196,26 +1226,8 @@ const MyDocument = (props: any) => (
           <Text style={[styles.headerText, styles.cell, { width: '70%', borderRight: 0, borderBottom: 0, paddingLeft: "7%" }]}>Term of Payment</Text>
           <Text style={[styles.headerText, styles.cell, { width: '25%', borderBottom: 0 }]}>Amount (RM)</Text>
         </View>
-        {props.formikProps.values.paymentTerm ?
-          props.formikProps.values.paymentTerm.map((value: any, index: number) => {
-            totalTerm += value.amount
-            return (
-              <div key={index}><View style={[styles.row]}>
-                <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
-                <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.percentage}% {value.desc}</Text>
-                <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.amount}</Text>
-              </View>
-                <View style={[styles.row]}>
-                  {props.formikProps.values.paymentTerm?.length === index + 1 &&
-                    <>
-                      <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 2}</Text>
-                      <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>Total</Text>
-                      <Text style={[styles.cell, { width: '25%', fontWeight: 'bold' }]}>{totalTerm}</Text></>
-                  }
-                </View>
-              </div>
-            );
-          }) : <></>}
+        <Term props={props} />
+
         <View style={{ display: 'flex', flexDirection: 'row', fontSize: 9, marginTop: 5, textAlign: 'left', lineHeight: 1.5, paddingRight: 30 }}>
           <Text>Note: </Text>
           <Text> - </Text>

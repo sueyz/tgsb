@@ -1,6 +1,6 @@
 import {Column} from 'react-table'
 import {QuotationsInfoCell} from './QuotationsInfoCell'
-import {QuotationsStatusCell} from './QuotationsLastLoginCell'
+import {QuotationsStatusCell} from './QuotationsStatusCell'
 import {UserActionsCell} from './QuotationsActionsCell'
 import {QuotationsSelectionCell} from './QuotationsSelectionCell'
 import {QuotationsSelectionHeader} from './QuotationsSelectionHeader'
@@ -34,9 +34,9 @@ const usersColumns: ReadonlyArray<Column<Quotations>> = [
 
     Cell: ({...props}) => (
       <QuotationsStatusCell
-        percentageDone= {(props.data[props.row.index].balancePaid/props.data[props.row.index].quotations) * 100}
-        balanceDue={
-          props.data[props.row.index].quotations - props.data[props.row.index].balancePaid
+        quotations= {props.data[props.row.index].quotations}
+        balancePaid={
+          props.data[props.row.index].balancePaid
         }
       />
     ),
