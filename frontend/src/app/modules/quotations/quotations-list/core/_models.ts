@@ -65,5 +65,5 @@ export const initialQuotations: Quotations = {
   contact: '',
   email: '',
   workType: 'EIT',
-  attachments: ['']
+  attachments: []
 }

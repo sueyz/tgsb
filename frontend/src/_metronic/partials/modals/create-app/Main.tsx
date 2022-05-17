@@ -1,9 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { FC, useEffect, useRef } from 'react'
 import useState from 'react-usestateref'
-import { Document, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
-import ReactPDF from '@react-pdf/renderer';
-// import { Document, Page } from 'react-pdf';
+import ReactPDF, { Document, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
 import { KTSVG, toAbsoluteUrl } from '../../../helpers'
 import { Formik, Form, FormikValues, Field, ErrorMessage, FieldArray } from 'formik'
 import * as Yup from 'yup'
@@ -18,6 +16,7 @@ const API_URL = process.env.REACT_APP_THEME_API_URL
 const QUOTATIONS_URL = `${API_URL}/quotations/register`
 const GET_COMPANIES_URL = `${API_URL}/company/?`
 const ATTACHMENTS_UPLOAD_URL = `${API_URL}/quotations/upload`
+const PDF_UPLOAD_URL = `${API_URL}/quotations/pdf`
 
 var totalProposed = 0
 var totalTerm = 0
@@ -43,6 +42,17 @@ const getCompanies = (text: String): Promise<CompaniesQueryResponse> => {
 const uploadAttachements = (file: FormData) => {
   return axios
     .post(ATTACHMENTS_UPLOAD_URL, file, {
+      headers: {
+        'content-type': 'multipart/form-data',
+      },
+    })
+    .then((response) => {
+      return response.data.files
+    })
+}
+const uploadPdf = (file: FormData) => {
+  return axios
+    .post(PDF_UPLOAD_URL, file, {
       headers: {
         'content-type': 'multipart/form-data',
       },
@@ -168,6 +178,8 @@ const Main: FC = () => {
     if (stepper.current.currentStepIndex !== stepper.current.totatStepsNumber) {
       stepper.current.goNext()
     } else {
+      values.attachments?.splice(0, values.attachments.length)
+
       if (file !== undefined) {
         let fd = new FormData()
 
@@ -181,10 +193,20 @@ const Main: FC = () => {
         });
       }
 
-      await createQuotations(values)
-      // const docs = path.join(__dirname, '../../../../../public/documents', 'example.pdf');
-      // ReactPDF.render(<MyDocument />,`${__dirname}/example.pdf`);
+      console.log("result2")
 
+        let fd2 = new FormData()
+        const newFormat = {
+          values : values
+        }
+
+        fd2.append('pdf', await ReactPDF.pdf(<MyDocument formikProps={newFormat} />).toBlob())
+
+        const result2 = await uploadPdf(fd2)
+        values.attachments?.push(`quotations/${result2}`)
+
+
+      await createQuotations(values)
 
 
       stepper.current.goto(1)

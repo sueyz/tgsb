@@ -95,6 +95,18 @@ const uploadAttachments =(req, res) => {
     })
 }
 
+const uploadPdf =(req, res) => {
+
+    if(!req.file ){
+        res.status(400)
+        throw new Error('Please choose an item')
+    }
+
+    res.status(200).json({
+        files: req.file.filename
+    })
+}
+
 // @desc get Projec 
 // @rout GEt /api/user/query
 // @access Private
@@ -308,5 +320,6 @@ module.exports = {
     getQuotationById,
     updateQuotation,
     deleteQuotation,
-    uploadAttachments
+    uploadAttachments,
+    uploadPdf
 }
