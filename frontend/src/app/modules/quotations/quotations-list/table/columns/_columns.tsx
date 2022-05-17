@@ -31,15 +31,7 @@ const usersColumns: ReadonlyArray<Column<Quotations>> = [
     Header: (props) => (
       <QuotationsCustomHeader tableProps={props} title='Status' className='min-w-150px cursor-pointer text-hover-primary' />
     ),
-    id: 'payment_term',
-    accessor: data => {
-      let output: any[] = [];
-      _.map(data.payment_term, (pay: any) => {
-        output.push(pay.date);
-      });
-      console.log(output.join(', '))
-      return output.join(', ');
-    },
+    id: 'payment_term.date',
     Cell: ({ ...props }) => (
       <QuotationsStatusCell
         quotations={props.data[props.row.index].quotations}

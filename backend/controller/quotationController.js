@@ -9,8 +9,8 @@ const Quotation = require('../model/quotationModel')
 // @rout Post /api/registerCompany
 // @access Public
 const registerQuotation = asyncHandler(async (req, res) => {
-    const { company, type, name, invoiceNo, address1, address2, address3, zip, city, state, email, quotations, balancePaid, next_payment_date,
-        finalPaymentDate, payment_term, projectSchedule, note, poc, contact, attachments, workType, lock } = req.body
+    const { company, type, name, invoiceNo, address1, address2, address3, zip, city, state, email, quotations, balancePaid,
+     payment_term, projectSchedule, note, poc, contact, attachments, workType, lock } = req.body
 
 
     if (!company || !type || !name || !address1 || !invoiceNo || !quotations || !zip || !city || !state) {
@@ -42,8 +42,6 @@ const registerQuotation = asyncHandler(async (req, res) => {
         email,
         quotations,
         balancePaid,
-        next_payment_date,
-        finalPaymentDate,
         payment_term,
         projectSchedule,
         note,
@@ -70,8 +68,6 @@ const registerQuotation = asyncHandler(async (req, res) => {
             email: quotation.email,
             quotations: quotation.quotations,
             balancePaid: quotation.balancePaid,
-            next_payment_date: quotation.next_payment_date,
-            finalPaymentDate: quotation.finalPaymentDate,
             payment_term: quotation.payment_term,
             projectSchedule: quotation.projectSchedule,
             note: quotation.note,
@@ -173,8 +169,6 @@ const queryQuotation = asyncHandler(async (req, res) => {
             email: 1,
             quotations: 1,
             balancePaid: 1,
-            next_payment_date: 1,
-            finalPaymentDate: 1,
             payment_term: 1,
             projectSchedule: 1,
             note: 1,

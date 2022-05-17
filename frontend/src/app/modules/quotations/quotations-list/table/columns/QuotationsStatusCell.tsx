@@ -29,6 +29,9 @@ const QuotationsStatusCell: FC<Props> = ({ balancePaid, payment_term, quotations
   var numberDate2 = parseInt(date2.toISOString().slice(0, 10).replace(/-/g, ""));
   // number 20180610
 
+  var diff1 = new Date()
+  var diff2 = new Date(date2.toISOString().slice(0, 10))
+
   quotations?.forEach((element: any) => {
     total += element.amount
   })
@@ -36,11 +39,14 @@ const QuotationsStatusCell: FC<Props> = ({ balancePaid, payment_term, quotations
   if (payment_term !== undefined) {
     for (let i = 0; i < payment_term.length; i++) {
 
+      diff1 = new Date(payment_term[i].date)
+
       next_payment_date = new Intl.DateTimeFormat('en-GB', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
       }).format(new Date(payment_term[i].date))
+
       numberDate1 = Number(next_payment_date.split('/').reverse().join(''));
       //number 20180605
 
@@ -49,9 +55,15 @@ const QuotationsStatusCell: FC<Props> = ({ balancePaid, payment_term, quotations
     }
   }
 
+  // To calculate the time difference of two dates
+  var Difference_In_Time = diff1.getTime() - diff2.getTime();
+
+  // To calculate the no. of days between two dates
+  var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+
   return (
     <div>
-      {(balancePaid ? balancePaid : 0) >= total ? <></> : <p style={{ fontSize: 'x-small' }} className='mt-5'>Next Payment: {next_payment_date } {numberDate2 <= numberDate1 ? <img style={{ paddingBottom: 3 }} src={toAbsoluteUrl('/media/icons/duotune/general/caution.png')} className='' alt='' /> : <img style={{ paddingBottom: 3 }} src={toAbsoluteUrl('/media/icons/duotune/general/warning.png')} className='' alt='' />}
+      {(balancePaid ? balancePaid : 0) >= total ? <></> : <p style={{ fontSize: 'x-small' }} className='mt-5'>Next Payment: {next_payment_date} {Difference_In_Days > 7 ? <></> : (Difference_In_Days <= 7 && Difference_In_Days > 3) ? <img style={{ paddingBottom: 3 }} src={toAbsoluteUrl('/media/icons/duotune/general/caution.png')} className='' alt='' /> : <img style={{ paddingBottom: 3 }} src={toAbsoluteUrl('/media/icons/duotune/general/warning.png')} className='' alt='' />}
       </p>}
 
       <ProgressBar
