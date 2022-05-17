@@ -1,5 +1,5 @@
 import {useEffect} from 'react'
-import {UserEditModalHeader} from './QuotationsEditModalHeader'
+import {QuotationEditModalHeader} from './QuotationsEditModalHeader'
 import {QuotationsEditModalFormWrapper} from './QuotationsEditModalFormWrapper'
 
 const QuotationsEditModal = () => {

@@ -1,165 +1,73 @@
-import {FC, useRef} from 'react'
-import useState from 'react-usestateref'
-
+import { FC, useState } from 'react'
 import * as Yup from 'yup'
-import {useFormik} from 'formik'
-import {isNotEmpty, toAbsoluteUrl} from '../../../../../_metronic/helpers'
-import {initialQuotations, Quotations} from '../core/_models'
+import { useFormik } from 'formik'
+import { isNotEmpty, toAbsoluteUrl } from '../../../../../_metronic/helpers'
+import { initialQuotations, Quotations } from '../core/_models'
 import clsx from 'clsx'
-import {useListView} from '../core/ListViewProvider'
-import {UsersListLoading} from '../components/loading/QuotationsListLoading'
-import {createUser, updateUser} from '../core/_requests'
-import {useQueryResponse} from '../core/QueryResponseProvider'
-import {UserEditModalHeader} from './QuotationsEditModalHeader'
-import {ToastContainer, toast} from 'react-toastify'
+import { useListView } from '../core/ListViewProvider'
+import { UsersListLoading } from '../components/loading/QuotationsListLoading'
+import { updateQuotation, uploadAttachements } from '../core/_requests'
+import { useQueryResponse } from '../core/QueryResponseProvider'
+import { QuotationEditModalHeader } from './QuotationsEditModalHeader'
+import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { StepperComponent } from '../../../../../_metronic/assets/ts/components'
-import { Companies } from '../../../companies/companies-list/core/_models'
 
 type Props = {
   isUserLoading: boolean
   quotations: Quotations
 }
 
-const createQuotationSchema = [
-  Yup.object({
-    name: Yup.string().required().label('Quotation name'),
-    invoiceNo: Yup.string().required().label('Invoice number'),
-    type: Yup.string().required().label('Quotation type'),
-  }),
-  Yup.object({
-    company: Yup.string().required().label('Company'),
-  }),
-  Yup.object({
-    workType: Yup.string().required().label('Work type'),
-    quotations: Yup.array().of(
-      Yup.object({
-        desc: Yup.string()
-          .required()
-          .label('Description'),
-        amount: Yup.number()
-          .required()
-          .label('Amount')
-      })
-    ).min(1, 'Quotations')
-  }),
-  Yup.object({
-    paymentTerm: Yup.array().of(
-      Yup.object({
-        percentage: Yup.number()
-          .required()
-          .label('Percentage'),
-        desc: Yup.string()
-          .required()
-          .label('Description'),
-        amount: Yup.number()
-          .required()
-          .label('Amount')
-      })
-    ).min(1, 'Payment Term'),
-    balancePaid: Yup.number()
-      .required()
-      .label('Balance paid'),
-    nextPaymentDate: Yup.date()
-      .required()
-      .label('Next date'),
-    finalPaymentDate: Yup.date()
-      .required()
-      .label('Final date')
-  }),
-  Yup.object({
-    projectSchedule: Yup.array().of(
-      Yup.object({
-        desc: Yup.string()
-          .required()
-          .label('Description'),
-        week: Yup.string()
-          .required()
-          .label('Week')
-      })
-    ).min(1, 'Project schedule')
-  }),
-  Yup.object({
-    address1: Yup.string().required().label('Address 1'),
-    zip: Yup.string().required().label('Zip'),
-    city: Yup.string().required().label('City'),
-    state: Yup.string().required().label('State')
-  })
-]
+const editBalanceSchema = Yup.object().shape({
+  balancePaid: Yup.number()
+    .min(1)
+    .required('Amount Paid is required')
+})
 
-const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
-  const {setItemIdForUpdate} = useListView()
-  const {refetch} = useQueryResponse()
+const QuotationEditModalForm: FC<Props> = ({ quotations, isUserLoading }) => {
+  const { setItemIdForUpdate } = useListView()
+  const { refetch } = useQueryResponse()
 
-  const stepperRef = useRef<HTMLDivElement | null>(null)
-  const stepper = useRef<StepperComponent | null>(null)
-  const [currentSchema, setCurrentSchema] = useState(createQuotationSchema[0])
-  const [company, setCompany, refCompany] = useState<Companies[]>()
-  const [initValues] = useState<Quotations>(initialQuotations)
+  const [file, setFile] = useState<File[]>()
+
+  const onChangeFiles = (e: any) => {
+    console.log(e.target.files)
+    setFile(e.target.files)
+  }
 
   const [userForEdit] = useState<Quotations>({
     ...quotations,
-    company: quotations.company || initialQuotations.company,
-    type: quotations.type || initialQuotations.type,
-    name: quotations.name || initialQuotations.name,
-    invoiceNo: quotations.invoiceNo || initialQuotations.invoiceNo,
-    address1: quotations.address1 || initialQuotations.address1,
-    quotations: quotations.quotations || initialQuotations.quotations,
     balancePaid: quotations.balancePaid || initialQuotations.balancePaid,
-    nextPaymentDate: quotations.nextPaymentDate || initialQuotations.nextPaymentDate,
-    finalPaymentDate: quotations.finalPaymentDate || initialQuotations.finalPaymentDate,
-    paymentTerm: quotations.paymentTerm || initialQuotations.paymentTerm,
-    projectSchedule: quotations.projectSchedule || initialQuotations.projectSchedule,
-    note: quotations.note || initialQuotations.note,
-    poc: quotations.poc || initialQuotations.poc,
-    contact: quotations.contact || initialQuotations.contact,
-    workType: quotations.workType || initialQuotations.workType,
-
   })
-
-  // const [file, setFile] = useState<File>()
-  // const [picture, setPicture] = useState<String>(`/media/${userForEdit.avatar}`)
-
-  // const onChangePicture = (e: any) => {
-  //   setPicture(URL.createObjectURL(e.target.files[0]))
-  //   setFile(e.target.files?.[0])
-  // }
 
   const cancel = (withRefresh?: boolean) => {
     if (withRefresh) {
-      refetch()
+      refetch() // ni yang buat refreshe tanpa reload
     }
-    setItemIdForUpdate(undefined)
+    setItemIdForUpdate(undefined) // ni wat modal tuutp
   }
-
-  const notifyUserExist = () => toast('User already exists!')
-
-  const blankImg = toAbsoluteUrl('/media/svg/avatars/blank.svg')
 
   const formik = useFormik({
     initialValues: userForEdit,
-    validationSchema: createQuotationSchema,
-    onSubmit: async (values, {setSubmitting}) => {
+    validationSchema: editBalanceSchema,
+    onSubmit: async (values, { setSubmitting }) => {
       setSubmitting(true)
-      try {
-        // if (file !== undefined) {
-        //   let fd = new FormData()
-        //   fd.append('avatar', file)
-        //   values.avatar = `profile/${await uploadImage(fd)}`
-        // }
+      if (isNotEmpty(values.id)) {
 
-        if (isNotEmpty(values.id)) {
-          await updateUser(values)
-        } else {
-          await createUser(values)
+        if (file !== undefined) {
+          let fd = new FormData()
+  
+          Array.from(file).forEach(async (file) => {
+            fd.append("attachments", file);
+  
+          });
+          const results = await uploadAttachements(fd)
+          Array.from(results).forEach((element: any) => {
+            values.attachments?.push(`quotations/${element.filename}`)
+          });
         }
+
+        await updateQuotation(values)
         cancel(true)
-      } catch (ex) {
-        notifyUserExist()
-        console.error(ex)
-      } finally {
-        setSubmitting(true)
-        // cancel(true)
       }
     },
   })
@@ -167,9 +75,9 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
   return (
     <>
       <ToastContainer position='bottom-center' />
-      <UserEditModalHeader checkUser={quotations.id} /> 
+      <QuotationEditModalHeader checkUser={quotations.id} />
 
-      <form id='kt_modal_add_user_form' className='form' onSubmit={formik.handleSubmit} noValidate>
+      <form id='kt_modal_add_user_form' className='form' onSubmit={formik.handleSubmit}>
         {/* begin::Scroll */}
 
         <div
@@ -182,295 +90,53 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
           data-kt-scroll-wrappers='#kt_modal_add_user_scroll'
           data-kt-scroll-offset='300px'
         >
-          {/* begin::Input group */}
-          <div className='d-flex align-items-center flex-column fv-row mb-10'>
-            {/* begin::Label */}
-            <label className='d-block fw-bold fs-6 mb-5'>Avatar</label>
-            {/* end::Label */}
-            {/* begin::Image input */}
-            <div
-              className='image-input image-input-outline'
-              data-kt-image-input='true'
-              style={{backgroundImage: `url('${blankImg}')`}}
-            >
-              {/* begin::Preview existing avatar */}
-              {/* <div
-                className='image-input-wrapper w-125px h-125px'
-                style={{backgroundImage: `url('${picture}')`}}
-              ></div> */}
-              {/* end::Preview existing avatar */}
-
-              {/* begin::Label */}
-              <label
-                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
-                data-kt-image-input-action='change'
-                data-bs-toggle='tooltip'
-                title='Change avatar'
-              >
-                <i className='bi bi-pencil-fill fs-7'></i>
-
-                {/* <input
-                  type='file'
-                  name='avatar'
-                  accept='.png, .jpg, .jpeg'
-                  onChange={(e) => {
-                    onChangePicture(e)
-                  }}
-                />
-                <input type='hidden' name='avatar_remove' /> */}
-              </label>
-              {/* end::Label */}
-
-              {/* begin::Cancel */}
-              <span
-                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
-                data-kt-image-input-action='cancel'
-                data-bs-toggle='tooltip'
-                title='Cancel avatar'
-              >
-                <i className='bi bi-x fs-2'></i>
-              </span>
-              {/* end::Cancel */}
-
-              {/* begin::Remove */}
-              {/* <span
-              className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
-              data-kt-image-input-action='remove'
-              data-bs-toggle='tooltip'
-              title='Remove avatar'
-            >
-              <i className='bi bi-x fs-2'></i>
-            </span> */}
-              {/* end::Remove */}
-            </div>
-            {/* end::Image input */}
-            {/* begin::Hint */}
-            <div className='form-text'>Allowed file types: png, jpg, jpeg.</div>
-            {/* end::Hint */}
-          </div>
-          {/* end::Input group */}
-
-          {/* begin::Form group ProjectName */}
-          <div className='row fv-row mb-7'>
-            <div className='col-xl-6'>
-              <label className='form-label fw-bolder text-dark fs-6'>Project name</label>
-              <input
-                placeholder='Project Name'
-                type='text'
-                autoComplete='off'
-                {...formik.getFieldProps('name')}
-                className={clsx(
-                  'form-control form-control-lg form-control-solid',
-                  {
-                    'is-invalid': formik.touched.name && formik.errors.name,
-                  },
-                  {
-                    'is-valid': formik.touched.name && !formik.errors.name,
-                  }
-                )}
-              />
-              {formik.touched.name && formik.errors.name && (
-                <div className='fv-plugins-message-container'>
-                  <div className='mt-2 fv-help-block'>
-                    <span role='alert' style={{color: '#f1416c'}}>
-                      {formik.errors.name}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className='col-xl-6'>
-              {/* begin::Form group Lastname */}
-              <div className='fv-row mb-5'>
-                <label className='form-label fw-bolder text-dark fs-6'>Work type</label>
-                <input
-                  placeholder='Work type'
-                  type='text'
-                  autoComplete='off'
-                  {...formik.getFieldProps('workType')}
-                  className={clsx(
-                    'form-control form-control-lg form-control-solid',
-                    {
-                      'is-invalid': formik.touched.workType && formik.errors.workType,
-                    },
-                    {
-                      'is-valid': formik.touched.workType && !formik.errors.workType,
-                    }
-                  )}
-                />
-                {formik.touched.workType && formik.errors.workType && (
-                  <div className='fv-plugins-message-container'>
-                    <div className='mt-2 fv-help-block'>
-                      <span role='alert' style={{color: '#f1416c'}}>
-                        {formik.errors.workType}
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </div>
-              {/* end::Form group */}
-            </div>
-          </div>
-          {/* end::Form group */}
-
-          {/* begin::Form group Email */}
-          <div className='fv-row mb-7'>
-            <label className='form-label fw-bolder text-dark fs-6'>Invoice Number</label>
+          {/* begin::Form group BALANCE */}
+          <div className='fv-row mb-3 d-flex flex-d-row' style={{ alignItems: 'center' }}>
+            <label className='form-label fw-bolder text-dark fs-6 me-5'>RM</label>
             <input
-              placeholder='Invoice Number'
-              type='invoiceNo'
+              placeholder='Amount Paid'
+              type='number'
+              min={1}
               autoComplete='off'
-              {...formik.getFieldProps('invoiceNo')}
+              {...formik.getFieldProps('balancePaid')}
               className={clsx(
                 'form-control form-control-lg form-control-solid',
-                {'is-invalid': formik.touched.invoiceNo && formik.errors.invoiceNo},
+                { 'is-invalid': formik.touched.balancePaid && formik.errors.balancePaid },
                 {
-                  'is-valid': formik.touched.invoiceNo && !formik.errors.invoiceNo,
+                  'is-valid': formik.touched.balancePaid && !formik.errors.balancePaid,
                 }
               )}
             />
-            {formik.touched.invoiceNo && formik.errors.invoiceNo && (
-              <div className='fv-plugins-message-container'>
-                <div className='mt-2 fv-help-block'>
-                  <span role='alert' style={{color: '#f1416c'}}>
-                    {formik.errors.invoiceNo}
-                  </span>
-                </div>
-              </div>
-            )}
           </div>
+          {formik.touched.balancePaid && formik.errors.balancePaid && (
+            <div className='fv-plugins-message-container'>
+              <div className='mt-2 fv-help-block'>
+                <span role='alert' style={{ color: '#f1416c' }}>
+                  {formik.errors.balancePaid}
+                </span>
+              </div>
+            </div>
+          )}
           {/* end::Form group */}
 
-          {/* begin::Input group */}
-          <div className='mb-7'>
-            {/* begin::Label */}
-            <label className='required fw-bold fs-6 mb-5'>workType</label>
-            {/* end::Label */}
-            {/* begin::Roles */}
-            {/* begin::Input row */}
-            <div className='d-flex fv-row'>
-              {/* begin::Radio */}
-              <div className='form-check form-check-custom form-check-solid'>
-                {/* begin::Input */}
-                <input
-                  className='form-check-input me-3'
-                  {...formik.getFieldProps('workType')}
-                  name='workType'
-                  type='radio'
-                  value='Analyst'
-                  id='kt_modal_update_role_option_0'
-                  checked={formik.values.workType === 'Analyst'}
-                  disabled={formik.isSubmitting || isUserLoading}
-                />
-
-                {/* end::Input */}
-                {/* begin::Label */}
-                <label className='form-check-label' htmlFor='kt_modal_update_role_option_0'>
-                  <div className='fw-bolder text-gray-800'>Analyst</div>
-                  <div className='text-gray-600'>Analyst of the company</div>
-                </label>
-                {/* end::Label */}
-              </div>
-              {/* end::Radio */}
-            </div>
-            {/* end::Input row */}
-            {/* <div className='separator separator-dashed my-5'></div> */}
-            {/* begin::Input row */}
-            {/* <div className='d-flex fv-row'>
-              <div className='form-check form-check-custom form-check-solid'>
-                <input
-                  className='form-check-input me-3'
-                  {...formik.getFieldProps('role')}
-                  name='role'
-                  type='radio'
-                  value='Developer'
-                  id='kt_modal_update_role_option_1'
-                  checked={formik.values.role === 'Developer'}
-                  disabled={formik.isSubmitting || isUserLoading}
-                />
-                <label className='form-check-label' htmlFor='kt_modal_update_role_option_1'>
-                  <div className='fw-bolder text-gray-800'>Developer</div>
-                  <div className='text-gray-600'>
-                    Best for developers or people primarily using the API
-                  </div>
-                </label>
-              </div>
-            </div> */}
-            {/* end::Input row */}
-            {/* <div className='separator separator-dashed my-5'></div> */}
-            {/* begin::Input row */}
-            {/* <div className='d-flex fv-row'>
-              <div className='form-check form-check-custom form-check-solid'>
-                <input
-                  className='form-check-input me-3'
-                  {...formik.getFieldProps('role')}
-                  name='role'
-                  type='radio'
-                  value='Analyst'
-                  id='kt_modal_update_role_option_2'
-                  checked={formik.values.role === 'Analyst'}
-                  disabled={formik.isSubmitting || isUserLoading}
-                />
-                <label className='form-check-label' htmlFor='kt_modal_update_role_option_2'>
-                  <div className='fw-bolder text-gray-800'>Analyst</div>
-                  <div className='text-gray-600'>
-                    Best for people who need full access to analytics data, but don't need to update
-                    business settings
-                  </div>
-                </label>
-              </div>
-            </div> */}
-            {/* end::Input row */}
-            <div className='separator separator-dashed my-5'></div>
-            {/* begin::Input row */}
-            <div className='d-flex fv-row'>
-              <div className='form-check form-check-custom form-check-solid'>
-                <input
-                  className='form-check-input me-3'
-                  {...formik.getFieldProps('workType')}
-                  name='workType'
-                  type='radio'
-                  value='Support'
-                  id='kt_modal_update_role_option_3'
-                  checked={formik.values.workType === 'Support'}
-                  disabled={formik.isSubmitting || isUserLoading}
-                />
-                <label className='form-check-label' htmlFor='kt_modal_update_role_option_3'>
-                  <div className='fw-bolder text-gray-800'>Support</div>
-                  <div className='text-gray-600'>Regular employees that are</div>
-                </label>
-              </div>
-            </div>
-            {/* end::Input row */}
-            {/* <div className='separator separator-dashed my-5'></div> */}
-            {/* begin::Input row */}
-            {/* <div className='d-flex fv-row'>
-              <div className='form-check form-check-custom form-check-solid'>
-                <input
-                  className='form-check-input me-3'
-                  {...formik.getFieldProps('role')}
-                  name='role'
-                  type='radio'
-                  id='kt_modal_update_role_option_4'
-                  value='Trial'
-                  checked={formik.values.role === 'Trial'}
-                  disabled={formik.isSubmitting || isUserLoading}
-                />
-                <label className='form-check-label' htmlFor='kt_modal_update_role_option_4'>
-                  <div className='fw-bolder text-gray-800'>Trial</div>
-                  <div className='text-gray-600'>
-                    Best for people who need to preview content data, but don't need to make any
-                    updates
-                  </div>
-                </label>
-              </div>
-            </div> */}
-            {/* end::Input row */}
-            {/* end::Roles */}
-          </div>
-          {/* end::Input group */}
         </div>
         {/* end::Scroll */}
+
+        <div className='d-flex flex-column mb-3 fv-row mt-10'>
+          <label className='fs-6 fw-bold form-label mb-4'>
+            Additional attachments/files: 
+          </label>
+          <div className='position-relative'>
+            <input
+              type="file"
+              name='files'
+              multiple
+              onChange={(e: any) => {
+                onChangeFiles(e)
+              }}
+            />
+          </div>
+        </div>
 
         {/* begin::Actions */}
         <div className='text-center pt-15'>
@@ -506,4 +172,4 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
   )
 }
 
-export {UserEditModalForm}
+export { QuotationEditModalForm, }

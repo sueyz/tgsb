@@ -1,16 +1,17 @@
-import {useEffect} from 'react'
-import {Outlet} from 'react-router-dom'
-import {AsideDefault} from './components/aside/AsideDefault'
-import {Footer} from './components/Footer'
-import {HeaderWrapper} from './components/header/HeaderWrapper'
-import {Toolbar} from './components/toolbar/Toolbar'
-import {RightToolbar} from '../partials/layout/RightToolbar'
-import {ScrollTop} from './components/ScrollTop'
-import {Content} from './components/Content'
-import {PageDataProvider} from './core'
-import {useLocation} from 'react-router-dom'
-import {DrawerMessenger, ActivityDrawer, Main, InviteUsers, UpgradePlan} from '../partials'
-import {MenuComponent} from '../assets/ts/components'
+import { useEffect } from 'react'
+import { Outlet } from 'react-router-dom'
+import { AsideDefault } from './components/aside/AsideDefault'
+import { Footer } from './components/Footer'
+import { HeaderWrapper } from './components/header/HeaderWrapper'
+import { Toolbar } from './components/toolbar/Toolbar'
+import { RightToolbar } from '../partials/layout/RightToolbar'
+import { ScrollTop } from './components/ScrollTop'
+import { Content } from './components/Content'
+import { PageDataProvider } from './core'
+import { useLocation } from 'react-router-dom'
+import { DrawerMessenger, ActivityDrawer, Main, InviteUsers, UpgradePlan } from '../partials'
+import { MenuComponent } from '../assets/ts/components'
+import { QueryResponseProvider } from '../../app/modules/quotations/quotations-list/core/QueryResponseProvider'
 
 const MasterLayout = () => {
   const location = useLocation()
@@ -52,7 +53,9 @@ const MasterLayout = () => {
       {/* end:: Drawers */}
 
       {/* begin:: Modals */}
-      <Main />
+      <QueryResponseProvider>        {/* for refreshing */}
+        <Main />
+      </QueryResponseProvider>
       <InviteUsers />
       <UpgradePlan />
       {/* end:: Modals */}
@@ -61,4 +64,4 @@ const MasterLayout = () => {
   )
 }
 
-export {MasterLayout}
+export { MasterLayout }

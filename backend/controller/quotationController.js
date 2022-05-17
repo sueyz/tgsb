@@ -185,7 +185,7 @@ const queryQuotation = asyncHandler(async (req, res) => {
         .match(queryMatch)
         .skip(startIndex)
         .limit(limit)
-        .exec(function (err, companies) {
+        .exec(function (err, quotation) {
             if (err) throw err;
 
             Quotation.aggregate()
@@ -256,7 +256,7 @@ const queryQuotation = asyncHandler(async (req, res) => {
                     }
 
                     res.status(200).json({
-                        data: companies,
+                        data: quotation,
                         payload: {
                             pagination: {
                                 page: page,
@@ -280,7 +280,8 @@ const queryQuotation = asyncHandler(async (req, res) => {
 // @ desc Get something
 // @rout GET api/company/:id/project
 const getQuotationById = asyncHandler(async (req, res) => {
-    const quotations = await Quotation.find(req.params.id)
+
+    const quotations = await Quotation.findById(req.params.id)
 
     res.status(200).json({
         data: quotations

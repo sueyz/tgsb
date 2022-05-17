@@ -11,6 +11,7 @@ import { initialQuotations, Quotations } from '../../../../app/modules/quotation
 import { ID, Response } from '../../../../_metronic/helpers'
 import { Companies, CompaniesQueryResponse } from '../../../../app/modules/companies/companies-list/core/_models'
 import { useNavigate } from 'react-router'
+import { useQueryResponse } from '../../../../app/modules/quotations/quotations-list/core/QueryResponseProvider';
 
 const API_URL = process.env.REACT_APP_THEME_API_URL
 const QUOTATIONS_URL = `${API_URL}/quotations/register`
@@ -130,6 +131,8 @@ const Main: FC = () => {
   const [currentSchema, setCurrentSchema] = useState(createQuotationSchema[0])
   const [company, setCompany, refCompany] = useState<Companies[]>()
   const [initValues] = useState<Quotations>(initialQuotations)
+  const { refetch } = useQueryResponse()
+
 
   const history = useNavigate()
 
@@ -210,7 +213,7 @@ const Main: FC = () => {
 
       stepper.current.goto(1)
       actions.resetForm()
-      history(0) // might be temp solution
+      refetch()
     }
   }
 
