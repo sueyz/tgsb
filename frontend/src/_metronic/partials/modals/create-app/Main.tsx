@@ -10,6 +10,7 @@ import axios, { AxiosResponse } from 'axios'
 import { initialQuotations, Quotations } from '../../../../app/modules/quotations/quotations-list/core/_models'
 import { ID, Response } from '../../../../_metronic/helpers'
 import { Companies, CompaniesQueryResponse } from '../../../../app/modules/companies/companies-list/core/_models'
+import { useNavigate } from 'react-router'
 
 const API_URL = process.env.REACT_APP_THEME_API_URL
 const QUOTATIONS_URL = `${API_URL}/quotations/register`
@@ -134,6 +135,9 @@ const Main: FC = () => {
   const [company, setCompany, refCompany] = useState<Companies[]>()
   const [initValues] = useState<Quotations>(initialQuotations)
 
+  const history = useNavigate()
+
+
   const [file, setFile] = useState<File[]>()
 
   const onChangeFiles = (e: any) => {
@@ -210,7 +214,7 @@ const Main: FC = () => {
 
       stepper.current.goto(1)
       actions.resetForm()
-      window.location.reload() // temp solutiom
+      history(0) // might be temp solution
     }
   }
 

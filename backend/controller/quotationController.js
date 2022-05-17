@@ -1,25 +1,27 @@
 const asyncHandler = require('express-async-handler')
 const { globalAgent } = require('http')
+const path = require('path');
+const fs = require('fs')
 
 const Quotation = require('../model/quotationModel')
 
 // @ desc Register Company
 // @rout Post /api/registerCompany
 // @access Public
-const registerQuotation = asyncHandler( async (req, res) => {
-    const {company, type, name, invoiceNo, address1, address2, address3, zip, city, state, email, quotations, balancePaid, nextPaymentDate,
-        finalPaymentDate, paymentTerm, projectSchedule, note, poc, contact, attachments, workType} = req.body
+const registerQuotation = asyncHandler(async (req, res) => {
+    const { company, type, name, invoiceNo, address1, address2, address3, zip, city, state, email, quotations, balancePaid, nextPaymentDate,
+        finalPaymentDate, paymentTerm, projectSchedule, note, poc, contact, attachments, workType } = req.body
 
 
-    if(!company || !type|| !name|| !address1 || !invoiceNo || !quotations || !zip || !city || !state ){
+    if (!company || !type || !name || !address1 || !invoiceNo || !quotations || !zip || !city || !state) {
         res.status(400)
         throw new Error('Please add all required fields')
     }
 
     //Check if Project exist
-    const quotationExists = await Quotation.findOne({invoiceNo}) 
+    const quotationExists = await Quotation.findOne({ invoiceNo })
 
-    if(quotationExists){
+    if (quotationExists) {
         res.status(400)
 
         throw new Error('{Quotation already exists!')
@@ -51,7 +53,7 @@ const registerQuotation = asyncHandler( async (req, res) => {
         attachments
     })
 
-    if(quotation){
+    if (quotation) {
         res.status(201).json({
             _id: quotation.id,
             company: quotation.company,
@@ -77,15 +79,15 @@ const registerQuotation = asyncHandler( async (req, res) => {
             workType: quotation.workType,
             attachments: quotation.attachments
         })
-    } else{
+    } else {
         res.status(400)
         throw new Error('Invalid quotation data')
     }
 })
 
-const uploadAttachments =(req, res) => {
+const uploadAttachments = (req, res) => {
 
-    if(!req.files ){
+    if (!req.files) {
         res.status(400)
         throw new Error('Please choose an item')
     }
@@ -95,9 +97,9 @@ const uploadAttachments =(req, res) => {
     })
 }
 
-const uploadPdf =(req, res) => {
+const uploadPdf = (req, res) => {
 
-    if(!req.file ){
+    if (!req.file) {
         res.status(400)
         throw new Error('Please choose an item')
     }
@@ -110,9 +112,9 @@ const uploadPdf =(req, res) => {
 // @desc get Projec 
 // @rout GEt /api/user/query
 // @access Private
-const queryQuotation = asyncHandler( async (req, res) => {
+const queryQuotation = asyncHandler(async (req, res) => {
 
-    var userQuery = req.query.search; 
+    var userQuery = req.query.search;
     var searchString = new RegExp(userQuery, 'ig');
 
     const page = parseInt(req.query.page)
@@ -123,26 +125,26 @@ const queryQuotation = asyncHandler( async (req, res) => {
     const sort = req.query.sort
     const order = req.query.order
 
-    if(filter === undefined && filter2 === undefined){
+    if (filter === undefined && filter2 === undefined) {
         filter = null
         filter2 = null
-        queryMatch = { name: searchString}
-    } else if(filter === undefined && filter2 !== undefined){
+        queryMatch = { name: searchString }
+    } else if (filter === undefined && filter2 !== undefined) {
         filter = null
         filter2 = filter2.toUpperCase()
 
-        queryMatch = { name: searchString, workType: filter2}
-    } else if(filter !== undefined && filter2 === undefined){
+        queryMatch = { name: searchString, workType: filter2 }
+    } else if (filter !== undefined && filter2 === undefined) {
         filter2 = null
         filter = filter.charAt(0).toUpperCase() + filter.slice(1)
 
-        queryMatch = { name: searchString, type: filter}
+        queryMatch = { name: searchString, type: filter }
     }
-    else{
+    else {
         filter = filter.charAt(0).toUpperCase() + filter.slice(1)
         filter2 = filter2.toUpperCase()
 
-        queryMatch = { name: searchString, type: filter, workType: filter2}
+        queryMatch = { name: searchString, type: filter, workType: filter2 }
     }
 
     const limit = 10
@@ -152,130 +154,132 @@ const queryQuotation = asyncHandler( async (req, res) => {
 
     const link = []
 
-        
+
     Quotation.aggregate()
-    .sort({ [sort]: order } )
-    .project({
-        id: '$_id',
-        type: 1,
-        name: 1,
-        invoiceNo: 1,
-        address1: 1,
-        address2: 1,
-        address3: 1,
-        zip: 1,
-        city: 1,
-        state: 1,
-        email: 1,
-        quotations: 1,
-        balancePaid: 1,
-        nextPaymentDate: 1,
-        finalPaymentDate: 1,
-        paymentTerm: 1,
-        projectSchedule: 1,
-        note: 1,
-        poc: 1,
-        contact: 1,
-        isFinished: 1,
-        workType: 1
-    })
-    .collation({locale: "en" })
-    .match(queryMatch)
-    .skip(startIndex) 
-    .limit(limit)
-    .exec(function (err, companies) {
-        if (err) throw err;
-
-        Quotation.aggregate()
-        .project({name: 1, type: 1, workType: 1}) //for filter + search
+        .sort({ [sort]: order })
+        .project({
+            id: '$_id',
+            type: 1,
+            name: 1,
+            invoiceNo: 1,
+            address1: 1,
+            address2: 1,
+            address3: 1,
+            zip: 1,
+            city: 1,
+            state: 1,
+            email: 1,
+            quotations: 1,
+            balancePaid: 1,
+            nextPaymentDate: 1,
+            finalPaymentDate: 1,
+            paymentTerm: 1,
+            projectSchedule: 1,
+            note: 1,
+            poc: 1,
+            contact: 1,
+            isFinished: 1,
+            workType: 1
+        })
+        .collation({ locale: "en" })
         .match(queryMatch)
-        .count('finalCount')
-        .exec((count_error, valueCount) => {
+        .skip(startIndex)
+        .limit(limit)
+        .exec(function (err, companies) {
+            if (err) throw err;
 
-            var count = 0
+            Quotation.aggregate()
+                .project({ name: 1, type: 1, workType: 1 }) //for filter + search
+                .match(queryMatch)
+                .count('finalCount')
+                .exec((count_error, valueCount) => {
 
-            if(valueCount.length >= 1){
-                count = valueCount[0].finalCount
-            }
+                    var count = 0
 
-            const lastPage = Math.ceil(count / limit)
-            const fromValue = (limit * page) - (limit -1)
-            const toValue = page === lastPage ? count : (limit * page)
+                    if (valueCount.length >= 1) {
+                        count = valueCount[0].finalCount
+                    }
 
-            if (err) {
-                return res.json(count_error);
-            }
+                    const lastPage = Math.ceil(count / limit)
+                    const fromValue = (limit * page) - (limit - 1)
+                    const toValue = page === lastPage ? count : (limit * page)
 
-            if (startIndex > 0) {
-                link.push({
-                    url: `/?page=${page - 1}`,
-                    label: "&laquo; Previous",
-                    active: false,
-                    page: page - 1
-                })
-            }
+                    if (err) {
+                        return res.json(count_error);
+                    }
 
-            var startPage, endPage;
-            if (lastPage <= 10) {
-            // less than 10 total pages so show all
-                startPage = 1;
-                endPage = lastPage;
-            } else {
-            // more than 10 total pages so calculate start and end pages
-                if (page <= 6) {
-                    startPage = 1;
-                    endPage = 10;
-                } else if (page + 4 >= lastPage) {
-                    startPage = lastPage - 9;
-                    endPage = lastPage;
-                } else {
-                    startPage = page - 5;
-                    endPage = page + 4;
-                }
-            }
+                    if (startIndex > 0) {
+                        link.push({
+                            url: `/?page=${page - 1}`,
+                            label: "&laquo; Previous",
+                            active: false,
+                            page: page - 1
+                        })
+                    }
 
-            for (let index = startPage; index <= endPage; index++) {
-                    link.push({
-                        url: `/?page=${index}`,
-                        label: `${index}`,
-                        active: true,
-                        page: index
-                    }) 
-            }
-            
+                    var startPage, endPage;
+                    if (lastPage <= 10) {
+                        // less than 10 total pages so show all
+                        startPage = 1;
+                        endPage = lastPage;
+                    } else {
+                        // more than 10 total pages so calculate start and end pages
+                        if (page <= 6) {
+                            startPage = 1;
+                            endPage = 10;
+                        } else if (page + 4 >= lastPage) {
+                            startPage = lastPage - 9;
+                            endPage = lastPage;
+                        } else {
+                            startPage = page - 5;
+                            endPage = page + 4;
+                        }
+                    }
 
-            if (endIndex < count) {
-                link.push({
-                    url: `/?page=${page + 1}`,
-                    label: "Next &raquo;",
-                    active: false,
-                    page: page + 1
-                })
-            }  
+                    for (let index = startPage; index <= endPage; index++) {
+                        link.push({
+                            url: `/?page=${index}`,
+                            label: `${index}`,
+                            active: true,
+                            page: index
+                        })
+                    }
 
-            res.status(200).json({
-                data: companies,
-                payload: {pagination: {
-                    page: page,
-                    items_per_page: limit,
-                    first_page_url: '/?page=1',
-                    from: fromValue,
-                    last_page: lastPage,
-                    links: link,
-                    next_page_url: page + 1 > lastPage? null :`/?page=${page + 1}`,
-                    items_per_page: limit,
-                    prev_page_url: page - 1 === 0 ? null :` /?page=${page - 1}`,
-                    to: toValue,
-                    total: count
-                }}
-            })
+
+                    if (endIndex < count) {
+                        link.push({
+                            url: `/?page=${page + 1}`,
+                            label: "Next &raquo;",
+                            active: false,
+                            page: page + 1
+                        })
+                    }
+
+                    res.status(200).json({
+                        data: companies,
+                        payload: {
+                            pagination: {
+                                page: page,
+                                items_per_page: limit,
+                                first_page_url: '/?page=1',
+                                from: fromValue,
+                                last_page: lastPage,
+                                links: link,
+                                next_page_url: page + 1 > lastPage ? null : `/?page=${page + 1}`,
+                                items_per_page: limit,
+                                prev_page_url: page - 1 === 0 ? null : ` /?page=${page - 1}`,
+                                to: toValue,
+                                total: count
+                            }
+                        }
+                    })
+                });
         });
-    });
 })
 
 // @ desc Get something
 // @rout GET api/company/:id/project
-const getQuotationById = asyncHandler (async (req, res) => {
+const getQuotationById = asyncHandler(async (req, res) => {
     const quotations = await Quotation.find(req.params.id)
 
     res.status(200).json({
@@ -285,31 +289,52 @@ const getQuotationById = asyncHandler (async (req, res) => {
 
 // @ desc Update something
 // @rout PUT /api/dashboard/:id
-const updateQuotation = asyncHandler (async (req, res) => {
+const updateQuotation = asyncHandler(async (req, res) => {
 
     const quotation = await Quotation.findById(req.params.id)
 
-    if(!quotation){
+    if (!quotation) {
         res.status(400)
         throw new Error('Quotation not found')
     }
 
-    const updatedQuotation = await Quotation.findByIdAndUpdate(req.params.id, req.body, {new: true})
+    const updatedQuotation = await Quotation.findByIdAndUpdate(req.params.id, req.body, { new: true })
     res.status(200).json(updatedQuotation)
 
 })
 
 // @ desc Delete something
 // @rout DELETE /api/dashboard
-const deleteQuotation = asyncHandler (async (req, res) => {
+const deleteQuotation = asyncHandler(async (req, res) => {
     const quotation = await Quotation.findById(req.params.id)
 
-    if(!quotation){
+    if (!quotation) {
         res.status(400)
         throw new Error('Quotation not found')
     }
 
-    const deletedQuotation= await Quotation.findByIdAndDelete(req.params.id)
+    Array.from(quotation.attachments).forEach(old => {
+        if (old !== undefined) {
+            console.log(__dirname)
+
+            try {
+                const oldPath = path.join(__dirname, '../../frontend/public/documents/', old);
+
+                if (fs.existsSync(oldPath)) {
+                    fs.unlink(oldPath, (err) => {
+                        if (err) {
+                            console.error(err);
+                            return;
+                        }
+                    });
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    });
+
+    const deletedQuotation = await Quotation.findByIdAndDelete(req.params.id)
 
     res.status(200).json(deletedQuotation)
 })

@@ -1,5 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const Company = require('../model/companyModel')
+const path = require('path');
+const fs = require('fs')
 
 // @ desc Register Company
 // @rout Post /api/registerCompany

@@ -1,4 +1,6 @@
-import {FC, useState} from 'react'
+import {FC, useRef} from 'react'
+import useState from 'react-usestateref'
+
 import * as Yup from 'yup'
 import {useFormik} from 'formik'
 import {isNotEmpty, toAbsoluteUrl} from '../../../../../_metronic/helpers'
@@ -11,31 +13,89 @@ import {useQueryResponse} from '../core/QueryResponseProvider'
 import {UserEditModalHeader} from './QuotationsEditModalHeader'
 import {ToastContainer, toast} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { StepperComponent } from '../../../../../_metronic/assets/ts/components'
+import { Companies } from '../../../companies/companies-list/core/_models'
 
 type Props = {
   isUserLoading: boolean
   quotations: Quotations
 }
 
-const editUserSchema = Yup.object().shape({
-  email: Yup.string()
-    .email('Wrong email format')
-    .min(3, 'Minimum 3 symbols')
-    .max(50, 'Maximum 50 symbols')
-    .required('Email is required'),
-  first_name: Yup.string()
-    .min(3, 'Minimum 3 symbols')
-    .max(50, 'Maximum 50 symbols')
-    .required('Name is required'),
-  last_name: Yup.string()
-    .min(3, 'Minimum 3 symbols')
-    .max(50, 'Maximum 50 symbols')
-    .required('Name is required'),
-})
+const createQuotationSchema = [
+  Yup.object({
+    name: Yup.string().required().label('Quotation name'),
+    invoiceNo: Yup.string().required().label('Invoice number'),
+    type: Yup.string().required().label('Quotation type'),
+  }),
+  Yup.object({
+    company: Yup.string().required().label('Company'),
+  }),
+  Yup.object({
+    workType: Yup.string().required().label('Work type'),
+    quotations: Yup.array().of(
+      Yup.object({
+        desc: Yup.string()
+          .required()
+          .label('Description'),
+        amount: Yup.number()
+          .required()
+          .label('Amount')
+      })
+    ).min(1, 'Quotations')
+  }),
+  Yup.object({
+    paymentTerm: Yup.array().of(
+      Yup.object({
+        percentage: Yup.number()
+          .required()
+          .label('Percentage'),
+        desc: Yup.string()
+          .required()
+          .label('Description'),
+        amount: Yup.number()
+          .required()
+          .label('Amount')
+      })
+    ).min(1, 'Payment Term'),
+    balancePaid: Yup.number()
+      .required()
+      .label('Balance paid'),
+    nextPaymentDate: Yup.date()
+      .required()
+      .label('Next date'),
+    finalPaymentDate: Yup.date()
+      .required()
+      .label('Final date')
+  }),
+  Yup.object({
+    projectSchedule: Yup.array().of(
+      Yup.object({
+        desc: Yup.string()
+          .required()
+          .label('Description'),
+        week: Yup.string()
+          .required()
+          .label('Week')
+      })
+    ).min(1, 'Project schedule')
+  }),
+  Yup.object({
+    address1: Yup.string().required().label('Address 1'),
+    zip: Yup.string().required().label('Zip'),
+    city: Yup.string().required().label('City'),
+    state: Yup.string().required().label('State')
+  })
+]
 
 const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
   const {setItemIdForUpdate} = useListView()
   const {refetch} = useQueryResponse()
+
+  const stepperRef = useRef<HTMLDivElement | null>(null)
+  const stepper = useRef<StepperComponent | null>(null)
+  const [currentSchema, setCurrentSchema] = useState(createQuotationSchema[0])
+  const [company, setCompany, refCompany] = useState<Companies[]>()
+  const [initValues] = useState<Quotations>(initialQuotations)
 
   const [userForEdit] = useState<Quotations>({
     ...quotations,
@@ -78,7 +138,7 @@ const UserEditModalForm: FC<Props> = ({quotations, isUserLoading}) => {
 
   const formik = useFormik({
     initialValues: userForEdit,
-    validationSchema: editUserSchema,
+    validationSchema: createQuotationSchema,
     onSubmit: async (values, {setSubmitting}) => {
       setSubmitting(true)
       try {
