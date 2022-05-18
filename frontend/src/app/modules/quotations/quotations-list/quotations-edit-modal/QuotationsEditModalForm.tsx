@@ -55,10 +55,10 @@ const QuotationEditModalForm: FC<Props> = ({ quotations, isUserLoading }) => {
 
         if (file !== undefined) {
           let fd = new FormData()
-  
+
           Array.from(file).forEach(async (file) => {
             fd.append("attachments", file);
-  
+
           });
           const results = await uploadAttachements(fd)
           Array.from(results).forEach((element: any) => {
@@ -71,6 +71,13 @@ const QuotationEditModalForm: FC<Props> = ({ quotations, isUserLoading }) => {
       }
     },
   })
+
+  var total = 0
+
+  quotations.quotations?.forEach((element: any) => {
+    total += element.amount
+  })
+
 
   return (
     <>
@@ -107,6 +114,10 @@ const QuotationEditModalForm: FC<Props> = ({ quotations, isUserLoading }) => {
                 }
               )}
             />
+            <p  className='form-label fw-bolder fs-6 ms-5'>/</p>
+            <p  className='form-label fs-6 ms-5'>{total}</p>
+
+
           </div>
           {formik.touched.balancePaid && formik.errors.balancePaid && (
             <div className='fv-plugins-message-container'>
@@ -124,7 +135,7 @@ const QuotationEditModalForm: FC<Props> = ({ quotations, isUserLoading }) => {
 
         <div className='d-flex flex-column mb-3 fv-row mt-10'>
           <label className='fs-6 fw-bold form-label mb-4'>
-            Additional attachments/files: 
+            Additional attachments/files:
           </label>
           <div className='position-relative'>
             <input
