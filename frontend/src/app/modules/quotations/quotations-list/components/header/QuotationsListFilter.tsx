@@ -8,6 +8,7 @@ const QuotationsListFilter = () => {
   const {updateState} = useQueryRequest()
   const {isLoading} = useQueryResponse()
   const [type, setType] = useState<string | undefined>()
+  const [lock, setLock] = useState<string | undefined>()
   const [workType, setWorkType] = useState<string | undefined>()
 
   useEffect(() => {
@@ -16,6 +17,7 @@ const QuotationsListFilter = () => {
 
   const resetData = () => {
     setType('')
+    setLock(undefined)
     setWorkType('')
     updateState({filter: undefined, ...initialQueryState})
   }
@@ -23,7 +25,7 @@ const QuotationsListFilter = () => {
   const filterData = () => {
     console.log(type)
     updateState({
-      filter: {type, workType},
+      filter: {type, workType, lock},
       ...initialQueryState,
     })
   }
@@ -56,6 +58,29 @@ const QuotationsListFilter = () => {
 
         {/* begin::Content */}
         <div className='px-7 py-5' data-kt-user-table-filter='form'>
+          {/* begin::Input group */}
+          <div className='mb-10'>
+            <label className='form-label fs-6 fw-bold'>Lock?:</label>
+            <select
+              className='form-select form-select-solid fw-bolder'
+              data-kt-select2='true'
+              data-placeholder='Select option'
+              data-allow-clear='true'
+              data-kt-user-table-filter='type'
+              data-hide-search='true'
+              onChange={(e) => setLock((e.target.value))}
+              value={lock}
+            >
+              <option value=''></option>
+              {/* <option value='Administrator'>Administrator</option> */}
+              <option value='true'>Lock</option>
+              {/* <option value='Developer'>Developer</option> */}
+              <option value='false'>Unlock</option>
+              {/* <option value='Trial'>Trial</option> */}
+            </select>
+          </div>
+          {/* end::Input group */}
+
           {/* begin::Input group */}
           <div className='mb-10'>
             <label className='form-label fs-6 fw-bold'>Quotation:</label>
