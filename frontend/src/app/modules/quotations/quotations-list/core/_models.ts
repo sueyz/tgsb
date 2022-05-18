@@ -1,7 +1,7 @@
 import { ID, Response } from '../../../../../_metronic/helpers'
 export type Quotations = {
   id?: ID
-  company?: string,
+  company?: ID,
   type?: string,
   name?: string,
   invoiceNo?: string,

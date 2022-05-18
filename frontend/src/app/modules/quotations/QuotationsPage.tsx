@@ -1,6 +1,6 @@
 import { Route, Routes, Outlet, Navigate } from 'react-router-dom'
 import { PageLink, PageTitle } from '../../../_metronic/layout/core'
-import { AccountHeader } from '../accounts/QuotationHeader'
+import { QuotationHeader } from '../accounts/QuotationHeader'
 import { Overview } from '../accounts/components/Overview'
 import { Settings } from '../accounts/components/settings/Settings'
 import { QuotationsListWrapper } from './quotations-list/QuotationsList'
@@ -34,7 +34,7 @@ const QuotationsPage = () => {
     <Route
       element={
         <>
-          <AccountHeader />
+          <QuotationHeader />
           <Outlet />
         </>
       }

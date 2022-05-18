@@ -8,27 +8,30 @@ import {
   ListsWidget5,
   TablesWidget5,
 } from '../../../../_metronic/partials/widgets'
+import { useLocation } from 'react-router'
 
 export function Overview() {
+  const location: any = useLocation()
+
   return (
     <>
       <div className='card mb-5 mb-xl-10' id='kt_profile_details_view'>
         <div className='card-header cursor-pointer'>
           <div className='card-title m-0'>
-            <h3 className='fw-bolder m-0'>Profile Details</h3>
+            <h3 className='fw-bolder m-0'>Quotation Details</h3>
           </div>
 
-          <Link to='/crafted/account/settings' className='btn btn-primary align-self-center'>
-            Edit Profile
+          <Link to='/quotations/settings' className='btn btn-primary align-self-center'>
+            Edit Quotation
           </Link>
         </div>
 
         <div className='card-body p-9'>
           <div className='row mb-7'>
-            <label className='col-lg-4 fw-bold text-muted'>Full Name</label>
+            <label className='col-lg-4 fw-bold text-muted'>Quotation Name</label>
 
             <div className='col-lg-8'>
-              <span className='fw-bolder fs-6 text-dark'>Max Smith</span>
+              <span className='fw-bolder fs-6 text-dark'>{location.state.original.name}</span>
             </div>
           </div>
 
@@ -36,7 +39,7 @@ export function Overview() {
             <label className='col-lg-4 fw-bold text-muted'>Company</label>
 
             <div className='col-lg-8 fv-row'>
-              <span className='fw-bold fs-6'>Keenthemes</span>
+              <span className='fw-bold fs-6'>{location.state.company_info.name}</span>
             </div>
           </div>
 

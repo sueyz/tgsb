@@ -164,7 +164,7 @@ const Main: FC = () => {
 
 
     if (stepper.current.currentStepIndex === 1) {
-      values.company = ""
+      // values.company = ""
       var { data } = await getCompanies(values.type ? values.type : "")
       setCompany(data)
 

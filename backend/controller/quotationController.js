@@ -185,6 +185,7 @@ const queryQuotation = asyncHandler(async (req, res) => {
         .project({
             id: '$_id',
             type: 1,
+            company: 1,
             name: 1,
             invoiceNo: 1,
             address1: 1,

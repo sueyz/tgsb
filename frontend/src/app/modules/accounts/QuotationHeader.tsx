@@ -6,12 +6,8 @@ import { Dropdown1 } from '../../../_metronic/partials'
 import { useLocation } from 'react-router'
 import { ProgressBar, Step } from 'react-step-progress-bar'
 
-const AccountHeader: React.FC = () => {
+const QuotationHeader: React.FC = () => {
   const location: any = useLocation()
-
-  // console.log(location.state)
-
-  // var test =location.state.original
 
   var stepPositions: Array<number> = []
   var total = 0
@@ -91,13 +87,10 @@ const AccountHeader: React.FC = () => {
 
           <div style={{ display: 'flex', flexDirection: 'column', marginLeft: 50 }}>
             <b style={{ color: 'green' }}>Balance Paid: RM {location.state.original.balancePaid}</b>
-            <b style={{ color: 'red',  marginTop: 5  }}>Balance Remaining: RM {total - location.state.original.balancePaid}</b>
+            <b style={{ color: 'red', marginTop: 5 }}>Balance Remaining: RM {total - location.state.original.balancePaid}</b>
             <b style={{ marginTop: 5 }}>Total: RM {total}</b>
           </div>
-
         </div>
-
-
 
         <div className='d-flex overflow-auto h-55px'>
           <ul className='nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap'>
@@ -130,4 +123,4 @@ const AccountHeader: React.FC = () => {
   )
 }
 
-export { AccountHeader }
+export { QuotationHeader }
