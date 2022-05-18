@@ -5,9 +5,13 @@ import { Link } from 'react-router-dom'
 import { Dropdown1 } from '../../../_metronic/partials'
 import { useLocation } from 'react-router'
 import { ProgressBar, Step } from 'react-step-progress-bar'
+import { RootState } from '../../../setup'
+import { shallowEqual, useSelector } from 'react-redux'
 
 const QuotationHeader: React.FC = () => {
   const location: any = useLocation()
+  const isAdmin = useSelector<RootState>(({ auth }) => auth.user?.role, shallowEqual)
+
 
   var stepPositions: Array<number> = []
   var total = 0
@@ -106,7 +110,7 @@ const QuotationHeader: React.FC = () => {
               </Link>
             </li>
             <li className='nav-item'>
-              <Link
+              {(location.state.original.lock === false || isAdmin === 'Administrator') ? <Link
                 className={
                   `nav-link text-active-primary me-6 ` +
                   (location.pathname === '/quotations/settings' && 'active')
@@ -114,7 +118,7 @@ const QuotationHeader: React.FC = () => {
                 to='/quotations/settings'
               >
                 Settings
-              </Link>
+              </Link> : <></>}
             </li>
           </ul>
         </div>

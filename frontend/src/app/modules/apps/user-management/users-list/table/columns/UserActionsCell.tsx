@@ -37,7 +37,7 @@ const UserActionsCell: FC<Props> = ({id}) => {
       <a
         href='#'
         className='btn btn-light btn-active-light-primary btn-sm'
-        data-kt-menu-trigger='click'
+        data-kt-menu-trigger='hover'
         data-kt-menu-placement='bottom-end'
       >
         Actions

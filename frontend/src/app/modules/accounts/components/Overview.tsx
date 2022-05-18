@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react'
-import {Link} from 'react-router-dom'
-import {KTSVG} from '../../../../_metronic/helpers'
+import { Link } from 'react-router-dom'
+import { KTSVG } from '../../../../_metronic/helpers'
 import {
   ChartsWidget1,
   TablesWidget1,
@@ -9,9 +9,16 @@ import {
   TablesWidget5,
 } from '../../../../_metronic/partials/widgets'
 import { useLocation } from 'react-router'
+import { shallowEqual, useSelector } from 'react-redux'
+import { RootState } from '../../../../setup'
+
 
 export function Overview() {
+  const isAdmin = useSelector<RootState>(({ auth }) => auth.user?.role, shallowEqual)
+
   const location: any = useLocation()
+
+  console.log(location)
 
   return (
     <>
@@ -20,13 +27,13 @@ export function Overview() {
           <div className='card-title m-0'>
             <h3 className='fw-bolder m-0'>Quotation Details</h3>
           </div>
-
-          <Link to='/quotations/settings' className='btn btn-primary align-self-center'>
+          {(location.state.original.lock === false || isAdmin === 'Administrator') ? <Link to='/quotations/settings' className='btn btn-primary align-self-center'>
             Edit Quotation
-          </Link>
+          </Link> : <></>}
         </div>
 
         <div className='card-body p-9'>
+
           <div className='row mb-7'>
             <label className='col-lg-4 fw-bold text-muted'>Quotation Name</label>
 
@@ -36,88 +43,82 @@ export function Overview() {
           </div>
 
           <div className='row mb-7'>
-            <label className='col-lg-4 fw-bold text-muted'>Company</label>
+            <label className='col-lg-4 fw-bold text-muted'>Quotation Type</label>
 
             <div className='col-lg-8 fv-row'>
-              <span className='fw-bold fs-6'>{location.state.company_info.name}</span>
+              <span className='fw-bolder fs-6'>{location.state.original.type}</span>
             </div>
           </div>
 
           <div className='row mb-7'>
-            <label className='col-lg-4 fw-bold text-muted'>
-              Contact Phone
-              <i
-                className='fas fa-exclamation-circle ms-1 fs-7'
-                data-bs-toggle='tooltip'
-                title='Phone number must be active'
-              ></i>
-            </label>
+            <label className='col-lg-4 fw-bold text-muted'>Company In Charge</label>
 
-            <div className='col-lg-8 d-flex align-items-center'>
-              <span className='fw-bolder fs-6 me-2'>044 3276 454 935</span>
-
-              <span className='badge badge-success'>Verified</span>
+            <div className='col-lg-8 fv-row'>
+              <span className='fw-bolder fs-6'>{location.state.company_info.name}</span>
             </div>
           </div>
 
           <div className='row mb-7'>
-            <label className='col-lg-4 fw-bold text-muted'>Company Site</label>
+            <label className='col-lg-4 fw-bold text-muted'>Invoice No</label>
+
+            <div className='col-lg-8 fv-row'>
+              <span className='fw-bolder fs-6'>{location.state.original.invoiceNo}</span>
+            </div>
+          </div>
+
+          <div className='row mb-7'>
+            <label className='col-lg-4 fw-bold text-muted'>Work Type</label>
+
+            <div className='col-lg-8 fv-row'>
+              <span className='fw-bolder fs-6'>{location.state.original.workType}</span>
+            </div>
+          </div>
+
+          <div className='row mb-7'>
+            <label className='col-lg-4 fw-bold text-muted'>Address</label>
+
+            <div className='col-lg-8 fv-row'>
+              <span className='fw-bolder fs-6'>{location.state.original.address1}, {location.state.original.address2 ? location.state.original.address2 + ',' : ''} {location.state.original.address3 ? location.state.original.address3 + ',' : ''} {location.state.original.zip}, {location.state.original.city}, {location.state.original.state}</span>
+            </div>
+          </div>
+
+          <div className='row mb-7'>
+            <label className='col-lg-4 fw-bold text-muted'>Person In Charge</label>
 
             <div className='col-lg-8'>
-              <a href='#' className='fw-bold fs-6 text-dark text-hover-primary'>
-                keenthemes.com
-              </a>
+              <span className='fw-bolder fs-6 text-dark'>{location.state.original.poc ? location.state.original.poc : "-"}</span>
             </div>
           </div>
 
           <div className='row mb-7'>
-            <label className='col-lg-4 fw-bold text-muted'>
-              Country
-              <i
-                className='fas fa-exclamation-circle ms-1 fs-7'
-                data-bs-toggle='tooltip'
-                title='Country of origination'
-              ></i>
-            </label>
+            <label className='col-lg-4 fw-bold text-muted'>Phone</label>
 
             <div className='col-lg-8'>
-              <span className='fw-bolder fs-6 text-dark'>Germany</span>
+              <span className='fw-bolder fs-6 text-dark'>{location.state.original.contact ? location.state.original.contact : "-"}</span>
             </div>
           </div>
 
           <div className='row mb-7'>
-            <label className='col-lg-4 fw-bold text-muted'>Communication</label>
+            <label className='col-lg-4 fw-bold text-muted'>Email</label>
 
             <div className='col-lg-8'>
-              <span className='fw-bolder fs-6 text-dark'>Email, Phone</span>
+              <span className='fw-bolder fs-6 text-dark'>{location.state.original.email ? location.state.original.email : "-"}</span>
+            </div>
+          </div>
+
+          <div className='row mb-7'>
+            <label className='col-lg-4 fw-bold text-muted'>Note</label>
+
+            <div className='col-lg-8 fv-row'>
+              <span className='fw-bolder fs-6'>{location.state.original.note ? location.state.original.note : "-"}</span>
             </div>
           </div>
 
           <div className='row mb-10'>
-            <label className='col-lg-4 fw-bold text-muted'>Allow Changes</label>
+            <label className='col-lg-4 fw-bold text-muted'>Lock</label>
 
             <div className='col-lg-8'>
-              <span className='fw-bold fs-6'>Yes</span>
-            </div>
-          </div>
-
-          <div className='notice d-flex bg-light-warning rounded border-warning border border-dashed p-6'>
-            <KTSVG
-              path='icons/duotune/general/gen044.svg'
-              className='svg-icon-2tx svg-icon-warning me-4'
-            />
-            <div className='d-flex flex-stack flex-grow-1'>
-              <div className='fw-bold'>
-                <h4 className='text-gray-800 fw-bolder'>We need your attention!</h4>
-                <div className='fs-6 text-gray-600'>
-                  Your payment was declined. To start using tools, please
-                  <Link className='fw-bolder' to='/crafted/account/settings'>
-                    {' '}
-                    Add Payment Method
-                  </Link>
-                  .
-                </div>
-              </div>
+              <span className='fw-bold fs-6'>{(location.state.original.lock).toString()}</span>
             </div>
           </div>
         </div>

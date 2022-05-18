@@ -49,8 +49,11 @@ const UserActionsCell: FC<Props> = ({ id, lock }) => {
       {(lock === false || isAdmin === 'Administrator') ? <a
         href='#'
         className='btn btn-light btn-active-light-primary btn-sm'
-        data-kt-menu-trigger='click'
+        data-kt-menu-trigger='hover'
         data-kt-menu-placement='bottom-end'
+        onClick={(event) => {
+          event.stopPropagation();
+        }}
       >
         Actions
         <KTSVG path='/media/icons/duotune/arrows/arr072.svg' className='svg-icon-5 m-0' />
@@ -59,19 +62,26 @@ const UserActionsCell: FC<Props> = ({ id, lock }) => {
       <div
         className='menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4'
         data-kt-menu='true'
+
       >
         {(lock === true && isAdmin === 'Administrator') ? <div className='menu-item px-3'>
           <a
             className='menu-link px-3'
             data-kt-users-table-filter='delete_row'
-            onClick={async () => await unlockItem.mutateAsync()}
+            onClick={async (event) => {
+              await unlockItem.mutateAsync()
+              event.stopPropagation()
+            }}
           >
             Unlock
           </a>
         </div> : <></>}
         {/* begin::Menu item */}
         <div className='menu-item px-3'>
-          <a className='menu-link px-3' onClick={openEditModal}>
+          <a className='menu-link px-3' onClick={(event) => {
+            openEditModal()
+            event.stopPropagation()
+          }}>
             Update Balance
           </a>
         </div>
@@ -82,7 +92,10 @@ const UserActionsCell: FC<Props> = ({ id, lock }) => {
           <a
             className='menu-link px-3'
             data-kt-users-table-filter='delete_row'
-            onClick={async () => await deleteItem.mutateAsync()}
+            onClick={async (event) => {
+              await deleteItem.mutateAsync()
+              event.stopPropagation()
+            }}
           >
             Delete
           </a>

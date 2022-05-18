@@ -203,6 +203,7 @@ const queryQuotation = asyncHandler(async (req, res) => {
             poc: 1,
             contact: 1,
             isFinished: 1,
+            attachments: 1,
             workType: 1,
             lock: 1
         })

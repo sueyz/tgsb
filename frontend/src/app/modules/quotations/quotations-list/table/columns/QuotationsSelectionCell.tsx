@@ -19,9 +19,13 @@ const QuotationsSelectionCell: FC<Props> = ({ id, lock }) => {
         id={'box-round'}
         data-kt-check={isSelected}
         disabled={lock}
+        onClick={(event) => {
+          event.stopPropagation(); 
+        }}
         data-kt-check-target='#kt_table_users .form-check-input'
         checked={lock === false ? isSelected : lock}
-        onChange={() => onSelect(id)}
+        onChange={() => {
+          onSelect(id)}}
       />
       <div id="tick_mark"></div>
 
