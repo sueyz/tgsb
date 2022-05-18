@@ -699,6 +699,7 @@ const Main: FC = () => {
                                                   type="number"
                                                   min={0}
                                                   disabled
+                                                  style={{paddingRight : 0}}
                                                   className='form-control form-control-lg form-control-solid'
                                                   name={`payment_term.${index}.amount`}
                                                   value={value.amount = allTotal * (value.percentage/100)}
@@ -724,7 +725,7 @@ const Main: FC = () => {
                                         );
                                       }) : <></>}
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                                      <button type='button' onClick={() => arrayHelpers.push({ percentage: 0, desc: '', amount: 0 })}>Add more fields</button>
+                                      <button type='button' onClick={() => arrayHelpers.push({ percentage: 0, desc: '', amount: 0, date: '' })}>Add more fields</button>
 
                                       <b style={{ margin: 'auto', marginRight: 0, width: '30%' }}>Total RM: {allTotal} </b>
                                     </div>

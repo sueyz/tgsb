@@ -32,6 +32,8 @@ const QuotationsStatusCell: FC<Props> = ({ balancePaid, payment_term, quotations
   var diff1 = new Date()
   var diff2 = new Date(date2.toISOString().slice(0, 10))
 
+  var cyclePayment = 0
+
   quotations?.forEach((element: any) => {
     total += element.amount
   })
@@ -50,8 +52,16 @@ const QuotationsStatusCell: FC<Props> = ({ balancePaid, payment_term, quotations
       numberDate1 = Number(next_payment_date.split('/').reverse().join(''));
       //number 20180605
 
-      if (numberDate2 <= numberDate1)
-        break
+      cyclePayment = payment_term[i].amount
+
+      if (balancePaid !== undefined) {
+        if (balancePaid < payment_term[i].amount && numberDate2 <= numberDate1) {
+          break
+        }
+        else if (balancePaid >= payment_term[i].amount && numberDate2 <= numberDate1) {
+          continue
+        }
+      }
     }
   }
 
@@ -65,6 +75,7 @@ const QuotationsStatusCell: FC<Props> = ({ balancePaid, payment_term, quotations
     <div>
       {(balancePaid ? balancePaid : 0) >= total ? <></> : <p style={{ fontSize: 'x-small' }} className='mt-5'>Next Payment: {next_payment_date} {Difference_In_Days > 7 ? <></> : (Difference_In_Days <= 7 && Difference_In_Days > 3) ? <img style={{ paddingBottom: 3 }} src={toAbsoluteUrl('/media/icons/duotune/general/caution.png')} className='' alt='' /> : <img style={{ paddingBottom: 3 }} src={toAbsoluteUrl('/media/icons/duotune/general/warning.png')} className='' alt='' />}
       </p>}
+      {/* {(balancePaid ? balancePaid : 0) >= total ? <></> : <p style={{ fontSize: 'x-small' }} className='mt-5'>Balance cycle: </p>} */}
 
       <ProgressBar
         percent={balancePaid ? balancePaid / total * 100 : 0}
