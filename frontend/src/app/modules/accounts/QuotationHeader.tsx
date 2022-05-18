@@ -1,21 +1,44 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from 'react'
-import { KTSVG, toAbsoluteUrl } from '../../../_metronic/helpers'
+import React, { useState } from 'react'
+import { ID, KTSVG, QUERIES, toAbsoluteUrl } from '../../../_metronic/helpers'
 import { Link } from 'react-router-dom'
-import { Dropdown1 } from '../../../_metronic/partials'
 import { useLocation } from 'react-router'
 import { ProgressBar, Step } from 'react-step-progress-bar'
 import { RootState } from '../../../setup'
 import { shallowEqual, useSelector } from 'react-redux'
+import { useMutation } from 'react-query'
+import { markQuotation, unlockQuotation } from '../quotations/quotations-list/core/_requests'
+
+import { confirm } from "react-confirm-box";
+import { UsersListLoading } from '../quotations/quotations-list/components/loading/QuotationsListLoading'
 
 const QuotationHeader: React.FC = () => {
   const location: any = useLocation()
   const isAdmin = useSelector<RootState>(({ auth }) => auth.user?.role, shallowEqual)
+  const [loading, setLoading] = useState(false)
 
 
   var stepPositions: Array<number> = []
   var total = 0
 
+  const markSelectedItems = useMutation(() => markQuotation([location.state.original.id]), {
+    // 💡 response of the mutation is passed to onSuccess
+    onSuccess: () => {
+      // ✅ update detail view directly
+      setLoading(false);
+      location.state.original.lock = true
+    },
+  })
+
+
+  const unlockItem = useMutation(() => unlockQuotation(location.state.original.id), {
+    // 💡 response of the mutation is passed to onSuccess
+    onSuccess: () => {
+      // ✅ update detail view directly
+      setLoading(false);
+      location.state.original.lock = false
+    },
+  })
 
   Array.from(location.state.original.payment_term).forEach((element: any, index: number) => {
     index > 0 ? stepPositions.push(element.percentage + stepPositions[index - 1]) : stepPositions.push(element.percentage)
@@ -29,9 +52,39 @@ const QuotationHeader: React.FC = () => {
     <div className='card mb-5 mb-xl-10'>
       <div className='card-body pt-9 pb-0'>
 
-        <a href='#' className='text-gray-800 text-hover-primary fs-2 fw-bolder me-1'>
-          Payment Schedule
-        </a>
+        <div style={{ display: 'flex' }}>
+
+          <a href='#' className='text-gray-800 text-hover-primary fs-2 fw-bolder me-1'>
+            Payment Schedule
+          </a>
+
+          {(location.state.original.lock === false || isAdmin === 'Administrator') ? <button
+            style={{ margin: 'auto', marginRight: 0 }}
+            type='button'
+            className='btn btn-danger'
+            onClick={async () => {
+              const result = await confirm("Are you sure?");
+              if (result) {
+                setLoading(true)
+
+                {
+                  location.state.original.lock === true && isAdmin === 'Administrator' ? await unlockItem.mutateAsync() :
+                    await markSelectedItems.mutateAsync()
+                }
+                return;
+              }
+            }
+            }
+          >
+            {location.state.original.lock === true && isAdmin === 'Administrator' ? "Unlock Quotation" : "Lock Quotation"}
+          </button> : <a className='btn' style={{ margin: 'auto', marginRight: 0 }}>Locked</a>}
+
+          {loading && <UsersListLoading />}
+
+
+          {location.state.original.lock === false}
+
+        </div>
 
 
         <div style={{ marginRight: 10, marginBottom: 50, marginTop: 70 }}>
