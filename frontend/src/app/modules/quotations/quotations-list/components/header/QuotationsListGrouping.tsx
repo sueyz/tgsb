@@ -2,14 +2,14 @@ import {useQueryClient, useMutation} from 'react-query'
 import {QUERIES} from '../../../../../../_metronic/helpers'
 import {useListView} from '../../core/ListViewProvider'
 import {useQueryResponse} from '../../core/QueryResponseProvider'
-import {deleteSelectedUsers} from '../../core/_requests'
+import {markQuotation} from '../../core/_requests'
 
 const QuotationsListGrouping = () => {
   const {selected, clearSelected} = useListView()
   const queryClient = useQueryClient()
   const {query} = useQueryResponse()
 
-  const deleteSelectedItems = useMutation(() => deleteSelectedUsers(selected), {
+  const markSelectedItems = useMutation(() => markQuotation(selected), {
     // 💡 response of the mutation is passed to onSuccess
     onSuccess: () => {
       // ✅ update detail view directly
@@ -27,9 +27,9 @@ const QuotationsListGrouping = () => {
       <button
         type='button'
         className='btn btn-danger'
-        onClick={async () => await deleteSelectedItems.mutateAsync()}
+        onClick={async () => await markSelectedItems.mutateAsync()}
       >
-        Delete Selected
+        Lock Selected
       </button>
     </div>
   )

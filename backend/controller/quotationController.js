@@ -305,6 +305,32 @@ const updateQuotation = asyncHandler(async (req, res) => {
 
 })
 
+const updateLock = asyncHandler(async (req, res) => {
+
+    const quotation = await Quotation.findById(req.params.id)
+
+    if (!quotation) {
+        res.status(400)
+        throw new Error('Quotation not found')
+    }
+
+    const updatedQuotation = await Quotation.findByIdAndUpdate(req.params.id, {"lock": true}, { new: true })
+    res.status(200).json(updatedQuotation)
+})
+
+const unlockLock = asyncHandler(async (req, res) => {
+
+    const quotation = await Quotation.findById(req.params.id)
+
+    if (!quotation) {
+        res.status(400)
+        throw new Error('Quotation not found')
+    }
+
+    const updatedQuotation = await Quotation.findByIdAndUpdate(req.params.id, {"lock": false}, { new: true })
+    res.status(200).json(updatedQuotation)
+})
+
 // @ desc Delete something
 // @rout DELETE /api/dashboard
 const deleteQuotation = asyncHandler(async (req, res) => {
@@ -348,5 +374,7 @@ module.exports = {
     updateQuotation,
     deleteQuotation,
     uploadAttachments,
-    uploadPdf
+    uploadPdf,
+    updateLock,
+    unlockLock
 }

@@ -12,7 +12,10 @@ const usersColumns: ReadonlyArray<Column<Quotations>> = [
   {
     Header: (props) => <QuotationsSelectionHeader tableProps={props} />,
     id: 'finalize',
-    Cell: ({ ...props }) => <QuotationsSelectionCell id={props.data[props.row.index].id} />,
+    Cell: ({ ...props }) => 
+    <QuotationsSelectionCell 
+    id={props.data[props.row.index].id} 
+    lock= {props.data[props.row.index].lock} />,
   },
   {
     Header: (props) => <QuotationsCustomHeader tableProps={props} title='Quotation' className='min-w-150px cursor-pointer text-hover-primary' />,
@@ -45,7 +48,10 @@ const usersColumns: ReadonlyArray<Column<Quotations>> = [
       <QuotationsCustomHeader tableProps={props} title='Actions' className='text-end min-w-100px' />
     ),
     id: 'actions',
-    Cell: ({ ...props }) => <UserActionsCell id={props.data[props.row.index].id} />,
+    Cell: ({ ...props }) => <UserActionsCell 
+    id={props.data[props.row.index].id} 
+    lock= {props.data[props.row.index].lock} 
+    />,
   },
 ]
 

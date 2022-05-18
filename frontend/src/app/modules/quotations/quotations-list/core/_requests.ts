@@ -31,9 +31,13 @@ const deleteQuotation = (quotationId: ID): Promise<void> => {
   return axios.delete(`${QUOTATIONS_URL}/${quotationId}`).then(() => {})
 }
 
-const deleteSelectedUsers = (userIds: Array<ID>): Promise<void> => {
-  const requests = userIds.map((id) => axios.delete(`${QUOTATIONS_URL}/${id}`))
+const markQuotation = (userIds: Array<ID>): Promise<void> => {
+  const requests = userIds.map((id) => axios.put(`${QUOTATIONS_URL}/lock/${id}`))
   return axios.all(requests).then(() => {})
+}
+
+const unlockQuotation = (quotationId: ID): Promise<void> => {
+  return axios.put(`${QUOTATIONS_URL}/unlock/${quotationId}`).then(() => {})
 }
 
 const uploadAttachements = (file: FormData) => {
@@ -48,4 +52,4 @@ const uploadAttachements = (file: FormData) => {
     })
 }
 
-export {getQuotations, deleteQuotation, deleteSelectedUsers, getQuotationsById, updateQuotation, uploadAttachements}
+export {getQuotations, deleteQuotation, markQuotation, getQuotationsById, updateQuotation, uploadAttachements, unlockQuotation}
