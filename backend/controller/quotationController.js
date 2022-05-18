@@ -124,9 +124,6 @@ const queryQuotation = asyncHandler(async (req, res) => {
 
     var queryMatch = {}
 
-    console.log(req.query)
-    console.log(filter3)
-
     const sort = req.query.sort
     const order = req.query.order
 

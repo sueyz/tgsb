@@ -1,11 +1,14 @@
-import {Route, Routes, Outlet, Navigate} from 'react-router-dom'
-import {PageLink, PageTitle} from '../../../_metronic/layout/core'
-import {QuotationsListWrapper} from './quotations-list/QuotationsList'
+import { Route, Routes, Outlet, Navigate } from 'react-router-dom'
+import { PageLink, PageTitle } from '../../../_metronic/layout/core'
+import { AccountHeader } from '../accounts/QuotationHeader'
+import { Overview } from '../accounts/components/Overview'
+import { Settings } from '../accounts/components/settings/Settings'
+import { QuotationsListWrapper } from './quotations-list/QuotationsList'
 
 const quotationsBreadcrumbs: Array<PageLink> = [
   {
     title: 'Quotations',
-    path: '/quotations',
+    path: '/quotations/list',
     isSeparator: false,
     isActive: false,
   },
@@ -18,23 +21,49 @@ const quotationsBreadcrumbs: Array<PageLink> = [
 ]
 
 const QuotationsPage = () => {
-  return <QuotationsListWrapper/>
-  // (
-  //   <Routes>
-  //     <Route element={<Outlet />}>
-  //     <Route
-  //       path='quotations'
-  //       element={
-  //         <>
-  //           <PageTitle>Quotation lists</PageTitle>
-  //           <QuotationsListWrapper />
-  //         </>
-  //       }
-  //     />
-  //     </Route>
-  //     <Route index element={<Navigate to='/' />} />
-  //   </Routes>
-  // )
+  return <Routes>
+    <Route
+      path='list'
+      element={
+        <>
+          {/* <PageTitle breadcrumbs={accountBreadCrumbs}>Overview</PageTitle> */}
+          <QuotationsListWrapper />
+        </>
+      }
+    />
+    <Route
+      element={
+        <>
+          <AccountHeader />
+          <Outlet />
+        </>
+      }
+    >
+      <Route
+        path='overview'
+        element={
+          <>
+            {/* <PageTitle breadcrumbs={accountBreadCrumbs}>Settings</PageTitle> */}
+            <Overview />
+
+            {/* <Settings /> */}
+          </>
+        }
+      />
+      <Route
+        path='settings'
+        element={
+          <>
+            {/* <PageTitle breadcrumbs={accountBreadCrumbs}>Settings</PageTitle> */}
+            {/* <Overview /> */}
+
+            <Settings />
+          </>
+        }
+      />
+    </Route>
+    <Route index element={<Navigate to='/quotations/list' />} />
+  </Routes>
 }
 
 export default QuotationsPage

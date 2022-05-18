@@ -2,14 +2,24 @@ import clsx from 'clsx'
 import {FC} from 'react'
 import {Row} from 'react-table'
 import {Quotations} from '../../core/_models'
+import { useNavigate } from 'react-router'
 
 type Props = {
   row: Row<Quotations>
 }
 
-const CustomRow: FC<Props> = ({row}) => (
-  <tr {...row.getRowProps()}>
+const CustomRow: FC<Props> = ({row}) => {
+  const history = useNavigate()
+
+  
+  return (
+  
+  
+  <tr {...row.getRowProps()} onClick={() => {
+    history('/quotations/overview', {state: {original: row.original}});
+    }}>
     {row.cells.map((cell) => {
+
       return (
         <td
           {...cell.getCellProps()}
@@ -21,6 +31,6 @@ const CustomRow: FC<Props> = ({row}) => (
       )
     })}
   </tr>
-)
+)}
 
 export {CustomRow}

@@ -10,7 +10,6 @@ import axios, { AxiosResponse } from 'axios'
 import { initialQuotations, Quotations } from '../../../../app/modules/quotations/quotations-list/core/_models'
 import { ID, Response } from '../../../../_metronic/helpers'
 import { Companies, CompaniesQueryResponse } from '../../../../app/modules/companies/companies-list/core/_models'
-import { useNavigate } from 'react-router'
 import { useQueryResponse } from '../../../../app/modules/quotations/quotations-list/core/QueryResponseProvider';
 
 const API_URL = process.env.REACT_APP_THEME_API_URL
@@ -130,10 +129,6 @@ const Main: FC = () => {
   const [company, setCompany, refCompany] = useState<Companies[]>()
   const [initValues] = useState<Quotations>(initialQuotations)
   const { refetch } = useQueryResponse()
-
-
-  const history = useNavigate()
-
 
   const [file, setFile] = useState<File[]>()
 
