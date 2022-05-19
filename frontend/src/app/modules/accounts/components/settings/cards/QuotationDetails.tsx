@@ -1,12 +1,12 @@
-import React, {useState} from 'react'
-import {toAbsoluteUrl} from '../../../../../../_metronic/helpers'
-import {IProfileDetails, profileDetailsInitValues as initialValues} from '../SettingsModel'
+import React, { useState } from 'react'
+import { toAbsoluteUrl } from '../../../../../../_metronic/helpers'
+import { IProfileDetails } from '../SettingsModel'
 import * as Yup from 'yup'
-import {useFormik} from 'formik'
+import { useFormik } from 'formik'
+import { useLocation } from 'react-router-dom'
 
 const profileDetailsSchema = Yup.object().shape({
-  fName: Yup.string().required('First name is required'),
-  lName: Yup.string().required('Last name is required'),
+  name: Yup.string().required('First name is required'),
   company: Yup.string().required('Company name is required'),
   contactPhone: Yup.string().required('Contact phone is required'),
   companySite: Yup.string().required('Company site is required'),
@@ -16,12 +16,35 @@ const profileDetailsSchema = Yup.object().shape({
   currency: Yup.string().required('Currency is required'),
 })
 
-const ProfileDetails: React.FC = () => {
+const QuotationDetails: React.FC = () => {
+  const location: any = useLocation()
+
+
+  const initialValues: IProfileDetails = {
+    name: location.state.original.name,
+    lName: 'Smith',
+    company: 'Keenthemes',
+    contactPhone: '044 3276 454 935',
+    companySite: 'keenthemes.com',
+    country: '',
+    language: '',
+    timeZone: '',
+    currency: '',
+    communications: {
+      email: false,
+      phone: false,
+    },
+    allowMarketing: false,
+  }
+
   const [data, setData] = useState<IProfileDetails>(initialValues)
   const updateData = (fieldsToUpdate: Partial<IProfileDetails>): void => {
     const updatedData = Object.assign(data, fieldsToUpdate)
     setData(updatedData)
   }
+
+
+
 
   const [loading, setLoading] = useState(false)
   const formik = useFormik<IProfileDetails>({
@@ -51,62 +74,47 @@ const ProfileDetails: React.FC = () => {
         aria-controls='kt_account_profile_details'
       >
         <div className='card-title m-0'>
-          <h3 className='fw-bolder m-0'>Profile Details</h3>
+          <h3 className='fw-bolder m-0'>Quotation Details</h3>
         </div>
       </div>
 
       <div id='kt_account_profile_details' className='collapse show'>
         <form onSubmit={formik.handleSubmit} noValidate className='form'>
           <div className='card-body border-top p-9'>
-            <div className='row mb-6'>
+
+            {/* <div className='row mb-6'>
               <label className='col-lg-4 col-form-label fw-bold fs-6'>Avatar</label>
               <div className='col-lg-8'>
                 <div
                   className='image-input image-input-outline'
                   data-kt-image-input='true'
-                  style={{backgroundImage: `url(${toAbsoluteUrl('/media/avatars/blank.png')})`}}
+                  style={{ backgroundImage: `url(${toAbsoluteUrl('/media/avatars/blank.png')})` }}
                 >
                   <div
                     className='image-input-wrapper w-125px h-125px'
-                    style={{backgroundImage: `url(${toAbsoluteUrl(data.avatar)})`}}
+                    style={{ backgroundImage: `url(${toAbsoluteUrl(data.avatar)})` }}
                   ></div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <div className='row mb-6'>
-              <label className='col-lg-4 col-form-label required fw-bold fs-6'>Full Name</label>
+              <label className='col-lg-4 col-form-label required fw-bold fs-6'>Quotation Name</label>
 
               <div className='col-lg-8'>
-                <div className='row'>
-                  <div className='col-lg-6 fv-row'>
-                    <input
-                      type='text'
-                      className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
-                      placeholder='First name'
-                      {...formik.getFieldProps('fName')}
-                    />
-                    {formik.touched.fName && formik.errors.fName && (
-                      <div className='fv-plugins-message-container'>
-                        <div className='fv-help-block'>{formik.errors.fName}</div>
-                      </div>
-                    )}
+                <input
+                  type='text'
+                  className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+                  placeholder='Quotation name'
+                  {...formik.getFieldProps('name')}
+                />
+                {formik.touched.name && formik.errors.name && (
+                  <div className='fv-plugins-message-container mt-2'>
+                    <span role='alert' style={{ color: '#f1416c' }}>
+                      {formik.errors.name}
+                    </span>
                   </div>
-
-                  <div className='col-lg-6 fv-row'>
-                    <input
-                      type='text'
-                      className='form-control form-control-lg form-control-solid'
-                      placeholder='Last name'
-                      {...formik.getFieldProps('lName')}
-                    />
-                    {formik.touched.lName && formik.errors.lName && (
-                      <div className='fv-plugins-message-container'>
-                        <div className='fv-help-block'>{formik.errors.lName}</div>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                )}
               </div>
             </div>
 
@@ -753,7 +761,7 @@ const ProfileDetails: React.FC = () => {
                     id='allowmarketing'
                     defaultChecked={data.allowMarketing}
                     onChange={() => {
-                      updateData({allowMarketing: !data.allowMarketing})
+                      updateData({ allowMarketing: !data.allowMarketing })
                     }}
                   />
                   <label className='form-check-label'></label>
@@ -766,7 +774,7 @@ const ProfileDetails: React.FC = () => {
             <button type='submit' className='btn btn-primary' disabled={loading}>
               {!loading && 'Save Changes'}
               {loading && (
-                <span className='indicator-progress' style={{display: 'block'}}>
+                <span className='indicator-progress' style={{ display: 'block' }}>
                   Please wait...{' '}
                   <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
                 </span>
@@ -779,4 +787,4 @@ const ProfileDetails: React.FC = () => {
   )
 }
 
-export {ProfileDetails}
+export { QuotationDetails }

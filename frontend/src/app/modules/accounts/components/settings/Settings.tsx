@@ -1,5 +1,5 @@
 import React from 'react'
-import {ProfileDetails} from './cards/ProfileDetails'
+import {QuotationDetails} from './cards/QuotationDetails'
 import {SignInMethod} from './cards/SignInMethod'
 import {ConnectedAccounts} from './cards/ConnectedAccounts'
 import {EmailPreferences} from './cards/EmailPreferences'
@@ -9,12 +9,12 @@ import {DeactivateAccount} from './cards/DeactivateAccount'
 export function Settings() {
   return (
     <>
-      <ProfileDetails />
-      <SignInMethod />
+      <QuotationDetails />
+      {/* <SignInMethod />
       <ConnectedAccounts />
       <EmailPreferences />
       <Notifications />
-      <DeactivateAccount />
+      <DeactivateAccount /> */}
     </>
   )
 }
