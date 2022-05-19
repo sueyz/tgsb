@@ -16,11 +16,18 @@ import { Document, Page } from 'react-pdf/dist/esm/entry.webpack'
 import { SizeMe } from 'react-sizeme'
 
 import { FileIcon, defaultStyles } from 'react-file-icon'
+import { useMutation } from 'react-query'
+import { deleteQuotation } from '../../quotations/quotations-list/core/_requests'
+import { confirm } from "react-confirm-box";
+import { useNavigate } from 'react-router'
+
 
 export function Overview() {
   const isAdmin = useSelector<RootState>(({ auth }) => auth.user?.role, shallowEqual)
 
   const location: any = useLocation()
+  const navigate = useNavigate()
+
 
   // console.log(location)
 
@@ -46,6 +53,16 @@ export function Overview() {
     changePage(1);
   }
 
+  const deleteItem = useMutation(() => deleteQuotation(location.state.original.id), {
+    // 💡 response of the mutation is passed to onSuccess
+    onSuccess: () => {
+      navigate('/quotations/list')
+
+      // ✅ update detail view directly
+      // queryClient.invalidateQueries([`${QUERIES.QUOTATION_LIST}-${query}`])
+    },
+  })
+
 
   const match = location.state.original.attachments.find((element: any) => {
     if (element.includes("_Quotations_summary")) {
@@ -60,7 +77,23 @@ export function Overview() {
           <div className='card-title m-0'>
             <h3 className='fw-bolder m-0'>Quotation Details</h3>
           </div>
-          {(location.state.original.lock === false || isAdmin === 'Administrator') ? <Link to='/quotations/settings' className='btn btn-primary align-self-center'>
+          {(location.state.original.lock === false || isAdmin === 'Administrator') ? <button
+            style={{ margin: 'auto', marginRight: 20, padding: 7 }}
+            type='button'
+            className='btn btn-danger'
+            onClick={async () => {
+              const result = await confirm("Are you sure?");
+              if (result) {
+                // setLoading(true)
+                await deleteItem.mutateAsync()
+                return;
+              }
+            }
+            }
+          >
+            Delete Quotation
+          </button> : <></>}
+          {(location.state.original.lock === false || isAdmin === 'Administrator') ? <Link style={{ padding: 7}} to='/quotations/settings' className='btn btn-primary align-self-center'>
             Edit Quotation
           </Link> : <></>}
         </div>
