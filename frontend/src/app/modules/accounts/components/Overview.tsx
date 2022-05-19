@@ -15,8 +15,7 @@ import { useHistoryState } from '../../quotations/QuotationsPage'
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack'
 import { SizeMe } from 'react-sizeme'
 
-
-
+import { FileIcon, defaultStyles } from 'react-file-icon'
 
 export function Overview() {
   const isAdmin = useSelector<RootState>(({ auth }) => auth.user?.role, shallowEqual)
@@ -49,15 +48,11 @@ export function Overview() {
 
 
   const match = location.state.original.attachments.find((element: any) => {
-      if (element.includes("_quote")) {
-        return true;
-      }
-    });
+    if (element.includes("_Quotations_summary")) {
+      return true;
+    }
+  });
 
-  // console.log(history)
-
-  console.log(location.state.original.attachments
-  )
   return (
     <>
       <div className='card mb-5 mb-xl-10' id='kt_profile_details_view'>
@@ -159,34 +154,56 @@ export function Overview() {
               <span className='fw-bold fs-6'>{(location.state.original.lock).toString()}</span>
             </div>
           </div>
+
+          <div className='row mb-10'>
+            <label className='col-lg-4 fw-bold text-muted'>Attachments</label>
+
+            <div className='col-lg-8'>
+              {location.state.original.attachments.map((element: any, i: number) => {
+                var str = element.replace('quotations/', '')
+                var last: any = str.substring(str.lastIndexOf(".") + 1)
+
+
+                return <div key={i} style={{ marginBottom: 5, display: 'flex', alignItems: 'center' }}>
+                  <Link to={toAbsoluteUrl(`/documents/${element}`)} target="_blank" download={str.substring(str.indexOf("_") + 1)}>{str.substring(str.indexOf("_") + 1)}</Link>
+                  <div style={{ width: 20, marginLeft: 15 }}>
+                    <FileIcon extension={last} {...(defaultStyles as any)[last]} />
+                  </div>
+                </div>
+              })}
+
+
+            </div>
+          </div>
         </div>
       </div>
 
       <div>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingRight: '8%' }}>
 
+          <button
+            type="button"
+            className='btn'
+            disabled={pageNumber <= 1}
+            onClick={previousPage}
+          >
+            {"<"}
+          </button>
+          <a style={{ marginLeft: 10, marginRight: 10 }}>
+            Page {pageNumber || (numPages ? 1 : '--')} of {numPages || '--'}
+          </a>
+          <button
+            type="button"
+            className='btn'
+            disabled={pageNumber >= (numPages ? numPages : 0)}
+            onClick={nextPage}
+          >
+            {">"}
+          </button>
+        </div>
         <SizeMe>
           {({ size }) => (
             <Document file={toAbsoluteUrl(`/documents/${match}`)} onLoadSuccess={onDocumentLoadSuccess}>
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-
-                <button
-                  type="button"
-                  disabled={pageNumber <= 1}
-                  onClick={previousPage}
-                >
-                  Previous
-                </button>
-                <a>
-                  Page {pageNumber || (numPages ? 1 : '--')} of {numPages || '--'}
-                </a>
-                <button
-                  type="button"
-                  disabled={pageNumber >= (numPages ? numPages : 0)}
-                  onClick={nextPage}
-                >
-                  Next
-                </button>
-              </div>
               <Page width={size.width ? size.width : 1} pageNumber={pageNumber} />
             </Document>
           )}

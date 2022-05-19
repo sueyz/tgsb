@@ -159,8 +159,8 @@ const Main: FC = () => {
 
     setCurrentSchema(createQuotationSchema[stepper.current.currentStepIndex])
 
-    console.log(values)
-    console.log(stepper.current)
+    // console.log(values)
+    // console.log(stepper.current)
 
 
     if (stepper.current.currentStepIndex === 1) {

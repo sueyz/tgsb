@@ -13,7 +13,9 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
 
-        cb(null, Date.now() + path.extname(file.originalname))
+        // cb(null, Date.now() + path.extname(file.originalname))
+        cb(null, `number${Date.now()}_${file.originalname}`)
+
     }
 })
 
@@ -25,7 +27,8 @@ const storagePdf = multer.diskStorage({
     },
     filename: (req, file, cb) => {
 
-        cb(null, Date.now() + path.extname(file.originalname) + '_quote')
+        // cb(null, Date.now() + path.extname(file.originalname) + '_quote')
+        cb(null, `number${Date.now()}`+ '_Quotations_summary.pdf')
     }
 })
 
