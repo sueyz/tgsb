@@ -12,19 +12,16 @@ import { markQuotation, unlockQuotation } from '../quotations/quotations-list/co
 import { confirm } from "react-confirm-box";
 import { UsersListLoading } from '../quotations/quotations-list/components/loading/QuotationsListLoading'
 import { useHistoryState } from '../quotations/QuotationsPage'
+import { useNavigate } from 'react-router'
 
 const QuotationHeader: React.FC = () => {
   const location: any = useLocation()
   const isAdmin = useSelector<RootState>(({ auth }) => auth.user?.role, shallowEqual)
   const [loading, setLoading] = useState(false)
-
-
+  const navigate = useNavigate()
 
   // const {history} = useHistoryState()
-  const {setHistory} = useHistoryState()
-
-
-
+  const { setHistory } = useHistoryState()
 
   var stepPositions: Array<number> = []
   var total = 0
@@ -36,7 +33,7 @@ const QuotationHeader: React.FC = () => {
       setLoading(false);
       location.state.original.lock = true
       setHistory(30)
-      
+
     },
   })
 
@@ -165,26 +162,33 @@ const QuotationHeader: React.FC = () => {
         <div className='d-flex overflow-auto h-55px'>
           <ul className='nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap'>
             <li className='nav-item'>
-              <Link
+              <a
                 className={
                   `nav-link text-active-primary me-6 ` +
                   (location.pathname === '/quotations/overview' && 'active')
                 }
-                to='/quotations/overview'
+                style={{ cursor: 'pointer' }}
+                onClick={() => {
+                  navigate('/quotations/overview', { state: { original: location.state.original, company_info: location.state.company_info } })
+                }}
               >
                 Overview
-              </Link>
+              </a>
             </li>
             <li className='nav-item'>
-              {(location.state.original.lock === false || isAdmin === 'Administrator') ? <Link
+              {(location.state.original.lock === false || isAdmin === 'Administrator') ? <a
                 className={
                   `nav-link text-active-primary me-6 ` +
                   (location.pathname === '/quotations/settings' && 'active')
                 }
-                to='/quotations/settings'
+                style={{ cursor: 'pointer' }}
+                onClick={() => {
+                  navigate('/quotations/settings', { state: { original: location.state.original, company_info: location.state.company_info } })
+                }}
               >
                 Settings
-              </Link> : <></>}
+              </a> : <></>}
+
             </li>
           </ul>
         </div>

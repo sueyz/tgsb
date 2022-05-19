@@ -93,9 +93,11 @@ export function Overview() {
           >
             Delete Quotation
           </button> : <></>}
-          {(location.state.original.lock === false || isAdmin === 'Administrator') ? <Link style={{ padding: 7}} to='/quotations/settings' className='btn btn-primary align-self-center'>
+          <button style={{ padding: 7 }} className='btn btn-primary align-self-center' onClick={() => {
+            navigate('/quotations/settings', { state: { original: location.state.original, company_info: location.state.company_info } })
+          }}>
             Edit Quotation
-          </Link> : <></>}
+          </button>
         </div>
 
         <div className='card-body p-9'>
