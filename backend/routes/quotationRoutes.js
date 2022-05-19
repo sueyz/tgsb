@@ -17,7 +17,21 @@ const storage = multer.diskStorage({
     }
 })
 
+const storagePdf = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const destination = path.join(__dirname, '../../frontend/public/documents/quotations');
+
+        cb(null, destination)
+    },
+    filename: (req, file, cb) => {
+
+        cb(null, Date.now() + path.extname(file.originalname) + '_quote')
+    }
+})
+
 const upload = multer({ storage: storage })
+const upload_pdf = multer({ storage: storagePdf })
+
 
 router.post('/register', protect, registerQuotation)
 router.get('/query?', protect, queryQuotation)
@@ -26,7 +40,7 @@ router.route('/:id').delete(protect, deleteQuotation).put(protect, updateQuotati
 router.route('/lock/:id').put(protect, updateLock)
 router.route('/unlock/:id').put(protect, unlockLock)
 router.post('/upload', protect, upload.array('attachments'), uploadAttachments)
-router.post('/pdf', protect, upload.single('pdf'), uploadPdf)
+router.post('/pdf', protect, upload_pdf.single('pdf'), uploadPdf)
 
 
 

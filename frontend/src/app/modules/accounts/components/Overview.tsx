@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { KTSVG } from '../../../../_metronic/helpers'
+import { KTSVG, toAbsoluteUrl } from '../../../../_metronic/helpers'
 import {
   ChartsWidget1,
   TablesWidget1,
@@ -11,6 +11,11 @@ import {
 import { useLocation } from 'react-router'
 import { shallowEqual, useSelector } from 'react-redux'
 import { RootState } from '../../../../setup'
+import { useHistoryState } from '../../quotations/QuotationsPage'
+import { Document, Page } from 'react-pdf/dist/esm/entry.webpack'
+import { SizeMe } from 'react-sizeme'
+
+
 
 
 export function Overview() {
@@ -18,8 +23,41 @@ export function Overview() {
 
   const location: any = useLocation()
 
-  console.log(location)
+  // console.log(location)
 
+  const { history } = useHistoryState()
+
+  const [numPages, setNumPages] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
+
+  function onDocumentLoadSuccess({ numPages }: any) {
+    setNumPages(numPages);
+    setPageNumber(1);
+  }
+
+  function changePage(offset: number) {
+    setPageNumber(prevPageNumber => prevPageNumber + offset);
+  }
+
+  function previousPage() {
+    changePage(-1);
+  }
+
+  function nextPage() {
+    changePage(1);
+  }
+
+
+  const match = location.state.original.attachments.find((element: any) => {
+      if (element.includes("_quote")) {
+        return true;
+      }
+    });
+
+  // console.log(history)
+
+  console.log(location.state.original.attachments
+  )
   return (
     <>
       <div className='card mb-5 mb-xl-10' id='kt_profile_details_view'>
@@ -124,10 +162,41 @@ export function Overview() {
         </div>
       </div>
 
-      <div className='row gy-10 gx-xl-10'>
-        <div className='col-xl-6'>
-          <ChartsWidget1 className='card-xxl-stretch mb-5 mb-xl-10' />
-        </div>
+      <div>
+
+        <SizeMe>
+          {({ size }) => (
+            <Document file={toAbsoluteUrl(`/documents/${match}`)} onLoadSuccess={onDocumentLoadSuccess}>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+
+                <button
+                  type="button"
+                  disabled={pageNumber <= 1}
+                  onClick={previousPage}
+                >
+                  Previous
+                </button>
+                <a>
+                  Page {pageNumber || (numPages ? 1 : '--')} of {numPages || '--'}
+                </a>
+                <button
+                  type="button"
+                  disabled={pageNumber >= (numPages ? numPages : 0)}
+                  onClick={nextPage}
+                >
+                  Next
+                </button>
+              </div>
+              <Page width={size.width ? size.width : 1} pageNumber={pageNumber} />
+            </Document>
+          )}
+        </SizeMe>
+
+        {/* <ChartsWidget1 className='card-xxl-stretch mb-5 mb-xl-10' /> */}
+      </div>
+
+      {/* <div className='row gy-10 gx-xl-10'>
+        
 
         <div className='col-xl-6'>
           <TablesWidget1 className='card-xxl-stretch mb-5 mb-xl-10' />
@@ -142,7 +211,7 @@ export function Overview() {
         <div className='col-xl-6'>
           <TablesWidget5 className='card-xxl-stretch mb-5 mb-xl-10' />
         </div>
-      </div>
+      </div> */}
     </>
   )
 }

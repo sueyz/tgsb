@@ -69,8 +69,8 @@ const UserActionsCell: FC<Props> = ({ id, lock }) => {
             className='menu-link px-3'
             data-kt-users-table-filter='delete_row'
             onClick={async (event) => {
-              await unlockItem.mutateAsync()
               event.stopPropagation()
+              await unlockItem.mutateAsync()
             }}
           >
             Unlock
@@ -79,8 +79,8 @@ const UserActionsCell: FC<Props> = ({ id, lock }) => {
         {/* begin::Menu item */}
         <div className='menu-item px-3'>
           <a className='menu-link px-3' onClick={(event) => {
-            openEditModal()
             event.stopPropagation()
+            openEditModal()
           }}>
             Update Balance
           </a>
@@ -93,8 +93,8 @@ const UserActionsCell: FC<Props> = ({ id, lock }) => {
             className='menu-link px-3'
             data-kt-users-table-filter='delete_row'
             onClick={async (event) => {
-              await deleteItem.mutateAsync()
               event.stopPropagation()
+              await deleteItem.mutateAsync()
             }}
           >
             Delete

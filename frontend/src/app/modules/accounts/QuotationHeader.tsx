@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { ID, KTSVG, QUERIES, toAbsoluteUrl } from '../../../_metronic/helpers'
 import { Link } from 'react-router-dom'
 import { useLocation } from 'react-router'
@@ -11,11 +11,19 @@ import { markQuotation, unlockQuotation } from '../quotations/quotations-list/co
 
 import { confirm } from "react-confirm-box";
 import { UsersListLoading } from '../quotations/quotations-list/components/loading/QuotationsListLoading'
+import { useHistoryState } from '../quotations/QuotationsPage'
 
 const QuotationHeader: React.FC = () => {
   const location: any = useLocation()
   const isAdmin = useSelector<RootState>(({ auth }) => auth.user?.role, shallowEqual)
   const [loading, setLoading] = useState(false)
+
+
+
+  // const {history} = useHistoryState()
+  const {setHistory} = useHistoryState()
+
+
 
 
   var stepPositions: Array<number> = []
@@ -27,6 +35,8 @@ const QuotationHeader: React.FC = () => {
       // ✅ update detail view directly
       setLoading(false);
       location.state.original.lock = true
+      setHistory(30)
+      
     },
   })
 
@@ -36,7 +46,10 @@ const QuotationHeader: React.FC = () => {
     onSuccess: () => {
       // ✅ update detail view directly
       setLoading(false);
-      location.state.original.lock = false
+      location.state.original.lock = false // nak antar  ni ke overview
+
+      setHistory(60)
+
     },
   })
 

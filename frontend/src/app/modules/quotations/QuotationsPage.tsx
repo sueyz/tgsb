@@ -4,6 +4,24 @@ import { QuotationHeader } from '../accounts/QuotationHeader'
 import { Overview } from '../accounts/components/Overview'
 import { Settings } from '../accounts/components/settings/Settings'
 import { QuotationsListWrapper } from './quotations-list/QuotationsList'
+import { createContext, Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
+
+
+export interface HistoryType {
+  history?: number;
+  setHistory: (value: number) => void;
+}
+
+export const HistoryContext = createContext<HistoryType | undefined>(undefined);
+
+export const useHistoryState = () => {
+  const context = useContext(HistoryContext);
+  if (context === undefined) {
+    throw new Error('useHistoryState error');
+  }
+  return context;
+};
+
 
 const quotationsBreadcrumbs: Array<PageLink> = [
   {
@@ -21,6 +39,12 @@ const quotationsBreadcrumbs: Array<PageLink> = [
 ]
 
 const QuotationsPage = () => {
+  const [history, setHistory] = useState<number | undefined>();
+
+  const value = useMemo(() => {
+    return { history, setHistory };
+  }, [history]);
+
   return <Routes>
     <Route
       path='list'
@@ -34,8 +58,12 @@ const QuotationsPage = () => {
     <Route
       element={
         <>
-          <QuotationHeader />
-          <Outlet />
+          <HistoryContext.Provider value={value}>
+
+            <QuotationHeader />
+            <Outlet />
+          </HistoryContext.Provider >
+
         </>
       }
     >

@@ -27,8 +27,6 @@ const registerQuotation = asyncHandler(async (req, res) => {
         throw new Error('{Quotation already exists!')
     }
 
-    console.log(req.body)
-
     //Create Quotation
     const quotation = await Quotation.create({
         company,
