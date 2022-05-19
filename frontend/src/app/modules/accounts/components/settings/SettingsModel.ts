@@ -1,19 +1,41 @@
+import { ID } from "../../../../../_metronic/helpers"
+
 export interface IProfileDetails {
   // avatar:string
-  name: string
-  lName: string
-  company: string
-  contactPhone: string
-  companySite: string
-  country: string
-  language: string
-  timeZone: string
-  currency: string
-  communications: {
-    email: boolean
-    phone: boolean
-  }
-  allowMarketing: boolean
+  // name: string
+  id?: ID
+  company?: ID,
+  type?: string,
+  name?: string,
+  address1?: string,
+  address2?: string,
+  address3?: string,
+  zip?: string,
+  city?: string,
+  state?: string,
+  quotations?: Array<Object>,
+  balancePaid?: number,
+  payment_term?: Array<Object>,
+  projectSchedule?: Array<Object>,
+  note?: string,
+  poc?: string,
+  contact?: string,
+  email?: string,
+  workType?: string,
+  attachments?: Array<String>
+  // lName: string
+  // company: string
+  // contactPhone: string
+  // companySite: string
+  // country: string
+  // language: string
+  // timeZone: string
+  // currency: string
+  // communications: {
+  //   email: boolean
+  //   phone: boolean
+  // }
+  // allowMarketing: boolean
 }
 
 export interface IUpdateEmail {
