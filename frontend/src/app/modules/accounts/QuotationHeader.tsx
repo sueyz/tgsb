@@ -20,6 +20,9 @@ const QuotationHeader: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
+  const [isActive, setActive] = useState(false);
+
+
   // const {history} = useHistoryState()
   const { setHistory } = useHistoryState()
 
@@ -58,6 +61,21 @@ const QuotationHeader: React.FC = () => {
     total += element.amount
   })
 
+  const toggleClass = async () => {
+
+    const result = await confirm("Are you sure?");
+    if (result) {
+      setLoading(true)
+      setActive(!isActive);
+      {
+        location.state.original.lock === true && isAdmin === 'Administrator' ? await unlockItem.mutateAsync() :
+          await markSelectedItems.mutateAsync()
+      }
+      return;
+    }
+  };
+
+
   return (
     <div className='card mb-5 mb-xl-10'>
       <div className='card-body pt-9 pb-0'>
@@ -68,7 +86,13 @@ const QuotationHeader: React.FC = () => {
             Payment Schedule
           </a>
 
-          {(location.state.original.lock === false || isAdmin === 'Administrator') ? <button
+
+
+          {(location.state.original.lock === false || isAdmin === 'Administrator') ?
+            <span style={{ marginTop: 5, marginLeft: 5 }} onClick={toggleClass} className={isActive ? 'lock' : 'unlocked'}></span>
+            : <a className='btn' style={{ margin: 'auto', marginRight: 0 }}>Locked</a>}
+
+          {/* {(location.state.original.lock === false || isAdmin === 'Administrator') ? <button
             style={{ margin: 'auto', marginRight: 0 }}
             type='button'
             className='btn btn-danger'
@@ -83,11 +107,10 @@ const QuotationHeader: React.FC = () => {
                 }
                 return;
               }
-            }
-            }
+            }}
           >
             {location.state.original.lock === true && isAdmin === 'Administrator' ? "Unlock Quotation" : "Lock Quotation"}
-          </button> : <a className='btn' style={{ margin: 'auto', marginRight: 0 }}>Locked</a>}
+          </button> : <a className='btn' style={{ margin: 'auto', marginRight: 0 }}>Locked</a>} */}
 
           {loading && <UsersListLoading />}
 
