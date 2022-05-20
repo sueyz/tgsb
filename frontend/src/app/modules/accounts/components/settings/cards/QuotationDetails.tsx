@@ -34,7 +34,7 @@ const QuotationDetails: React.FC = () => {
   const initialValues: IProfileDetails = {
     name: location.state.original.name,
     type: location.state.original.type,
-    company: location.state.company_info.name,
+    company: location.state.original.company,
     address1: location.state.original.address1,
     address2: location.state.original.address2,
     address3: location.state.original.address3,
@@ -72,18 +72,22 @@ const QuotationDetails: React.FC = () => {
     setData(updatedData)
   }
   const [company, setCompany, refCompany] = useState<Companies[]>()
+  const [placeholder, setPlaceholder, refPlaceholder] = useState(true) //not sure how this work without the ref thing
+
 
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<any>();
     useEffect(() => {
+
       const fetchData = async () => {
         var { data } = await getCompanies(values.type)
         setCompany(data)
       }
 
-      fetchData()
-
-
+      if (placeholder) {
+        setPlaceholder(false)
+        fetchData()
+      }
     }, [values]);
     return null;
   };
@@ -111,9 +115,7 @@ const QuotationDetails: React.FC = () => {
   // })
 
   const handleOnChange = async (event: FormEvent) => {
-    // console.log(formik.getFieldProps('company'))
-    console.log("Form::onChange", event);
-    // setCompany(data)
+    setPlaceholder(true)
   };
 
   return (
@@ -144,7 +146,7 @@ const QuotationDetails: React.FC = () => {
           {(formik) => {
 
             return (
-              <Form onSubmit={formik.handleSubmit} noValidate className='form'>
+              <Form onChange={handleOnChange} onSubmit={formik.handleSubmit} noValidate className='form'>
                 <FormObserver />
                 <div className='card-body border-top p-9'>
 
@@ -206,7 +208,7 @@ const QuotationDetails: React.FC = () => {
                   <div className='row mb-6'>
                     <label className='col-lg-4 col-form-label required fw-bold fs-6'>Company In Charge</label>
                     <div className='col-lg-8 fv-row'>
-                      <select
+                      <Field as='select'
                         className='form-select form-select-solid form-select-lg'
                         {...formik.getFieldProps('company')}
                       >
@@ -222,7 +224,7 @@ const QuotationDetails: React.FC = () => {
                           : <></>
                         }
 
-                      </select>
+                      </Field>
                       {formik.touched.company && formik.errors.company && (
                         <div className='fv-plugins-message-container'>
                           <div className='fv-help-block'>{formik.errors.company}</div>
