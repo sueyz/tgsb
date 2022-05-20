@@ -6,6 +6,7 @@ export interface IProfileDetails {
   id?: ID
   company?: ID,
   type?: string,
+  invoiceNo?: string,
   name?: string,
   address1?: string,
   address2?: string,
@@ -22,7 +23,9 @@ export interface IProfileDetails {
   contact?: string,
   email?: string,
   workType?: string,
-  attachments?: Array<String>
+  attachments?: Array<String>,
+  lock?: boolean,
+
   // lName: string
   // company: string
   // contactPhone: string

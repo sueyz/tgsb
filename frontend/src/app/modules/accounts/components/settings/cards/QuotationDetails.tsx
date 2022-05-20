@@ -3,10 +3,11 @@ import { toAbsoluteUrl } from '../../../../../../_metronic/helpers'
 import { IProfileDetails } from '../SettingsModel'
 import * as Yup from 'yup'
 import { ErrorMessage, Field, FieldArray, Form, Formik, useFormik, useFormikContext } from 'formik'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Companies, CompaniesQueryResponse } from '../../../../companies/companies-list/core/_models'
 import axios, { AxiosResponse } from 'axios'
 import useState from 'react-usestateref'
+import { updateQuotation } from '../../../../quotations/quotations-list/core/_requests'
 
 const profileDetailsSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
@@ -53,12 +54,9 @@ const profileDetailsSchema = Yup.object().shape({
         .label('Week')
     })
   ).min(1, 'Project schedule'),
-  balancePaid: Yup.string().required('Balance Paid is required'),
-  contactPhone: Yup.string().required('Contact phone is required'),
-  country: Yup.string().required('Country is required'),
-  language: Yup.string().required('Language is required'),
-  timeZone: Yup.string().required('Time zone is required'),
-  currency: Yup.string().required('Currency is required'),
+  balancePaid: Yup.number().required('Balance Paid is required'),
+  // note: Yup.string().required('Time zone is required'),
+  // currency: Yup.string().required('Currency is required'),
 })
 const API_URL = process.env.REACT_APP_THEME_API_URL
 const GET_COMPANIES_URL = `${API_URL}/company/?`
@@ -73,6 +71,8 @@ const QuotationDetails: React.FC = () => {
   const location: any = useLocation()
 
   const initialValues: IProfileDetails = {
+    id: location.state.original.id,
+    invoiceNo: location.state.original.invoiceNo,
     name: location.state.original.name,
     type: location.state.original.type,
     company: location.state.original.company,
@@ -91,7 +91,9 @@ const QuotationDetails: React.FC = () => {
     contact: location.state.original.contact,
     email: location.state.original.email,
     workType: location.state.original.workType,
-    attachments: location.state.original.attachments
+    attachments: location.state.original.attachments,
+    lock: location.state.original.lock
+
     // lName: 'Smith',
     // company: 'Keenthemes',
     // contactPhone: '044 3276 454 935',
@@ -115,6 +117,7 @@ const QuotationDetails: React.FC = () => {
   const [company, setCompany, refCompany] = useState<Companies[]>()
   const [placeholder, setPlaceholder, refPlaceholder] = useState(true) //not sure how this work without the ref thing
 
+  const navigate = useNavigate()
 
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<any>();
@@ -178,21 +181,25 @@ const QuotationDetails: React.FC = () => {
         <Formik
           validationSchema={profileDetailsSchema}
           initialValues={initialValues}
-          onSubmit={() => {
+          onSubmit={async (values) => {
             setLoading(true)
+
+            await updateQuotation(values).then((response) => {
+              location.state.original = values // ni hantar alik atas je
+
+              navigate('/quotations/overview', { state: { original: location.state.original, company_info: location.state.company_info } })
+
+            })
 
           }}
           enableReinitialize
         >
-          {(formik) => {
-            console.log({ ...formik.getFieldProps('quotations') }
-            )
-            return (
-              <Form onChange={handleOnChange} onSubmit={formik.handleSubmit} noValidate className='form'>
-                <FormObserver />
-                <div className='card-body border-top p-9'>
+          {(formik) => (
+            <Form onChange={handleOnChange} onSubmit={formik.handleSubmit} className='form'>
+              <FormObserver />
+              <div className='card-body border-top p-9'>
 
-                  {/* <div className='row mb-6'>
+                {/* <div className='row mb-6'>
               <label className='col-lg-4 col-form-label fw-bold fs-6'>Avatar</label>
               <div className='col-lg-8'>
                 <div
@@ -208,518 +215,566 @@ const QuotationDetails: React.FC = () => {
               </div>
             </div> */}
 
-                  <div className='row mb-6'>
-                    <label className='col-lg-4 col-form-label required fw-bold fs-6'>Balance Paid</label>
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label required fw-bold fs-6'>Balance Paid</label>
 
-                    <div className='col-lg-8'>
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <b style={{ marginRight: 7 }}>RM</b>
-                        <Field
-                          type='number'
-                          className='form-control form-control-lg form-control-solid'
-                          name='balancePaid'
-                          min="0"
-                          placeholder='Balance paid'
-                        />
-                      </div>
-                      <div className='text-danger mt-3'>
-                        <ErrorMessage name='balancePaid' />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className='row mb-6'>
-                    <label className='col-lg-4 col-form-label required fw-bold fs-6'>Quotation Name</label>
-
-                    <div className='col-lg-8'>
+                  <div className='col-lg-8'>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <b style={{ marginRight: 7 }}>RM</b>
                       <Field
-                        type='text'
-                        className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
-                        placeholder='Quotation name'
-                        {...formik.getFieldProps('name')}
+                        type='number'
+                        className='form-control form-control-lg form-control-solid'
+                        name='balancePaid'
+                        min="0"
+                        placeholder='Balance paid'
                       />
-                      {formik.touched.name && formik.errors.name && (
-                        <div className='fv-plugins-message-container mt-2'>
-                          <span role='alert' style={{ color: '#f1416c' }}>
-                            {formik.errors.name}
-                          </span>
-                        </div>
-                      )}
+                    </div>
+                    <div className='text-danger mt-3'>
+                      <ErrorMessage name='balancePaid' />
                     </div>
                   </div>
+                </div>
+
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label required fw-bold fs-6'>Quotation Name</label>
+
+                  <div className='col-lg-8'>
+                    <Field
+                      type='text'
+                      className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+                      placeholder='Quotation name'
+                      {...formik.getFieldProps('name')}
+                    />
+                    {formik.touched.name && formik.errors.name && (
+                      <div className='fv-plugins-message-container mt-2'>
+                        <span role='alert' style={{ color: '#f1416c' }}>
+                          {formik.errors.name}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
 
-                  <div className='row mb-6'>
-                    <label className='col-lg-4 col-form-label required fw-bold fs-6'>Quotation Type</label>
-                    <div className='col-lg-8 fv-row'>
-                      <Field as='select'
-                        className='form-select form-select-solid form-select-lg'
-                        {...formik.getFieldProps('type')}
-                      >
-                        <option value='Regular'>Regular Quotation</option>
-                        <option value='Sub-consultant'>Sub-consultant Quotation</option>
-                      </Field>
-                      {formik.touched.type && formik.errors.type && (
-                        <div className='fv-plugins-message-container'>
-                          <span role='alert' style={{ color: '#f1416c' }}>
-                            {formik.errors.type}
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label required fw-bold fs-6'>Quotation Type</label>
+                  <div className='col-lg-8 fv-row'>
+                    <Field as='select'
+                      className='form-select form-select-solid form-select-lg'
+                      {...formik.getFieldProps('type')}
+                    >
+                      <option value='Regular'>Regular Quotation</option>
+                      <option value='Sub-consultant'>Sub-consultant Quotation</option>
+                    </Field>
+                    {formik.touched.type && formik.errors.type && (
+                      <div className='fv-plugins-message-container'>
+                        <span role='alert' style={{ color: '#f1416c' }}>
+                          {formik.errors.type}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label required fw-bold fs-6'>Company In Charge</label>
+                  <div className='col-lg-8 fv-row'>
+                    <Field as='select'
+                      className='form-select form-select-solid form-select-lg'
+                      {...formik.getFieldProps('company')}
+                    >
+
+                      {refCompany.current ?
+
+                        refCompany.current.length > 0 ?
+                          (
+                            refCompany.current.map((company: Companies, i) => {
+                              return <option key={i} value={(company.id)?.toString()}>{company.name}</option>
+                            })) : <></>
+
+                        : <></>
+                      }
+
+                    </Field>
+                    {formik.touched.company && formik.errors.company && (
+                      <div className='fv-plugins-message-container'>
+                        <span role='alert' style={{ color: '#f1416c' }}>
+                          {formik.errors.company}
+                        </span>
+                      </div>
+                    )}
+                    <i className='form-text'>
+                      If company is not in the list, please add first at the companies page
+                    </i>
                   </div>
 
-                  <div className='row mb-6'>
-                    <label className='col-lg-4 col-form-label required fw-bold fs-6'>Company In Charge</label>
-                    <div className='col-lg-8 fv-row'>
-                      <Field as='select'
-                        className='form-select form-select-solid form-select-lg'
-                        {...formik.getFieldProps('company')}
-                      >
+                </div>
 
-                        {refCompany.current ?
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label required fw-bold fs-6'>Work Type</label>
 
-                          refCompany.current.length > 0 ?
-                            (
-                              refCompany.current.map((company: Companies, i) => {
-                                return <option key={i} value={(company.id)?.toString()}>{company.name}</option>
-                              })) : <></>
+                  <div className='col-lg-8 fv-row'>
+                    <Field
+                      as='select'
+                      className='form-select form-select-solid form-select-lg'
+                      {...formik.getFieldProps('workType')}
+                    >
+                      <option value="EIA">Environmental Impact Asssesment</option>
+                      <option value="EMT">Environmental Mark Assesment</option>
+                      <option value="DSR">Dynamic Search Rescue</option>
+                    </Field>
+                    {formik.touched.workType && formik.errors.workType && (
+                      <div className='fv-plugins-message-container'>
+                        <span role='alert' style={{ color: '#f1416c' }}>
+                          {formik.errors.workType}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-                          : <></>
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label fw-bold fs-6'>
+                    <span className='required'>Address 1</span>
+                  </label>
+
+                  <div className='col-lg-8 fv-row'>
+                    <Field
+                      type='text'
+                      className='form-control form-control-lg form-control-solid'
+                      placeholder='#Address 1'
+                      {...formik.getFieldProps('address1')}
+                    />
+                    {formik.touched.address1 && formik.errors.address1 && (
+                      <div className='fv-plugins-message-container'>
+                        <span role='alert' style={{ color: '#f1416c' }}>
+                          {formik.errors.address1}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label fw-bold fs-6'>
+                    <span>Address 2</span>
+                  </label>
+
+                  <div className='col-lg-8 fv-row'>
+                    <Field
+                      type='text'
+                      className='form-control form-control-lg form-control-solid'
+                      placeholder='#Address 2'
+                      {...formik.getFieldProps('address2')}
+                    />
+                  </div>
+                </div>
+
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label fw-bold fs-6'>
+                    <span>Address 3</span>
+                  </label>
+
+                  <div className='col-lg-8 fv-row'>
+                    <Field
+                      type='text'
+                      className='form-control form-control-lg form-control-solid'
+                      placeholder='#Address 3'
+                      {...formik.getFieldProps('address3')}
+                    />
+                  </div>
+                </div>
+
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label fw-bold fs-6'>
+                    <span className='required'>Zip</span>
+                  </label>
+
+                  <div className='col-lg-8 fv-row'>
+                    <Field
+                      type='text'
+                      onKeyPress={(event: any) => {
+                        if (!/[0-9]/.test(event.key)) {
+                          event.preventDefault();
                         }
-
-                      </Field>
-                      {formik.touched.company && formik.errors.company && (
-                        <div className='fv-plugins-message-container'>
-                          <span role='alert' style={{ color: '#f1416c' }}>
-                            {formik.errors.company}
-                          </span>
-                        </div>
-                      )}
-                      <i className='form-text'>
-                        If company is not in the list, please add first at the companies page
-                      </i>
-                    </div>
-
+                      }}
+                      maxLength={5}
+                      className='form-control form-control-lg form-control-solid'
+                      placeholder='Zip'
+                      {...formik.getFieldProps('zip')}
+                    />
+                    {formik.touched.zip && formik.errors.zip && (
+                      <div className='fv-plugins-message-container'>
+                        <span role='alert' style={{ color: '#f1416c' }}>
+                          {formik.errors.zip}
+                        </span>
+                      </div>
+                    )}
                   </div>
+                </div>
 
-                  <div className='row mb-6'>
-                    <label className='col-lg-4 col-form-label required fw-bold fs-6'>Work Type</label>
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label fw-bold fs-6'>
+                    <span className='required'>City</span>
+                  </label>
 
-                    <div className='col-lg-8 fv-row'>
-                      <Field
-                        as='select'
-                        className='form-select form-select-solid form-select-lg'
-                        {...formik.getFieldProps('workType')}
-                      >
-                        <option value="EIA">Environmental Impact Asssesment</option>
-                        <option value="EMT">Environmental Mark Assesment</option>
-                        <option value="DSR">Dynamic Search Rescue</option>
-                      </Field>
-                      {formik.touched.workType && formik.errors.workType && (
-                        <div className='fv-plugins-message-container'>
-                          <span role='alert' style={{ color: '#f1416c' }}>
-                            {formik.errors.workType}
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                  <div className='col-lg-8 fv-row'>
+                    <Field
+                      type='text'
+                      className='form-control form-control-lg form-control-solid'
+                      placeholder='City'
+                      {...formik.getFieldProps('city')}
+                    />
+                    {formik.touched.city && formik.errors.city && (
+                      <div className='fv-plugins-message-container'>
+                        <span role='alert' style={{ color: '#f1416c' }}>
+                          {formik.errors.city}
+                        </span>
+                      </div>
+                    )}
                   </div>
+                </div>
 
-                  <div className='row mb-6'>
-                    <label className='col-lg-4 col-form-label fw-bold fs-6'>
-                      <span className='required'>Address 1</span>
-                    </label>
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label required fw-bold fs-6'>State</label>
 
-                    <div className='col-lg-8 fv-row'>
-                      <Field
-                        type='text'
-                        className='form-control form-control-lg form-control-solid'
-                        placeholder='#Address 1'
-                        {...formik.getFieldProps('address1')}
-                      />
-                      {formik.touched.address1 && formik.errors.address1 && (
-                        <div className='fv-plugins-message-container'>
-                          <span role='alert' style={{ color: '#f1416c' }}>
-                            {formik.errors.address1}
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                  <div className='col-lg-8 fv-row'>
+                    <Field
+                      as='select'
+                      className='form-select form-select-solid form-select-lg'
+                      {...formik.getFieldProps('state')}
+                    >
+                      <option value='Kelantan'>Kelantan</option>
+                      <option value='Johor'>Johor</option>
+                      <option value='Terengganu'>Terengganu</option>
+                      <option value='Pahang'>Pahang</option>
+                      <option value='Perak'>Perak</option>
+                      <option value='Perlis'>Perlis</option>
+                      <option value='Kedah'>Kedah</option>
+                      <option value='KL'>WP Kuala Lumpur</option>
+                      <option value='Selangor'>Selangor</option>
+                      <option value='N9'>Negeri Sembilan</option>
+                      <option value='Labuan'>WP Labuan</option>
+                      <option value='Sabah'>Sabah</option>
+                      <option value='Melaka'>Melaka</option>
+                      <option value='Sarawak'>Sarawak</option>
+                    </Field>
+                    {formik.touched.state && formik.errors.state && (
+                      <div className='fv-plugins-message-container'>
+                        <span role='alert' style={{ color: '#f1416c' }}>
+                          {formik.errors.state}
+                        </span>
+                      </div>
+                    )}
                   </div>
+                </div>
 
-                  <div className='row mb-6'>
-                    <label className='col-lg-4 col-form-label fw-bold fs-6'>
-                      <span className='required'>Address 2</span>
-                    </label>
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label fw-bold fs-6'>
+                    <span className='required'>Proposed Fee</span>
+                  </label>
 
-                    <div className='col-lg-8 fv-row'>
-                      <Field
-                        type='text'
-                        className='form-control form-control-lg form-control-solid'
-                        placeholder='#Address 2'
-                        {...formik.getFieldProps('address2')}
-                      />
-                    </div>
-                  </div>
+                  <div className='col-lg-8 fv-row'>
+                    <FieldArray name="quotations">
+                      {(arrayHelpers) => {
 
-                  <div className='row mb-6'>
-                    <label className='col-lg-4 col-form-label fw-bold fs-6'>
-                      <span className='required'>Address 3</span>
-                    </label>
+                        return (
+                          <div>
+                            {
+                              formik.getFieldProps('quotations').value.map((value: any, index: number) => {
 
-                    <div className='col-lg-8 fv-row'>
-                      <Field
-                        type='text'
-                        className='form-control form-control-lg form-control-solid'
-                        placeholder='#Address 3'
-                        {...formik.getFieldProps('address3')}
-                      />
-                    </div>
-                  </div>
-
-                  <div className='row mb-6'>
-                    <label className='col-lg-4 col-form-label fw-bold fs-6'>
-                      <span className='required'>Zip</span>
-                    </label>
-
-                    <div className='col-lg-8 fv-row'>
-                      <Field
-                        type='text'
-                        onKeyPress={(event: any) => {
-                          if (!/[0-9]/.test(event.key)) {
-                            event.preventDefault();
-                          }
-                        }}
-                        maxLength={5}
-                        className='form-control form-control-lg form-control-solid'
-                        placeholder='Zip'
-                        {...formik.getFieldProps('zip')}
-                      />
-                      {formik.touched.zip && formik.errors.zip && (
-                        <div className='fv-plugins-message-container'>
-                          <span role='alert' style={{ color: '#f1416c' }}>
-                            {formik.errors.zip}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className='row mb-6'>
-                    <label className='col-lg-4 col-form-label fw-bold fs-6'>
-                      <span className='required'>City</span>
-                    </label>
-
-                    <div className='col-lg-8 fv-row'>
-                      <Field
-                        type='text'
-                        className='form-control form-control-lg form-control-solid'
-                        placeholder='City'
-                        {...formik.getFieldProps('city')}
-                      />
-                      {formik.touched.city && formik.errors.city && (
-                        <div className='fv-plugins-message-container'>
-                          <span role='alert' style={{ color: '#f1416c' }}>
-                            {formik.errors.city}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className='row mb-6'>
-                    <label className='col-lg-4 col-form-label required fw-bold fs-6'>State</label>
-
-                    <div className='col-lg-8 fv-row'>
-                      <Field
-                        as='select'
-                        className='form-select form-select-solid form-select-lg'
-                        {...formik.getFieldProps('state')}
-                      >
-                        <option value='Kelantan'>Kelantan</option>
-                        <option value='Johor'>Johor</option>
-                        <option value='Terengganu'>Terengganu</option>
-                        <option value='Pahang'>Pahang</option>
-                        <option value='Perak'>Perak</option>
-                        <option value='Perlis'>Perlis</option>
-                        <option value='Kedah'>Kedah</option>
-                        <option value='KL'>WP Kuala Lumpur</option>
-                        <option value='Selangor'>Selangor</option>
-                        <option value='N9'>Negeri Sembilan</option>
-                        <option value='Labuan'>WP Labuan</option>
-                        <option value='Sabah'>Sabah</option>
-                        <option value='Melaka'>Melaka</option>
-                        <option value='Sarawak'>Sarawak</option>
-                      </Field>
-                      {formik.touched.state && formik.errors.state && (
-                        <div className='fv-plugins-message-container'>
-                          <span role='alert' style={{ color: '#f1416c' }}>
-                            {formik.errors.state}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className='row mb-6'>
-                    <label className='col-lg-4 col-form-label fw-bold fs-6'>
-                      <span className='required'>Proposed Fee</span>
-                    </label>
-
-                    <div className='col-lg-8 fv-row'>
-                      <FieldArray name="quotations">
-                        {(arrayHelpers) => {
-
-                          return (
-                            <div>
-                              {
-                                formik.getFieldProps('quotations').value.map((value: any, index: number) => {
-
-                                  return (
-                                    <div key={index}><div className='mb-10' style={{ display: 'flex', alignItems: 'center' }}>
+                                return (
+                                  <div key={index}><div className='mb-10' style={{ display: 'flex', alignItems: 'center' }}>
+                                    <Field
+                                      component="textarea" rows="3"
+                                      className='form-control form-control-lg form-control-solid'
+                                      name={`quotations.${index}.desc`}
+                                      placeholder='Description' />
+                                  </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: 25 }}>
+                                      <b style={{ marginRight: 7 }}>RM</b>
                                       <Field
-                                        component="textarea" rows="3"
+                                        type="number"
+                                        rows="1"
+                                        min={0}
                                         className='form-control form-control-lg form-control-solid'
-                                        name={`quotations.${index}.desc`}
-                                        placeholder='Description' />
+                                        name={`quotations.${index}.amount`}
+                                        placeholder='Amount' />
+                                      {index >= 1 ?
+                                        <img style={{ cursor: 'pointer', marginLeft: 20 }} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
+                                        : <></>}
                                     </div>
-                                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 25 }}>
-                                        <b style={{ marginRight: 7 }}>RM</b>
+                                    <div className='fv-row'>
+
+                                      <div key={index}><div className='text-danger'>
+                                        <ErrorMessage name={`quotations.${index}.desc`} />
+                                      </div><div className='text-danger'>
+                                          <ErrorMessage name={`quotations.${index}.amount`} />
+                                        </div></div>
+
+                                    </div>
+                                    <div className="divider mb-5">{index + 1}</div>
+
+                                  </div>
+
+                                );
+                              })}
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                              <button type='button' onClick={() => arrayHelpers.push({ desc: '', amount: 0 })}>Add more fields</button>
+
+                              <p style={{ display: 'flex', margin: 'auto', alignItems: 'center', marginRight: 0, width: '30%' }}><b>Total RM: </b>
+                                <span style={{ marginLeft: 10 }}>{formik.getFieldProps('quotations').value.reduce((sum: any, item: any) => sum + item.amount, 0)}</span></p>
+                            </div>
+                          </div>
+                        )
+                      }}
+                    </FieldArray>
+                  </div>
+                </div>
+
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label fw-bold fs-6'>
+                    <span className='required'>Payment Schedule</span>
+                  </label>
+
+                  <div className='col-lg-8 fv-row'>
+
+                    <FieldArray name="payment_term">
+                      {(arrayHelpers) => {
+
+                        return (
+                          <div>
+                            {
+                              formik.getFieldProps('payment_term').value.map((value: any, index: number) => {
+
+                                return (
+                                  <div className='mb-10' key={index} style={{ alignItems: 'center' }}>
+                                    <div style={{ display: 'flex' }}>
+                                      <div style={{ width: '22%', display: 'flex', alignItems: 'center' }}>
+                                        <b style={{ marginRight: 7, marginLeft: 10 }}>%</b>
                                         <Field
                                           type="number"
-                                          rows="1"
                                           min={0}
+                                          max={100}
+                                          rows="1"
                                           className='form-control form-control-lg form-control-solid'
-                                          name={`quotations.${index}.amount`}
-                                          placeholder='Amount' />
-                                        {index >= 1 ?
-                                          <img style={{ cursor: 'pointer', marginLeft: 20 }} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
-                                          : <></>}
-                                      </div>
-                                      <div className='fv-row'>
-
-                                        <div key={index}><div className='text-danger'>
-                                          <ErrorMessage name={`quotations.${index}.desc`} />
-                                        </div><div className='text-danger'>
-                                            <ErrorMessage name={`quotations.${index}.amount`} />
-                                          </div></div>
-
-                                      </div>
-                                      <div className="divider mb-5">{index + 1}</div>
-
-                                    </div>
-
-                                  );
-                                })}
-                              <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <button type='button' onClick={() => arrayHelpers.push({ desc: '', amount: 0 })}>Add more fields</button>
-
-                                <p style={{ display: 'flex', margin: 'auto', alignItems: 'center', marginRight: 0, width: '30%' }}><b>Total RM: </b>
-                                  <span style={{ marginLeft: 10 }}>{formik.getFieldProps('quotations').value.reduce((sum: any, item: any) => sum + item.amount, 0)}</span></p>
-                              </div>
-                            </div>
-                          )
-                        }}
-                      </FieldArray>
-                    </div>
-                  </div>
-
-                  <div className='row mb-6'>
-                    <label className='col-lg-4 col-form-label fw-bold fs-6'>
-                      <span className='required'>Payment Schedule</span>
-                    </label>
-
-                    <div className='col-lg-8 fv-row'>
-
-                      <FieldArray name="payment_term">
-                        {(arrayHelpers) => {
-
-                          return (
-                            <div>
-                              {
-                                formik.getFieldProps('payment_term').value.map((value: any, index: number) => {
-
-                                  return (
-                                    <div className='mb-10' key={index} style={{ alignItems: 'center' }}>
-                                      <div style={{ display: 'flex' }}>
-                                        <div style={{ width: '22%', display: 'flex', alignItems: 'center' }}>
-                                          <b style={{ marginRight: 7, marginLeft: 10 }}>%</b>
-                                          <Field
-                                            type="number"
-                                            min={0}
-                                            max={100}
-                                            rows="1"
-                                            className='form-control form-control-lg form-control-solid'
-                                            name={`payment_term.${index}.percentage`}
-                                            placeholder=''
-                                          />
-                                        </div>
-
-                                        <Field
-                                          style={{ width: '78%', marginLeft: 20 }}
-                                          component="textarea" rows="1"
-                                          className='form-control form-control-lg form-control-solid'
-                                          name={`payment_term.${index}.desc`}
-                                          placeholder='Description'
+                                          name={`payment_term.${index}.percentage`}
+                                          placeholder=''
                                         />
-
                                       </div>
 
-                                      <div style={{ display: 'flex', marginTop: 20, alignItems: 'center' }}>
-                                        <div style={{ width: '22%', margin: 'auto', marginRight: 0, display: 'flex', alignItems: 'center' }}>
-                                          <b style={{ marginRight: 7 }}>RM</b>
-                                          <Field
-                                            type="number"
-                                            min={0}
-                                            disabled
-                                            style={{ paddingRight: 0 }}
-                                            className='form-control form-control-lg form-control-solid'
-                                            name={`payment_term.${index}.amount`}
-                                            value={value.amount = formik.getFieldProps('quotations').value.reduce((sum: any, item: any) => sum + item.amount, 0) * (value.percentage / 100)}
-                                            placeholder='Amount'
-                                          />
-                                        </div>
-                                        <Field
-                                          style={{ width: '78%', marginLeft: 20 }}
-                                          type='date'
-                                          className='form-control form-control-lg form-control-solid'
-                                          name={`payment_term.${index}.date`}
-                                        />
-                                        {index >= 1 ?
-                                          <img style={{ cursor: 'pointer', marginLeft: 20 }} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
-                                          : <></>}
-                                      </div>
-                                      <></>
-
-                                      <div key={index}>
-                                        <div className='text-danger'>
-                                          <ErrorMessage name={`payment_term.${index}.percentage`} />
-                                        </div>
-                                        <div className='text-danger'>
-                                          <ErrorMessage name={`payment_term.${index}.desc`} />
-                                        </div>
-                                        <div className='text-danger'>
-                                          <ErrorMessage name={`payment_term.${index}.amount`} />
-                                        </div>
-                                        <div className='text-danger'>
-                                          <ErrorMessage name={`payment_term.${index}.date`} />
-                                        </div>
-                                      </div>
-
-                                      <div className="divider mt-5">{index + 1}</div>
-
-                                    </div>
-
-                                  );
-                                })}
-                              <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <button type='button' onClick={() => arrayHelpers.push({ percentage: 0, desc: '', amount: 0, date: '' })}>Add more fields</button>
-
-                                <b style={{ margin: 'auto', marginRight: 0, width: '30%' }}>Total RM: {formik.getFieldProps('quotations').value.reduce((sum: any, item: any) => sum + item.amount, 0)} </b>
-                              </div>
-                            </div>
-                          )
-                        }}
-                      </FieldArray>
-                    </div>
-                  </div>
-
-                  <div className='row mb-6'>
-                    <label className='col-lg-4 col-form-label fw-bold fs-6'>
-                      <span className='required'>Payment Schedule</span>
-                    </label>
-
-                    <div className='col-lg-8 fv-row'>
-
-                      <FieldArray name="projectSchedule">
-                        {(arrayHelpers) => {
-
-                          return (
-                            <div>
-                              {
-                                formik.getFieldProps('projectSchedule').value.map((value: any, index: number) => {
-
-                                  return (
-                                    <div className='mb-10' key={index}>
                                       <Field
-                                        style={{ width: '100%' }}
-                                        component="textarea" rows="3"
-                                        className='form-control form-control-lg form-control-solid mb-5'
-                                        name={`projectSchedule.${index}.desc`}
+                                        style={{ width: '78%', marginLeft: 20 }}
+                                        component="textarea" rows="1"
+                                        className='form-control form-control-lg form-control-solid'
+                                        name={`payment_term.${index}.desc`}
                                         placeholder='Description'
                                       />
 
-                                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    </div>
+
+                                    <div style={{ display: 'flex', marginTop: 20, alignItems: 'center' }}>
+                                      <div style={{ width: '22%', margin: 'auto', marginRight: 0, display: 'flex', alignItems: 'center' }}>
+                                        <b style={{ marginRight: 7 }}>RM</b>
                                         <Field
-                                          style={{ width: '30%' }}
-                                          type="text"
+                                          type="number"
+                                          min={0}
+                                          disabled
+                                          style={{ paddingRight: 0 }}
                                           className='form-control form-control-lg form-control-solid'
-                                          name={`projectSchedule.${index}.week`}
-                                          placeholder='Week'
+                                          name={`payment_term.${index}.amount`}
+                                          value={value.amount = formik.getFieldProps('quotations').value.reduce((sum: any, item: any) => sum + item.amount, 0) * (value.percentage / 100)}
+                                          placeholder='Amount'
+                                        />
+                                      </div>
+                                      <Field
+                                        style={{ width: '78%', marginLeft: 20 }}
+                                        type='date'
+                                        className='form-control form-control-lg form-control-solid'
+                                        name={`payment_term.${index}.date`}
+                                      />
+                                      {index >= 1 ?
+                                        <img style={{ cursor: 'pointer', marginLeft: 20 }} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
+                                        : <></>}
+                                    </div>
+                                    <></>
+
+                                    <div key={index}>
+                                      <div className='text-danger'>
+                                        <ErrorMessage name={`payment_term.${index}.percentage`} />
+                                      </div>
+                                      <div className='text-danger'>
+                                        <ErrorMessage name={`payment_term.${index}.desc`} />
+                                      </div>
+                                      <div className='text-danger'>
+                                        <ErrorMessage name={`payment_term.${index}.amount`} />
+                                      </div>
+                                      <div className='text-danger'>
+                                        <ErrorMessage name={`payment_term.${index}.date`} />
+                                      </div>
+                                    </div>
+
+                                    <div className="divider mt-5">{index + 1}</div>
+
+                                  </div>
+
+                                );
+                              })}
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                              <button type='button' onClick={() => arrayHelpers.push({ percentage: 0, desc: '', amount: 0, date: '' })}>Add more fields</button>
+
+                              <b style={{ margin: 'auto', marginRight: 0, width: '30%' }}>Total RM: {formik.getFieldProps('quotations').value.reduce((sum: any, item: any) => sum + item.amount, 0)} </b>
+                            </div>
+                          </div>
+                        )
+                      }}
+                    </FieldArray>
+                  </div>
+                </div>
+
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label fw-bold fs-6'>
+                    <span className='required'>Payment Schedule</span>
+                  </label>
+
+                  <div className='col-lg-8 fv-row'>
+
+                    <FieldArray name="projectSchedule">
+                      {(arrayHelpers) => {
+
+                        return (
+                          <div>
+                            {
+                              formik.getFieldProps('projectSchedule').value.map((value: any, index: number) => {
+
+                                return (
+                                  <div className='mb-10' key={index}>
+                                    <Field
+                                      style={{ width: '100%' }}
+                                      component="textarea" rows="3"
+                                      className='form-control form-control-lg form-control-solid mb-5'
+                                      name={`projectSchedule.${index}.desc`}
+                                      placeholder='Description'
+                                    />
+
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                      <Field
+                                        style={{ width: '30%' }}
+                                        type="text"
+                                        className='form-control form-control-lg form-control-solid'
+                                        name={`projectSchedule.${index}.week`}
+                                        placeholder='Week'
+                                      />
+
+                                      <div style={{ width: '60%', display: 'flex', alignItems: 'center' }}>
+
+                                        <Field
+                                          component="textarea" rows="2"
+                                          className='form-control form-control-lg form-control-solid'
+                                          name={`projectSchedule.${index}.remark`}
+                                          placeholder='Remark'
                                         />
 
-                                        <div style={{ width: '60%', display: 'flex', alignItems: 'center' }}>
-
-                                          <Field
-                                            component="textarea" rows="2"
-                                            className='form-control form-control-lg form-control-solid'
-                                            name={`projectSchedule.${index}.remark`}
-                                            placeholder='Remark'
-                                          />
-
-                                          {index >= 1 ?
-                                            <img style={{ cursor: 'pointer', position: 'absolute', right: 0, marginRight: '5%' }} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
-                                            : <></>}
-                                        </div>
-
+                                        {index >= 1 ?
+                                          <img style={{ cursor: 'pointer', position: 'absolute', right: 0, marginRight: '5%' }} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
+                                          : <></>}
                                       </div>
-
-                                      <div key={index}>
-                                        <div className='text-danger'>
-                                          <ErrorMessage name={`projectSchedule.${index}.desc`} />
-                                        </div>
-                                        <div className='text-danger'>
-                                          <ErrorMessage name={`projectSchedule.${index}.week`} />
-                                        </div>
-                                        <div className='text-danger'>
-                                          <ErrorMessage name={`projectSchedule.${index}.remark`} />
-                                        </div>
-                                      </div>
-
-                                      <div className="divider mt-3">{index + 1}</div>
-
-                                      <></>
 
                                     </div>
-                                  );
-                                })}
-                              <button type='button' onClick={() => arrayHelpers.push({ desc: '', week: '', remark: '' })}>Add more fields</button>
-                            </div>
-                          )
-                        }}
-                      </FieldArray>
-                    </div>
+
+                                    <div key={index}>
+                                      <div className='text-danger'>
+                                        <ErrorMessage name={`projectSchedule.${index}.desc`} />
+                                      </div>
+                                      <div className='text-danger'>
+                                        <ErrorMessage name={`projectSchedule.${index}.week`} />
+                                      </div>
+                                      <div className='text-danger'>
+                                        <ErrorMessage name={`projectSchedule.${index}.remark`} />
+                                      </div>
+                                    </div>
+
+                                    <div className="divider mt-3">{index + 1}</div>
+
+                                    <></>
+
+                                  </div>
+                                );
+                              })}
+                            <button type='button' onClick={() => arrayHelpers.push({ desc: '', week: '', remark: '' })}>Add more fields</button>
+                          </div>
+                        )
+                      }}
+                    </FieldArray>
                   </div>
-
-
-
                 </div>
 
-                <div className='card-footer d-flex justify-content-end py-6 px-9'>
-                  <button type='submit' className='btn btn-primary' disabled={loading}>
-                    {!loading && 'Save Changes'}
-                    {loading && (
-                      <span className='indicator-progress' style={{ display: 'block' }}>
-                        Please wait...{' '}
-                        <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
-                      </span>
-                    )}
-                  </button>
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label fw-bold fs-6'>Person In Charge</label>
+
+                  <div className='col-lg-8'>
+                    <Field
+                      type='text'
+                      className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+                      placeholder='POC'
+                      {...formik.getFieldProps('poc')}
+                    />
+                  </div>
                 </div>
-              </Form>
-            )
-          }}
+
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label fw-bold fs-6'>Phone</label>
+
+                  <div className='col-lg-8'>
+                    <Field
+                      type='text'
+                      className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+                      placeholder='Phone'
+                      {...formik.getFieldProps('contact')}
+                    />
+                  </div>
+                </div>
+
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label fw-bold fs-6'>E-mail</label>
+
+                  <div className='col-lg-8'>
+                    <Field
+                      type='text'
+                      className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+                      placeholder='E-mail'
+                      {...formik.getFieldProps('email')}
+                    />
+                  </div>
+                </div>
+
+                <div className='row mb-6'>
+                  <label className='col-lg-4 col-form-label fw-bold fs-6'>Note</label>
+
+                  <div className='col-lg-8'>
+                    <Field
+                      component="textarea" rows="4"
+                      className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+                      placeholder='Note'
+                      {...formik.getFieldProps('note')}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className='card-footer d-flex justify-content-end py-6 px-9'>
+                <button type='submit' className='btn btn-primary' >
+                  {!loading && 'Save Changes'}
+                  {loading && (
+                    <span className='indicator-progress' style={{ display: 'block' }}>
+                      Please wait...{' '}
+                      <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+                    </span>
+                  )}
+                </button>
+              </div>
+            </Form>
+          )}
         </Formik>
       </div>
     </div>
