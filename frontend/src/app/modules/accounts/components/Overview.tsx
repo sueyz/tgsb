@@ -238,7 +238,9 @@ export function Overview() {
         </div>
         <SizeMe>
           {({ size }) => (
-            <Document file={toAbsoluteUrl(`/documents/${match}`)} onLoadSuccess={onDocumentLoadSuccess}>
+            <Document file={toAbsoluteUrl(`/documents/${match}`)} onLoadSuccess={onDocumentLoadSuccess} onLoadError={
+              (error) => {alert('Error while loading document! ' + error.message)}
+            }>
               <Page width={size.width ? size.width : 1} pageNumber={pageNumber} />
             </Document>
           )}
