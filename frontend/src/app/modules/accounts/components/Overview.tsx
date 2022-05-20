@@ -17,7 +17,7 @@ import { SizeMe } from 'react-sizeme'
 
 import { FileIcon, defaultStyles } from 'react-file-icon'
 import { useMutation } from 'react-query'
-import { deleteQuotation } from '../../quotations/quotations-list/core/_requests'
+import { deleteQuotation, deletePdf } from '../../quotations/quotations-list/core/_requests'
 import { confirm } from "react-confirm-box";
 import { useNavigate } from 'react-router'
 import { ToastContainer, toast } from 'react-toastify'
@@ -62,6 +62,19 @@ export function Overview() {
 
       // ✅ update detail view directly
       // queryClient.invalidateQueries([`${QUERIES.QUOTATION_LIST}-${query}`])
+    },
+  })
+
+  const deletePdfItem = useMutation((element: { path: any; attachments: any; }) => deletePdf(location.state.original.id, element), {
+    // 💡 response of the mutation is passed to onSuccess
+
+    onSuccess: (response: any) => {
+      // ✅ update detail view directly
+      // setLoading(false);
+      location.state.original = response // nak antar  ni ke overview
+
+      // setHistory(60)
+
     },
   })
 
@@ -201,11 +214,26 @@ export function Overview() {
                 var last: any = str.substring(str.lastIndexOf(".") + 1)
 
 
-                return <div key={i} style={{ marginBottom: 5, display: 'flex', alignItems: 'center' }}>
-                  <Link to={toAbsoluteUrl(`/documents/${element}`)} target="_blank" download={str.substring(str.indexOf("_") + 1)}>{str.substring(str.indexOf("_") + 1)}</Link>
-                  <div style={{ width: 20, marginLeft: 15 }}>
+                return <div key={i} style={{ marginBottom: 7, display: 'flex', alignItems: 'center' }}>
+
+                  {((str.substring(str.indexOf("_") + 1)).includes('Quotations_summary') || location.state.original.lock === true) ? <></> :
+                    <span onClick={async () => {
+
+                      var placeholder = {
+                        path: element,
+                        attachments: location.state.original.attachments
+                      }
+
+                      await deletePdfItem.mutateAsync(placeholder)
+
+                    }} style={{ marginRight: 15, fontSize: 25, fontWeight: 'bold', color: '#000', cursor: 'pointer' }}>&times;</span>
+                  }
+
+                  <div style={{ width: 20, marginRight: 15 }}>
                     <FileIcon extension={last} {...(defaultStyles as any)[last]} />
                   </div>
+                  <Link to={toAbsoluteUrl(`/documents/${element}`)} target="_blank" download={str.substring(str.indexOf("_") + 1)}>{str.substring(str.indexOf("_") + 1)}</Link>
+
                 </div>
               })}
 
@@ -242,7 +270,7 @@ export function Overview() {
         <SizeMe>
           {({ size }) => (
             <Document file={toAbsoluteUrl(`/documents/${match}`)} onLoadSuccess={onDocumentLoadSuccess} onLoadError={
-              (error) => toast('Error while loading document! ' + error.message) 
+              (error) => toast('Error while loading document! ' + error.message)
             }>
               <Page width={size.width ? size.width : 1} pageNumber={pageNumber} />
             </Document>

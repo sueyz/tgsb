@@ -1,6 +1,6 @@
-import axios, {AxiosResponse} from 'axios'
-import {ID, Response} from '../../../../../_metronic/helpers'
-import {Quotations, QuotationsQueryResponse} from './_models'
+import axios, { AxiosResponse } from 'axios'
+import { ID, Response } from '../../../../../_metronic/helpers'
+import { Quotations, QuotationsQueryResponse } from './_models'
 
 const API_URL = process.env.REACT_APP_THEME_API_URL
 const QUOTATIONS_URL = `${API_URL}/quotations`
@@ -27,17 +27,24 @@ const updateQuotation = (quotation: Quotations): Promise<Quotations | undefined>
     .then((response: Response<Quotations>) => response.data)
 }
 
+const deletePdf = (id: ID, object: { path: any; attachments: any; }): Promise<Quotations | undefined> => {
+  return axios
+    .put(`${QUOTATIONS_URL}/pdf/${id}`, object)
+    .then((response: AxiosResponse<Response<Quotations>>) => response.data)
+    .then((response: Response<Quotations>) => response.data)
+}
+
 const deleteQuotation = (quotationId: ID): Promise<void> => {
-  return axios.delete(`${QUOTATIONS_URL}/${quotationId}`).then(() => {})
+  return axios.delete(`${QUOTATIONS_URL}/${quotationId}`).then(() => { })
 }
 
 const markQuotation = (userIds: Array<ID>): Promise<void> => {
   const requests = userIds.map((id) => axios.put(`${QUOTATIONS_URL}/lock/${id}`))
-  return axios.all(requests).then(() => {})
+  return axios.all(requests).then(() => { })
 }
 
 const unlockQuotation = (quotationId: ID): Promise<void> => {
-  return axios.put(`${QUOTATIONS_URL}/unlock/${quotationId}`).then(() => {})
+  return axios.put(`${QUOTATIONS_URL}/unlock/${quotationId}`).then(() => { })
 }
 
 const uploadAttachements = (file: FormData) => {
@@ -52,4 +59,4 @@ const uploadAttachements = (file: FormData) => {
     })
 }
 
-export {getQuotations, deleteQuotation, markQuotation, getQuotationsById, updateQuotation, uploadAttachements, unlockQuotation}
+export { getQuotations, deleteQuotation, markQuotation, getQuotationsById, updateQuotation, deletePdf, uploadAttachements, unlockQuotation }
