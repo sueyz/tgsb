@@ -103,6 +103,14 @@ export function Overview() {
         <div className='card-body p-9'>
 
           <div className='row mb-7'>
+            <label className='col-lg-4 fw-bold text-muted'>Invoice No</label>
+
+            <div className='col-lg-8 fv-row'>
+              <span className='fw-bolder fs-6'>{location.state.original.invoiceNo}</span>
+            </div>
+          </div>
+
+          <div className='row mb-7'>
             <label className='col-lg-4 fw-bold text-muted'>Quotation Name</label>
 
             <div className='col-lg-8'>
@@ -123,14 +131,6 @@ export function Overview() {
 
             <div className='col-lg-8 fv-row'>
               <span className='fw-bolder fs-6'>{location.state.company_info.name}</span>
-            </div>
-          </div>
-
-          <div className='row mb-7'>
-            <label className='col-lg-4 fw-bold text-muted'>Invoice No</label>
-
-            <div className='col-lg-8 fv-row'>
-              <span className='fw-bolder fs-6'>{location.state.original.invoiceNo}</span>
             </div>
           </div>
 

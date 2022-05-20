@@ -179,7 +179,6 @@ const Main: FC = () => {
     if (stepper.current.currentStepIndex === 1) {
       // values.company = ""
       await checkInvoice(values.invoiceNo ? values.invoiceNo : '').then(async (response) => {
-        console.log(response.data)
         if (response.data === null) {
           var { data } = await getCompanies(values.type ? values.type : "")
           setCompany(data)
