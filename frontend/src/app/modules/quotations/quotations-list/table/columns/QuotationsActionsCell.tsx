@@ -77,14 +77,15 @@ const UserActionsCell: FC<Props> = ({ id, lock }) => {
           </a>
         </div> : <></>}
         {/* begin::Menu item */}
-        <div className='menu-item px-3'>
+        {(lock === false) ? <div className='menu-item px-3'>
           <a className='menu-link px-3' onClick={(event) => {
             event.stopPropagation()
             openEditModal()
           }}>
             Update Balance
           </a>
-        </div>
+        </div> : <></>}
+
         {/* end::Menu item */}
 
         {/* begin::Menu item */}

@@ -77,7 +77,7 @@ export function Overview() {
           <div className='card-title m-0'>
             <h3 className='fw-bolder m-0'>Quotation Details</h3>
           </div>
-          {(location.state.original.lock === false || isAdmin === 'Administrator') ? <button
+          {(location.state.original.lock === false) ? <button
             style={{ margin: 'auto', marginRight: 20, padding: 7 }}
             type='button'
             className='btn btn-danger'
@@ -93,11 +93,11 @@ export function Overview() {
           >
             Delete Quotation
           </button> : <></>}
-          <button style={{ padding: 7 }} className='btn btn-primary align-self-center' onClick={() => {
+          {(location.state.original.lock === false) ? <button style={{ padding: 7 }} className='btn btn-primary align-self-center' onClick={() => {
             navigate('/quotations/settings', { state: { original: location.state.original, company_info: location.state.company_info } })
           }}>
             Edit Quotation
-          </button>
+          </button> : <></>}
         </div>
 
         <div className='card-body p-9'>
@@ -239,7 +239,7 @@ export function Overview() {
         <SizeMe>
           {({ size }) => (
             <Document file={toAbsoluteUrl(`/documents/${match}`)} onLoadSuccess={onDocumentLoadSuccess} onLoadError={
-              (error) => {alert('Error while loading document! ' + error.message)}
+              (error) => { alert('Error while loading document! ' + error.message) }
             }>
               <Page width={size.width ? size.width : 1} pageNumber={pageNumber} />
             </Document>
