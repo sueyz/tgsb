@@ -10,7 +10,7 @@ const Quotation = require('../model/quotationModel')
 // @access Public
 const registerQuotation = asyncHandler(async (req, res) => {
     const { company, type, name, invoiceNo, address1, address2, address3, zip, city, state, email, quotations, balancePaid,
-     payment_term, projectSchedule, note, poc, contact, attachments, workType, lock } = req.body
+        payment_term, projectSchedule, note, poc, contact, attachments, workType, lock } = req.body
 
 
     if (!company || !type || !name || !address1 || !invoiceNo || !quotations || !zip || !city || !state) {
@@ -156,12 +156,12 @@ const queryQuotation = asyncHandler(async (req, res) => {
     else if (filter === undefined && filter2 !== undefined && req.query.filter_lock !== undefined) {
         filter = null
 
-        queryMatch = { name: searchString, type: filter , lock: filter3}
+        queryMatch = { name: searchString, type: filter, lock: filter3 }
     }
     else if (filter !== undefined && filter2 === undefined && req.query.filter_lock !== undefined) {
         filter2 = null
 
-        queryMatch = { name: searchString, workType: filter2 , lock: filter3}
+        queryMatch = { name: searchString, workType: filter2, lock: filter3 }
     }
     else {
         filter = filter.charAt(0).toUpperCase() + filter.slice(1)
@@ -316,7 +316,7 @@ const getQuotationById = asyncHandler(async (req, res) => {
 
 const getQuotationByInvoice = asyncHandler(async (req, res) => {
 
-    const quotationExists = await Quotation.findOne({invoiceNo: Object.keys(req.query)})
+    const quotationExists = await Quotation.findOne({ invoiceNo: Object.keys(req.query) })
 
     res.status(200).json({
         data: quotationExists
@@ -335,8 +335,11 @@ const updateQuotation = asyncHandler(async (req, res) => {
     }
 
     const updatedQuotation = await Quotation.findByIdAndUpdate(req.params.id, req.body, { new: true })
-    res.status(200).json(updatedQuotation)
-
+    res.status(200).json(
+        {
+            data: updatedQuotation
+        }
+    )
 })
 
 const updateLock = asyncHandler(async (req, res) => {
@@ -348,7 +351,7 @@ const updateLock = asyncHandler(async (req, res) => {
         throw new Error('Quotation not found')
     }
 
-    const updatedQuotation = await Quotation.findByIdAndUpdate(req.params.id, {"lock": true}, { new: true })
+    const updatedQuotation = await Quotation.findByIdAndUpdate(req.params.id, { "lock": true }, { new: true })
     res.status(200).json(updatedQuotation)
 })
 
@@ -361,7 +364,7 @@ const unlockLock = asyncHandler(async (req, res) => {
         throw new Error('Quotation not found')
     }
 
-    const updatedQuotation = await Quotation.findByIdAndUpdate(req.params.id, {"lock": false}, { new: true })
+    const updatedQuotation = await Quotation.findByIdAndUpdate(req.params.id, { "lock": false }, { new: true })
     res.status(200).json(updatedQuotation)
 })
 

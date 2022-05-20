@@ -20,6 +20,8 @@ import { useMutation } from 'react-query'
 import { deleteQuotation } from '../../quotations/quotations-list/core/_requests'
 import { confirm } from "react-confirm-box";
 import { useNavigate } from 'react-router'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 
 export function Overview() {
@@ -236,10 +238,11 @@ export function Overview() {
             {">"}
           </button>
         </div>
+        <ToastContainer position='bottom-center' />
         <SizeMe>
           {({ size }) => (
             <Document file={toAbsoluteUrl(`/documents/${match}`)} onLoadSuccess={onDocumentLoadSuccess} onLoadError={
-              (error) => { alert('Error while loading document! ' + error.message) }
+              (error) => toast('Error while loading document! ' + error.message) 
             }>
               <Page width={size.width ? size.width : 1} pageNumber={pageNumber} />
             </Document>

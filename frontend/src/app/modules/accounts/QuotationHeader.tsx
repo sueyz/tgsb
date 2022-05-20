@@ -103,7 +103,7 @@ const QuotationHeader: React.FC = () => {
 
   const formik = useFormik({
     initialValues: {
-      balancePaid: location.state.original.balancePaid,
+      ...location.state.original,
     },
     validationSchema: editBalanceSchema,
     onSubmit: async (values, { setSubmitting }) => {
@@ -118,13 +118,17 @@ const QuotationHeader: React.FC = () => {
 
           });
           const results = await uploadAttachements(fd)
+          
           Array.from(results).forEach((element: any) => {
             location.state.original.attachments?.push(`quotations/${element.filename}`)
           });
         }
 
         await updateQuotation(values)
-        // cancel(true)
+        closeModal()
+
+        location.state.original = values // ni hantar alik atas je
+        setHistory(80) // ni hantar ke overview just random change something for history
       }
     },
   })
@@ -145,8 +149,6 @@ const QuotationHeader: React.FC = () => {
           <a href='#' className='text-gray-800 text-hover-primary fs-2 fw-bolder me-1'>
             Payment Schedule
           </a>
-
-
 
           <span style={{ marginTop: 5, marginLeft: 5 }} onClick={toggleClass} className={location.state.original.lock ? 'lock' : 'unlocked'}></span>
 
