@@ -62,7 +62,7 @@ export const initialQuotations: Quotations = {
   poc: '',
   contact: '',
   email: '',
-  workType: 'EIT',
+  workType: 'EIA',
   attachments: [],
   lock: false
 }

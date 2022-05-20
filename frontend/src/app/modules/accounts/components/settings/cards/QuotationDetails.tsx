@@ -12,6 +12,7 @@ const profileDetailsSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
   type: Yup.string().required('Type is required'),
   company: Yup.string().required('Company is required'),
+  workType: Yup.string().required('Work Type is required'),
   contactPhone: Yup.string().required('Contact phone is required'),
   companySite: Yup.string().required('Company site is required'),
   country: Yup.string().required('Country is required'),
@@ -241,15 +242,18 @@ const QuotationDetails: React.FC = () => {
                     <label className='col-lg-4 col-form-label required fw-bold fs-6'>Work Type</label>
 
                     <div className='col-lg-8 fv-row'>
-                      <input
-                        type='text'
-                        className='form-control form-control-lg form-control-solid'
-                        placeholder='Company name'
-                        {...formik.getFieldProps('company')}
-                      />
-                      {formik.touched.company && formik.errors.company && (
+                      <Field
+                        as='select'
+                        className='form-select form-select-solid form-select-lg'
+                        {...formik.getFieldProps('workType')}
+                      >
+                        <option value="EIA">Environmental Impact Asssesment</option>
+                        <option value="EMT">Environmental Mark Assesment</option>
+                        <option value="DSR">Dynamic Search Rescue</option>
+                      </Field>
+                      {formik.touched.workType && formik.errors.workType && (
                         <div className='fv-plugins-message-container'>
-                          <div className='fv-help-block'>{formik.errors.company}</div>
+                          <div className='fv-help-block'>{formik.errors.workType}</div>
                         </div>
                       )}
                     </div>
