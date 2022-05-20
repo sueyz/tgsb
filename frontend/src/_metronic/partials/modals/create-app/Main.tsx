@@ -11,10 +11,13 @@ import { initialQuotations, Quotations } from '../../../../app/modules/quotation
 import { ID, Response } from '../../../../_metronic/helpers'
 import { Companies, CompaniesQueryResponse } from '../../../../app/modules/companies/companies-list/core/_models'
 import { useQueryResponse } from '../../../../app/modules/quotations/quotations-list/core/QueryResponseProvider';
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const API_URL = process.env.REACT_APP_THEME_API_URL
 const QUOTATIONS_URL = `${API_URL}/quotations/register`
 const GET_COMPANIES_URL = `${API_URL}/company/?`
+const CHECK_INVOICE_URL = `${API_URL}/quotations/check/?`
 const ATTACHMENTS_UPLOAD_URL = `${API_URL}/quotations/upload`
 const PDF_UPLOAD_URL = `${API_URL}/quotations/pdf`
 
@@ -34,6 +37,14 @@ const getCompanies = (text: String): Promise<CompaniesQueryResponse> => {
   return axios
     .get(`${GET_COMPANIES_URL}${text}`)
     .then((d: AxiosResponse<CompaniesQueryResponse>) => d.data)
+}
+
+const checkInvoice = (text: String) => {
+  return axios
+    .get(`${CHECK_INVOICE_URL}${text}`)
+    .then((response) => {
+      return response.data
+    })
 }
 
 const uploadAttachements = (file: FormData) => {
@@ -122,6 +133,10 @@ const createQuotationSchema = [
     state: Yup.string().required().label('State')
   })
 ]
+
+const notifyExist = () => toast('Invoice number already used!')
+
+
 const Main: FC = () => {
   const stepperRef = useRef<HTMLDivElement | null>(null)
   const stepper = useRef<StepperComponent | null>(null)
@@ -159,19 +174,30 @@ const Main: FC = () => {
 
     setCurrentSchema(createQuotationSchema[stepper.current.currentStepIndex])
 
-    // console.log(values)
     // console.log(stepper.current)
-
 
     if (stepper.current.currentStepIndex === 1) {
       // values.company = ""
-      var { data } = await getCompanies(values.type ? values.type : "")
-      setCompany(data)
+      await checkInvoice(values.invoiceNo ? values.invoiceNo : '').then(async (response) => {
+        console.log(response.data)
+        if (response.data === null) {
+          var { data } = await getCompanies(values.type ? values.type : "")
+          setCompany(data)
+        } else {
+          setCompany(undefined)
+          notifyExist()
+        }
+      })
+
 
     }
-
     if (stepper.current.currentStepIndex !== stepper.current.totatStepsNumber) {
       stepper.current.goNext()
+
+      if (refCompany.current === undefined) {
+        prevStep()
+      }
+
     } else {
       values.attachments?.splice(0, values.attachments.length)
 
@@ -222,6 +248,8 @@ const Main: FC = () => {
         <div className='modal-content'>
           <div className='modal-header'>
             <h2>Create Quotation</h2>
+            <ToastContainer position='bottom-center' />
+
 
             <div className='btn btn-sm btn-icon btn-active-color-primary' data-bs-dismiss='modal'>
               <KTSVG path='/media/icons/duotune/arrows/arr061.svg' className='svg-icon-1' />
@@ -694,10 +722,10 @@ const Main: FC = () => {
                                                   type="number"
                                                   min={0}
                                                   disabled
-                                                  style={{paddingRight : 0}}
+                                                  style={{ paddingRight: 0 }}
                                                   className='form-control form-control-lg form-control-solid'
                                                   name={`payment_term.${index}.amount`}
-                                                  value={value.amount = allTotal * (value.percentage/100)}
+                                                  value={value.amount = allTotal * (value.percentage / 100)}
                                                   placeholder='Amount'
                                                 />
                                                 {index >= 1 ?

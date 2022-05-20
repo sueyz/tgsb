@@ -314,6 +314,15 @@ const getQuotationById = asyncHandler(async (req, res) => {
     })
 })
 
+const getQuotationByInvoice = asyncHandler(async (req, res) => {
+
+    const quotationExists = await Quotation.findOne({invoiceNo: Object.keys(req.query)})
+
+    res.status(200).json({
+        data: quotationExists
+    })
+})
+
 // @ desc Update something
 // @rout PUT /api/dashboard/:id
 const updateQuotation = asyncHandler(async (req, res) => {
@@ -401,5 +410,6 @@ module.exports = {
     uploadAttachments,
     uploadPdf,
     updateLock,
-    unlockLock
+    unlockLock,
+    getQuotationByInvoice
 }
