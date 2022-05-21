@@ -36,7 +36,7 @@ const Topbar: FC = () => {
       {/* NOTIFICATIONS */}
       <div className={clsx('d-flex align-items-center', toolbarButtonMarginClass)}>
         {/* begin::Menu- wrapper */}
-        <div
+        {/* <div
           className={clsx(
             'btn btn-icon btn-active-light-primary btn-custom',
             toolbarButtonHeightClass
@@ -51,7 +51,7 @@ const Topbar: FC = () => {
             className={toolbarButtonIconSizeClass}
           />
         </div>
-        <HeaderNotificationsMenu />
+        <HeaderNotificationsMenu /> */}
         {/* end::Menu wrapper */}
       </div>
 

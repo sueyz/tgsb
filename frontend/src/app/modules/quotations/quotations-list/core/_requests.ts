@@ -13,6 +13,12 @@ const getQuotations = (query: string): Promise<QuotationsQueryResponse> => {
     .then((d: AxiosResponse<QuotationsQueryResponse>) => d.data)
 }
 
+const getCurrentQuotations = (): Promise<QuotationsQueryResponse> => {
+  return axios
+    .get(`${QUOTATIONS_URL}/current`)
+    .then((d: AxiosResponse<QuotationsQueryResponse>) => d.data)
+}
+
 const getQuotationsById = (id: ID): Promise<Quotations | undefined> => {
   return axios
     .get(`${QUOTATIONS_URL}/${id}`)
@@ -59,4 +65,4 @@ const uploadAttachements = (file: FormData) => {
     })
 }
 
-export { getQuotations, deleteQuotation, markQuotation, getQuotationsById, updateQuotation, deletePdf, uploadAttachements, unlockQuotation }
+export { getCurrentQuotations, getQuotations, deleteQuotation, markQuotation, getQuotationsById, updateQuotation, deletePdf, uploadAttachements, unlockQuotation }

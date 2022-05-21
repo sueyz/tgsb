@@ -39,7 +39,12 @@ const QuotationsStatusCell: FC<Props> = ({ balancePaid, payment_term, quotations
   })
 
   if (payment_term !== undefined) {
+    var tempCount = 0
+
     for (let i = 0; i < payment_term.length; i++) {
+
+      tempCount += payment_term[i].amount
+
 
       diff1 = new Date(payment_term[i].date)
 
@@ -55,10 +60,10 @@ const QuotationsStatusCell: FC<Props> = ({ balancePaid, payment_term, quotations
       cyclePayment = payment_term[i].amount
 
       if (balancePaid !== undefined) {
-        if (balancePaid < payment_term[i].amount && numberDate2 <= numberDate1) {
+        if (balancePaid < tempCount && numberDate2 <= numberDate1) {
           break
         }
-        else if (balancePaid >= payment_term[i].amount && numberDate2 <= numberDate1) {
+        else if (balancePaid >= tempCount && numberDate2 <= numberDate1) {
           continue
         }
       }
@@ -73,8 +78,8 @@ const QuotationsStatusCell: FC<Props> = ({ balancePaid, payment_term, quotations
 
   return (
     <div>
-      {(balancePaid ? balancePaid : 0) >= total ? <></> : <p style={{ fontSize: 'x-small' }} className='mt-5'>Next Payment: {next_payment_date} {Difference_In_Days > 7 ? <></> : (Difference_In_Days <= 7 && Difference_In_Days > 3) ? <img style={{ paddingBottom: 3 }} src={toAbsoluteUrl('/media/icons/duotune/general/caution.png')} className='' alt='' /> : <img style={{ paddingBottom: 3 }} src={toAbsoluteUrl('/media/icons/duotune/general/warning.png')} className='' alt='' />}
-      </p>}
+      {/* {(balancePaid ? balancePaid : 0) >= total ? <></> : <p style={{ fontSize: 'x-small' }} className='mt-5'>Next Payment: {next_payment_date} {Difference_In_Days > 7 ? <></> : (Difference_In_Days <= 7 && Difference_In_Days > 3) ? <img style={{ paddingBottom: 3 }} src={toAbsoluteUrl('/media/icons/duotune/general/caution.png')} className='' alt='' /> : <img style={{ paddingBottom: 3 }} src={toAbsoluteUrl('/media/icons/duotune/general/warning.png')} className='' alt='' />}
+      </p>} */}
       {/* {(balancePaid ? balancePaid : 0) >= total ? <></> : <p style={{ fontSize: 'x-small' }} className='mt-5'>Balance cycle: {cyclePayment - (balancePaid?balancePaid:0)}</p>} */}
 
       <ProgressBar

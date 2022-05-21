@@ -8,6 +8,16 @@ const Quotation = require('../model/quotationModel')
 // @ desc Register Company
 // @rout Post /api/registerCompany
 // @access Public
+
+const getAllUnlockQuotation= asyncHandler (async (req, res) => {
+
+    const quotation = await Quotation.find({lock: false})
+
+    res.status(200).json({
+        data: quotation
+    })
+})
+
 const registerQuotation = asyncHandler(async (req, res) => {
     const { company, type, name, invoiceNo, address1, address2, address3, zip, city, state, email, quotations, balancePaid,
         payment_term, projectSchedule, note, poc, contact, attachments, workType, lock } = req.body
@@ -490,6 +500,7 @@ const deleteQuotation = asyncHandler(async (req, res) => {
 })
 
 module.exports = {
+    getAllUnlockQuotation,
     registerQuotation,
     queryQuotation,
     getQuotationById,

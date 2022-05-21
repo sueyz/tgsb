@@ -2,12 +2,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { KTSVG, toAbsoluteUrl } from '../../../../_metronic/helpers'
-import {
-  ChartsWidget1,
-  TablesWidget1,
-  ListsWidget5,
-  TablesWidget5,
-} from '../../../../_metronic/partials/widgets'
 import { useLocation } from 'react-router'
 import { shallowEqual, useSelector } from 'react-redux'
 import { RootState } from '../../../../setup'
