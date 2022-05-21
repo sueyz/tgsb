@@ -183,7 +183,7 @@ const DashboardPage: FC = () => {
           // To calculate the no. of days between two dates
           var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
 
-          var color = Difference_In_Days > 7 ? '#50CC89' : (Difference_In_Days <= 7 && Difference_In_Days > 3) ? 'yellow' : 'red'
+          var color = Difference_In_Days > 7 ? '#50CC89' : (Difference_In_Days <= 7 && Difference_In_Days > 3) ? '#EED202' : 'red'
 
           var tempTotal = 0
 

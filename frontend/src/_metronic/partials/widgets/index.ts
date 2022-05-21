@@ -75,8 +75,8 @@ export * from './stats/StatsWidget4'
 export * from './stats/StatsWidget5'
 export * from './stats/StatsWidget6'
 export * from './stats/StatsWidget7'
-export * from './stats/StatsWidget8'
-export * from './stats/StatsWidget9'
+// export * from './stats/StatsWidget8'
+// export * from './stats/StatsWidget9'
 
 // feeds
 export * from './feeds/FeedsWidget2'
