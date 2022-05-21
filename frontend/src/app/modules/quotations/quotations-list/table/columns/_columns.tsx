@@ -29,12 +29,12 @@ const usersColumns: ReadonlyArray<Column<Quotations>> = [
   {
     Header: (props) => <QuotationsCustomHeader tableProps={props} title='Venue' className='min-w-125px cursor-pointer text-hover-primary' />,
     accessor: 'address1',
-    Cell: ({ ...props }) => 
+    Cell: ({ ...props }) =>
       `${props.data[props.row.index].address1 ? props.data[props.row.index].address1 : ""} 
-      ${props.data[props.row.index].address2 ? ", " + props.data[props.row.index].address2: ""}
-      ${props.data[props.row.index].address3 ? ", " + props.data[props.row.index].address3: ""}
+      ${props.data[props.row.index].address2 ? ", " + props.data[props.row.index].address2 : ""}
+      ${props.data[props.row.index].address3 ? ", " + props.data[props.row.index].address3 : ""}
       ${props.data[props.row.index].zip}, ${props.data[props.row.index].city}, ${props.data[props.row.index].state}`
-    
+
   },
   {
     Header: (props) => (
