@@ -12,10 +12,10 @@ const usersColumns: ReadonlyArray<Column<Quotations>> = [
   {
     Header: (props) => <QuotationsSelectionHeader tableProps={props} />,
     id: 'finalize',
-    Cell: ({ ...props }) => 
-    <QuotationsSelectionCell 
-    id={props.data[props.row.index].id} 
-    lock= {props.data[props.row.index].lock} />,
+    Cell: ({ ...props }) =>
+      <QuotationsSelectionCell
+        id={props.data[props.row.index].id}
+        lock={props.data[props.row.index].lock} />,
   },
   {
     Header: (props) => <QuotationsCustomHeader tableProps={props} title='Quotation' className='min-w-150px cursor-pointer text-hover-primary' />,
@@ -29,6 +29,12 @@ const usersColumns: ReadonlyArray<Column<Quotations>> = [
   {
     Header: (props) => <QuotationsCustomHeader tableProps={props} title='Venue' className='min-w-125px cursor-pointer text-hover-primary' />,
     accessor: 'address1',
+    Cell: ({ ...props }) => 
+      `${props.data[props.row.index].address1 ? props.data[props.row.index].address1 : ""} 
+      ${props.data[props.row.index].address2 ? ", " + props.data[props.row.index].address2: ""}
+      ${props.data[props.row.index].address3 ? ", " + props.data[props.row.index].address3: ""}
+      ${props.data[props.row.index].zip}, ${props.data[props.row.index].city}, ${props.data[props.row.index].state}`
+    
   },
   {
     Header: (props) => (
@@ -48,9 +54,9 @@ const usersColumns: ReadonlyArray<Column<Quotations>> = [
       <QuotationsCustomHeader tableProps={props} title='Actions' className='text-end min-w-100px' />
     ),
     id: 'actions',
-    Cell: ({ ...props }) => <UserActionsCell 
-    id={props.data[props.row.index].id} 
-    lock= {props.data[props.row.index].lock} 
+    Cell: ({ ...props }) => <UserActionsCell
+      id={props.data[props.row.index].id}
+      lock={props.data[props.row.index].lock}
     />,
   },
 ]
