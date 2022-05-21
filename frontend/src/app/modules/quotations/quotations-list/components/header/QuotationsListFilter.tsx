@@ -75,7 +75,7 @@ const QuotationsListFilter = () => {
               {/* <option value='Administrator'>Administrator</option> */}
               <option value='true'>Lock</option>
               {/* <option value='Developer'>Developer</option> */}
-              <option value='false'>Unlock</option>
+              <option value='false'>Unlocked</option>
               {/* <option value='Trial'>Trial</option> */}
             </select>
           </div>

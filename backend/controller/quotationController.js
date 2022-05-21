@@ -118,7 +118,7 @@ const queryQuotation = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page)
     var filter = req.query.filter_type
     var filter2 = req.query.filter_worktype
-    var filter3 = Boolean(req.query.filter_lock)
+    var filter3 = (req.query.filter_lock === "true")
 
     var queryMatch = {}
 
