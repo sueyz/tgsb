@@ -53,7 +53,7 @@ const CompaniesInfoCell: FC<Props> = ({ company }) => {
 
             <div className="card-body d-flex justify-content-center align-items-center">
 
-              <a style={{ color: '#34b0f6' }} href='/crafted/account/overview' className="card-text fs-1 fw-bolder"><u>More Info</u></a>
+              {/* <a style={{ color: '#34b0f6' }} href='/crafted/account/overview' className="card-text fs-1 fw-bolder"><u>More Info</u></a> */}
               {/* <Link to='/crafted/account/settings' className='menu-link px-5'>
           Account Settings
         </Link> */}

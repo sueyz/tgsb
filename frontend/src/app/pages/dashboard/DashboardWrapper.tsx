@@ -11,6 +11,7 @@ import AnimatedProgressProvider from './AnimatedProgressProvider';
 import { ID, Response } from '../../../_metronic/helpers';
 import { Companies } from '../../modules/companies/companies-list/core/_models';
 import axios, { AxiosResponse } from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const DashboardLoading = () => {
   const styles = {
@@ -31,6 +32,8 @@ const DashboardLoading = () => {
 
 
 const DashboardPage: FC = () => {
+  const navigate = useNavigate()
+
 
   const API_URL = process.env.REACT_APP_THEME_API_URL
   const COMPANY_URL = `${API_URL}/company`
@@ -47,7 +50,21 @@ const DashboardPage: FC = () => {
 
   const [quote, setQuote] = useState<Quotations[] | undefined>([]);
   const [loading, setLoading] = useState(false)
-  const [company, setCompany] = useState<Array<string>>([])
+  const [company, setCompany] = useState<Array<Companies>>([])
+  const [isOpen, setIsOpen] = useState(false);
+  const [file, setFile] = useState<File[]>()
+
+
+  const openModal = () => setIsOpen(true);
+  const closeModal = () => {
+    setFile([])
+    setIsOpen(false)
+  }
+
+  const onChangeFiles = (e: any) => {
+    console.log(e.target.files)
+    setFile(e.target.files)
+  }
 
 
 
@@ -64,6 +81,7 @@ const DashboardPage: FC = () => {
     },
   })
 
+
   useEffect(() => {
     async function getAll() {
       setLoading(true)
@@ -71,15 +89,13 @@ const DashboardPage: FC = () => {
       setQuote(test.data)
       // console.log(refQuote.current)
 
-      var array: Array<string> = []
+      var array: Array<Companies> = []
 
 
       if (test.data !== undefined) {
         for (const element of test.data) {
           await getCompaniesById(element.company).then((response: any) => {
-            var company = ''
-            company = response.name
-            array.push(company)
+            array.push(response)
           })
 
         }
@@ -153,7 +169,6 @@ const DashboardPage: FC = () => {
                   break
                 }
                 else if (element.balancePaid >= tempCount && numberDate2 <= numberDate1) {
-                  console.log(element.payment_term[i].amount)
 
                   continue
                 }
@@ -194,13 +209,13 @@ const DashboardPage: FC = () => {
             </div>
 
             <div className="card-body">
-              <h5 className="card-title">{company[i]}'s</h5>
+              <h5 className="card-title">{company[i] && company[i].name}'s</h5>
               <p className="card-text">{element.name}</p>
             </div>
 
-            {element.balancePaid >= total && <div className='card-body ms-15'>Completed</div>}
+            {element.balancePaid >= total && <h3 className='card-body ms-10'>COMPLETED</h3>}
 
-            
+
             <ul style={{ alignItems: 'center', width: '100%' }} className="list-group list-group-flush">
 
 
@@ -228,9 +243,25 @@ const DashboardPage: FC = () => {
 
 
             </ul>
-            <div className="card-body">
-              <a href="#" className="card-link">Card link</a>
-              <a href="#" className="card-link">Another link</a>
+            <div className="card-body" style={{ bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'end' }}>
+              {/* {(element.lock === false) ? <button
+                style={{ fontSize: 12 }}
+                type='button'
+                className='btn btn-success'
+                onClick={openModal}
+              >
+                Update Balance
+              </button> : <></>} */}
+              <button
+                style={{ fontSize: 12, marginTop: 10 }}
+                type='button'
+                className='btn btn-primary'
+                onClick={() => 
+                  navigate('/quotations/overview', { state: { original: element, company_info: company && company } })
+                }
+              >
+                More Info
+              </button>
             </div>
           </div>
 
