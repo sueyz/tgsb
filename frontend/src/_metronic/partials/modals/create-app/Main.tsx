@@ -1314,4 +1314,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export { Main }
+export { Main, MyDocument }

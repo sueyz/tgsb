@@ -334,11 +334,56 @@ const updateQuotation = asyncHandler(async (req, res) => {
         throw new Error('Quotation not found')
     }
 
-    const updatedQuotation = await Quotation.findByIdAndUpdate(req.params.id, req.body, { new: true })
-    res.status(200).json({
-        data: updatedQuotation
-    })
 
+    var summary = req.body.attachments.filter(element => element.includes('Quotations_summary'))
+
+    if (summary.length > 1) {
+
+        var newNumbers = []
+        Array.from(summary).forEach((element) => {
+
+            parseInt(newNumbers.push(element.substring(element.indexOf("r") + 1, element.indexOf("_"))))
+        })
+
+        var findToDelete = Math.min(...newNumbers)
+
+        var newSummaryArray = req.body.attachments.filter(element => !element.includes(findToDelete))
+
+        var oldPdf = req.body.attachments.find(element => element.includes(findToDelete))
+
+        if (oldPdf !== undefined) {
+            console.log(__dirname)
+
+            try {
+                const oldPath = path.join(__dirname, '../../frontend/public/documents/', oldPdf);
+
+                if (fs.existsSync(oldPath)) {
+                    fs.unlink(oldPath, (err) => {
+                        if (err) {
+                            console.error(err);
+                            return;
+                        }
+                    });
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        var submit = req.body
+        submit.attachments = newSummaryArray
+
+        const updatedQuotation = await Quotation.findByIdAndUpdate(req.params.id, submit, { new: true })
+        res.status(200).json({
+            data: updatedQuotation
+        })
+    } else {
+        const updatedQuotation = await Quotation.findByIdAndUpdate(req.params.id, req.body, { new: true })
+        res.status(200).json({
+            data: updatedQuotation
+        })
+
+    }
 })
 
 const deletePdf = asyncHandler(async (req, res) => {
@@ -351,13 +396,7 @@ const deletePdf = asyncHandler(async (req, res) => {
     }
 
     const oldPdfPaths = req.body.attachments
-
     const oldPdf = req.body.path
-    console.log(oldPdfPaths)
-
-    console.log(oldPdf)
-
-
     var newPdfPaths = oldPdfPaths.filter(f => f !== oldPdf)
 
     //  Remove old photo

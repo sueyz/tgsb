@@ -8,6 +8,8 @@ import { Companies, CompaniesQueryResponse } from '../../../../companies/compani
 import axios, { AxiosResponse } from 'axios'
 import useState from 'react-usestateref'
 import { updateQuotation } from '../../../../quotations/quotations-list/core/_requests'
+import { MyDocument } from '../../../../../../_metronic/partials/modals/create-app/Main'
+import ReactPDF, { PDFViewer } from '@react-pdf/renderer'
 
 const profileDetailsSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
@@ -60,6 +62,19 @@ const profileDetailsSchema = Yup.object().shape({
 })
 const API_URL = process.env.REACT_APP_THEME_API_URL
 const GET_COMPANIES_URL = `${API_URL}/company/?`
+const PDF_UPLOAD_URL = `${API_URL}/quotations/pdf`
+
+const uploadPdf = (file: FormData) => {
+  return axios
+    .post(PDF_UPLOAD_URL, file, {
+      headers: {
+        'content-type': 'multipart/form-data',
+      },
+    })
+    .then((response) => {
+      return response.data.files
+    })
+}
 
 const getCompanies = (text: String): Promise<CompaniesQueryResponse> => {
   return axios
@@ -184,7 +199,21 @@ const QuotationDetails: React.FC = () => {
           onSubmit={async (values) => {
             setLoading(true)
 
+
+            let fd2 = new FormData()
+            const newFormat = {
+              values: values
+            }
+
+            fd2.append('pdf', await ReactPDF.pdf(<MyDocument formikProps={newFormat} />).toBlob())
+
+            const result2 = await uploadPdf(fd2)
+            var newArray = values.attachments?.filter(element => !element.includes("Quotations_summary"))
+            newArray?.push(`quotations/${result2}`)
+            values.attachments?.push(`quotations/${result2}`)
+
             await updateQuotation(values).then((response) => {
+              values.attachments = newArray
               location.state.original = values // ni hantar alik atas je
 
               navigate('/quotations/overview', { state: { original: location.state.original, company_info: location.state.company_info } })

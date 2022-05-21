@@ -89,6 +89,8 @@ const QuotationHeader: React.FC = () => {
           location.state.original.lock === true && isAdmin === 'Administrator' ? await unlockItem.mutateAsync() :
             await markSelectedItems.mutateAsync()
         }
+        navigate('/quotations/overview', { state: { original: location.state.original, company_info: location.state.company_info } })
+
         return;
       }
     }
@@ -122,6 +124,8 @@ const QuotationHeader: React.FC = () => {
           Array.from(results).forEach((element: any) => {
             location.state.original.attachments?.push(`quotations/${element.filename}`)
           });
+
+          console.log(results)
         }
 
 
@@ -129,7 +133,7 @@ const QuotationHeader: React.FC = () => {
         closeModal()
 
         location.state.original = values // ni hantar alik atas je
-        setHistory(80) // ni hantar ke overview just random change something for history
+        setHistory(Math.floor(Math.random() * 1000)) // ni hantar ke overview just random change something for history
       }
     },
   })
@@ -355,7 +359,7 @@ const QuotationHeader: React.FC = () => {
               </a>
             </li>
             <li className='nav-item'>
-              {(location.state.original.lock === false || isAdmin === 'Administrator') ? <a
+              {(location.state.original.lock === false) ? <a
                 className={
                   `nav-link text-active-primary me-6 ` +
                   (location.pathname === '/quotations/settings' && 'active')

@@ -22,6 +22,8 @@ import { confirm } from "react-confirm-box";
 import { useNavigate } from 'react-router'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { PDFViewer } from '@react-pdf/renderer'
+import { MyDocument } from '../../../../_metronic/partials'
 
 
 export function Overview() {
@@ -244,7 +246,7 @@ export function Overview() {
       </div>
 
       <div>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingRight: '8%' }}>
+        {/* <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingRight: '8%' }}>
 
           <button
             type="button"
@@ -265,8 +267,8 @@ export function Overview() {
           >
             {">"}
           </button>
-        </div>
-        <ToastContainer position='bottom-center' />
+        </div> */}
+        {/* <ToastContainer position='bottom-center' />
         <SizeMe>
           {({ size }) => (
             <Document file={toAbsoluteUrl(`/documents/${match}`)} onLoadSuccess={onDocumentLoadSuccess} onLoadError={
@@ -275,7 +277,11 @@ export function Overview() {
               <Page width={size.width ? size.width : 1} pageNumber={pageNumber} />
             </Document>
           )}
-        </SizeMe>
+        </SizeMe> */}
+        <PDFViewer showToolbar={false} width='100%' height='700px' >
+          <MyDocument formikProps={{ values: location.state.original }} />
+
+        </PDFViewer>
 
         {/* <ChartsWidget1 className='card-xxl-stretch mb-5 mb-xl-10' /> */}
       </div>
