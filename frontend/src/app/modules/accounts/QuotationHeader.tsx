@@ -37,7 +37,10 @@ const QuotationHeader: React.FC = () => {
 
 
   const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
+  const closeModal = () => {
+    setFile([])
+    setIsOpen(false)
+  }
 
 
   // const {history} = useHistoryState()
@@ -120,20 +123,30 @@ const QuotationHeader: React.FC = () => {
 
           });
           const results = await uploadAttachements(fd)
-          
+
           Array.from(results).forEach((element: any) => {
-            location.state.original.attachments?.push(`quotations/${element.filename}`)
+            values.attachments?.push(`quotations/${element.filename}`)
           });
 
-          console.log(results)
+
+
         }
 
+        console.log(values)
 
-        await updateQuotation(values)
-        closeModal()
+        values.lock = location.state.original.lock
 
-        location.state.original = values // ni hantar alik atas je
-        setHistory(Math.floor(Math.random() * 1000)) // ni hantar ke overview just random change something for history
+
+
+        await updateQuotation(values).then(() => {
+          closeModal()
+
+          location.state.original = values // ni hantar alik atas je
+          setHistory(Math.floor(Math.random() * 1000)) // ni hantar ke overview just random change something for history
+        }).catch((e) => {
+          console.log(e)
+        })
+
       }
     },
   })

@@ -33,7 +33,8 @@ export function Overview() {
   const navigate = useNavigate()
 
 
-  // console.log(location)
+  // console.log(location.state.original)
+
 
   const { history } = useHistoryState()
 
@@ -73,6 +74,8 @@ export function Overview() {
     onSuccess: (response: any) => {
       // ✅ update detail view directly
       // setLoading(false);
+
+      // console.log(response)
       location.state.original = response // nak antar  ni ke overview
 
       // setHistory(60)

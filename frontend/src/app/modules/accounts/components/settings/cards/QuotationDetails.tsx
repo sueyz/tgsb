@@ -85,6 +85,8 @@ const getCompanies = (text: String): Promise<CompaniesQueryResponse> => {
 const QuotationDetails: React.FC = () => {
   const location: any = useLocation()
 
+  // console.log(location.state.original)
+
   const initialValues: IProfileDetails = {
     id: location.state.original.id,
     invoiceNo: location.state.original.invoiceNo,
