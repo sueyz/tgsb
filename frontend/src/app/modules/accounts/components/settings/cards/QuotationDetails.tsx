@@ -204,6 +204,14 @@ const QuotationDetails: React.FC = () => {
               values.attachments = newArray
               location.state.original = values // ni hantar alik atas je
 
+              if (refCompany.current !== undefined) {
+                let obj = refCompany.current.find(
+                  (o: any) => o.id === location.state.original.company
+                )
+
+                location.state.company_info = obj
+              }
+
               navigate('/quotations/overview', {
                 state: {
                   original: location.state.original,
