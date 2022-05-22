@@ -27,7 +27,7 @@ export function Overview() {
 
   // console.log(location.state.original)
 
-  const {history} = useHistoryState()
+  const {setHistory} = useHistoryState()
 
   const [numPages, setNumPages] = useState(null)
   const [pageNumber, setPageNumber] = useState(1)
@@ -70,6 +70,10 @@ export function Overview() {
 
         // console.log(response)
         location.state.original = response // nak antar  ni ke overview
+
+        navigate('/quotations/overview', {
+          state: {original: location.state.original, company_info: location.state.company_info},
+        })
 
         // setHistory(60)
       },

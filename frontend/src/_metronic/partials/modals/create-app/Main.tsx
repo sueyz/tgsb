@@ -1,17 +1,23 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { FC, useEffect, useRef } from 'react'
+import React, {FC, useEffect, useRef} from 'react'
 import useState from 'react-usestateref'
-import ReactPDF, { Document, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
-import { KTSVG, toAbsoluteUrl } from '../../../helpers'
-import { Formik, Form, FormikValues, Field, ErrorMessage, FieldArray } from 'formik'
+import ReactPDF, {Document, Page, Text, View, StyleSheet, PDFViewer} from '@react-pdf/renderer'
+import {KTSVG, toAbsoluteUrl} from '../../../helpers'
+import {Formik, Form, FormikValues, Field, ErrorMessage, FieldArray} from 'formik'
 import * as Yup from 'yup'
-import { StepperComponent } from '../../../assets/ts/components'
-import axios, { AxiosResponse } from 'axios'
-import { initialQuotations, Quotations } from '../../../../app/modules/quotations/quotations-list/core/_models'
-import { ID, Response } from '../../../../_metronic/helpers'
-import { Companies, CompaniesQueryResponse } from '../../../../app/modules/companies/companies-list/core/_models'
-import { useQueryResponse } from '../../../../app/modules/quotations/quotations-list/core/QueryResponseProvider';
-import { ToastContainer, toast } from 'react-toastify'
+import {StepperComponent} from '../../../assets/ts/components'
+import axios, {AxiosResponse} from 'axios'
+import {
+  initialQuotations,
+  Quotations,
+} from '../../../../app/modules/quotations/quotations-list/core/_models'
+import {ID, Response} from '../../../../_metronic/helpers'
+import {
+  Companies,
+  CompaniesQueryResponse,
+} from '../../../../app/modules/companies/companies-list/core/_models'
+import {useQueryResponse} from '../../../../app/modules/quotations/quotations-list/core/QueryResponseProvider'
+import {ToastContainer, toast} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 const API_URL = process.env.REACT_APP_THEME_API_URL
@@ -24,7 +30,6 @@ const PDF_UPLOAD_URL = `${API_URL}/quotations/pdf`
 var allTotal = 0
 
 const createQuotations = (quotation: Quotations): Promise<Quotations | undefined> => {
-
   return axios
     .post(QUOTATIONS_URL, quotation)
     .then((response: AxiosResponse<Response<Quotations>>) => response.data)
@@ -40,11 +45,9 @@ const getCompanies = (text: String): Promise<CompaniesQueryResponse> => {
 }
 
 const checkInvoice = (text: String) => {
-  return axios
-    .get(`${CHECK_INVOICE_URL}${text}`)
-    .then((response) => {
-      return response.data
-    })
+  return axios.get(`${CHECK_INVOICE_URL}${text}`).then((response) => {
+    return response.data
+  })
 }
 
 const uploadAttachements = (file: FormData) => {
@@ -70,7 +73,6 @@ const uploadPdf = (file: FormData) => {
     })
 }
 
-
 const createQuotationSchema = [
   Yup.object({
     name: Yup.string().required().label('Quotation name'),
@@ -82,60 +84,47 @@ const createQuotationSchema = [
   }),
   Yup.object({
     workType: Yup.string().required().label('Work type'),
-    quotations: Yup.array().of(
-      Yup.object({
-        desc: Yup.string()
-          .required()
-          .label('Description'),
-        amount: Yup.number()
-          .required()
-          .label('Amount')
-      })
-    ).min(1, 'Quotations')
+    quotations: Yup.array()
+      .of(
+        Yup.object({
+          desc: Yup.string().required().label('Description'),
+          amount: Yup.number().required().label('Amount'),
+        })
+      )
+      .min(1, 'Quotations'),
   }),
   Yup.object({
-    payment_term: Yup.array().of(
-      Yup.object({
-        percentage: Yup.number()
-          .required()
-          .label('Percentage'),
-        desc: Yup.string()
-          .required()
-          .label('Description'),
-        amount: Yup.number()
-          .required()
-          .label('Amount'),
-        date: Yup.date()
-          .required()
-          .label('Date'),
-      })
-    ).min(1, 'Payment Term'),
-    balancePaid: Yup.number()
-      .required()
-      .label('Balance paid')
+    payment_term: Yup.array()
+      .of(
+        Yup.object({
+          percentage: Yup.number().required().label('Percentage'),
+          desc: Yup.string().required().label('Description'),
+          amount: Yup.number().required().label('Amount'),
+          date: Yup.date().required().label('Date'),
+        })
+      )
+      .min(1, 'Payment Term'),
+    balancePaid: Yup.number().required().label('Balance paid'),
   }),
   Yup.object({
-    projectSchedule: Yup.array().of(
-      Yup.object({
-        desc: Yup.string()
-          .required()
-          .label('Description'),
-        week: Yup.string()
-          .required()
-          .label('Week')
-      })
-    ).min(1, 'Project schedule')
+    projectSchedule: Yup.array()
+      .of(
+        Yup.object({
+          desc: Yup.string().required().label('Description'),
+          week: Yup.string().required().label('Week'),
+        })
+      )
+      .min(1, 'Project schedule'),
   }),
   Yup.object({
     address1: Yup.string().required().label('Address 1'),
     zip: Yup.string().required().label('Zip'),
     city: Yup.string().required().label('City'),
-    state: Yup.string().required().label('State')
-  })
+    state: Yup.string().required().label('State'),
+  }),
 ]
 
 const notifyExist = () => toast('Invoice number already used!')
-
 
 const Main: FC = () => {
   const stepperRef = useRef<HTMLDivElement | null>(null)
@@ -143,7 +132,7 @@ const Main: FC = () => {
   const [currentSchema, setCurrentSchema] = useState(createQuotationSchema[0])
   const [company, setCompany, refCompany] = useState<Companies[]>()
   const [initValues] = useState<Quotations>(initialQuotations)
-  const { refetch } = useQueryResponse()
+  const {refetch} = useQueryResponse()
 
   const [file, setFile] = useState<File[]>()
 
@@ -167,7 +156,6 @@ const Main: FC = () => {
   }
 
   const submitStep = async (values: Quotations, actions: FormikValues) => {
-
     if (!stepper.current) {
       return
     }
@@ -180,15 +168,13 @@ const Main: FC = () => {
       // values.company = ""
       await checkInvoice(values.invoiceNo ? values.invoiceNo : '').then(async (response) => {
         if (response.data === null) {
-          var { data } = await getCompanies(values.type ? values.type : "")
+          var {data} = await getCompanies(values.type ? values.type : '')
           setCompany(data)
         } else {
           setCompany(undefined)
           notifyExist()
         }
       })
-
-
     }
     if (stepper.current.currentStepIndex !== stepper.current.totatStepsNumber) {
       stepper.current.goNext()
@@ -196,26 +182,24 @@ const Main: FC = () => {
       if (refCompany.current === undefined) {
         prevStep()
       }
-
     } else {
       values.attachments?.splice(0, values.attachments.length)
 
       if (file !== undefined) {
         let fd = new FormData()
 
-        Array.from(file).forEach(async (file) => {
-          fd.append("attachments", file);
-
-        });
+        Array.from(file).forEach(async (file: any) => {
+          fd.append('attachments', file)
+        })
         const results = await uploadAttachements(fd)
         Array.from(results).forEach((element: any) => {
           values.attachments?.push(`quotations/${element.filename}`)
-        });
+        })
       }
 
       let fd2 = new FormData()
       const newFormat = {
-        values: values
+        values: values,
       }
 
       fd2.append('pdf', await ReactPDF.pdf(<MyDocument formikProps={newFormat} />).toBlob())
@@ -223,9 +207,7 @@ const Main: FC = () => {
       const result2 = await uploadPdf(fd2)
       values.attachments?.push(`quotations/${result2}`)
 
-
       await createQuotations(values)
-
 
       stepper.current.goto(1)
       actions.resetForm()
@@ -248,7 +230,6 @@ const Main: FC = () => {
           <div className='modal-header'>
             <h2>Create Quotation</h2>
             <ToastContainer position='bottom-center' />
-
 
             <div className='btn btn-sm btn-icon btn-active-color-primary' data-bs-dismiss='modal'>
               <KTSVG path='/media/icons/duotune/arrows/arr061.svg' className='svg-icon-1' />
@@ -378,7 +359,11 @@ const Main: FC = () => {
                   enableReinitialize
                 >
                   {(formikProps) => (
-                    <Form className='form' id='kt_modal_create_app_form' onSubmit={formikProps.handleSubmit}>
+                    <Form
+                      className='form'
+                      id='kt_modal_create_app_form'
+                      onSubmit={formikProps.handleSubmit}
+                    >
                       <div className='current' data-kt-stepper-element='content'>
                         <div className='w-100'>
                           <div className='fv-row mb-10'>
@@ -489,8 +474,6 @@ const Main: FC = () => {
                                   />
                                 </span>
                               </label>
-
-
                             </div>
 
                             <div className='text-danger'>
@@ -511,16 +494,22 @@ const Main: FC = () => {
                                 title='Specify your project company'
                               ></i> */}
                             </label>
-                            <p className='fs-7 mb-6' ><i>If company is not in the list, please add first at the companies page</i></p>
+                            <p className='fs-7 mb-6'>
+                              <i>
+                                If company is not in the list, please add first at the companies
+                                page
+                              </i>
+                            </p>
 
-
-                            <div style={{ height: 300, overflowY: 'scroll' }}>
-                              {refCompany.current ?
-
-                                refCompany.current.length > 0 ?
-                                  (
-                                    refCompany.current.map((company: Companies, i) => {
-                                      return <label key={i} className='d-flex flex-stack cursor-pointer mb-5'>
+                            <div style={{height: 300, overflowY: 'scroll'}}>
+                              {refCompany.current ? (
+                                refCompany.current.length > 0 ? (
+                                  refCompany.current.map((company: Companies, i: number) => {
+                                    return (
+                                      <label
+                                        key={i}
+                                        className='d-flex flex-stack cursor-pointer mb-5'
+                                      >
                                         <span className='d-flex align-items-center me-2'>
                                           <span className='symbol symbol-50px me-6'>
                                             {company.avatar ? (
@@ -528,12 +517,15 @@ const Main: FC = () => {
                                                 <img
                                                   src={toAbsoluteUrl(`/media/${company.avatar}`)}
                                                   className='h-100 w-100'
-                                                  style={{ objectFit: 'cover' }}
+                                                  style={{objectFit: 'cover'}}
                                                 />
                                               </div>
                                             ) : (
                                               <div className='symbol-label'>
-                                                <img src={toAbsoluteUrl('/media/avatars/blank.png')} className='w-100' />
+                                                <img
+                                                  src={toAbsoluteUrl('/media/avatars/blank.png')}
+                                                  className='w-100'
+                                                />
                                               </div>
                                             )}
                                           </span>
@@ -541,7 +533,9 @@ const Main: FC = () => {
                                           <span className='d-flex flex-column'>
                                             <span className='fw-bolder fs-6'>{company.name}</span>
 
-                                            <span className='fs-7 text-muted'>{company.type} Quotation</span>
+                                            <span className='fs-7 text-muted'>
+                                              {company.type} Quotation
+                                            </span>
                                           </span>
                                         </span>
 
@@ -554,11 +548,14 @@ const Main: FC = () => {
                                           />
                                         </span>
                                       </label>
-                                    })) : <></>
-
-                                : <></>
-                              }
-
+                                    )
+                                  })
+                                ) : (
+                                  <></>
+                                )
+                              ) : (
+                                <></>
+                              )}
                             </div>
                           </div>
                           <div className='text-danger'>
@@ -588,12 +585,17 @@ const Main: FC = () => {
                                   </span>
                                 </span> */}
 
-                                <Field as='select' name='workType' style={{ textOverflow: 'ellipsis' }} className="form-select" aria-label="Default select example">
-                                  <option value="EIA">Environmental Impact Asssesment</option>
-                                  <option value="EMT">Environmental Mark Assesment</option>
-                                  <option value="DSR">Dynamic Search Rescue</option>
+                                <Field
+                                  as='select'
+                                  name='workType'
+                                  style={{textOverflow: 'ellipsis'}}
+                                  className='form-select'
+                                  aria-label='Default select example'
+                                >
+                                  <option value='EIA'>Environmental Impact Asssesment</option>
+                                  <option value='EMT'>Environmental Mark Assesment</option>
+                                  <option value='DSR'>Dynamic Search Rescue</option>
                                 </Field>
-
                               </span>
                             </label>
                           </div>
@@ -604,46 +606,91 @@ const Main: FC = () => {
                           <div className='fv-row mb-10'>
                             <label className='required fs-5 fw-bold mb-2'>Proposed Fee</label>
 
-
-                            <FieldArray name="quotations">
+                            <FieldArray name='quotations'>
                               {(arrayHelpers) => {
-
                                 return (
                                   <div>
-                                    {formikProps.values.quotations ?
+                                    {formikProps.values.quotations ? (
                                       formikProps.values.quotations.map((value: any, index) => {
-
                                         return (
-                                          <div key={index}><div className='mb-10' style={{ display: 'flex', alignItems: 'center' }}>
-                                            <Field
-                                              component="textarea" rows="3"
-                                              className='form-control form-control-lg form-control-solid'
-                                              name={`quotations.${index}.desc`}
-                                              placeholder='Description' />
-                                          </div>
-                                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 25 }}>
-                                              <b style={{ marginRight: 7 }}>RM</b>
+                                          <div key={index}>
+                                            <div
+                                              className='mb-10'
+                                              style={{display: 'flex', alignItems: 'center'}}
+                                            >
                                               <Field
-                                                type="number"
-                                                rows="1"
+                                                component='textarea'
+                                                rows='3'
+                                                className='form-control form-control-lg form-control-solid'
+                                                name={`quotations.${index}.desc`}
+                                                placeholder='Description'
+                                              />
+                                            </div>
+                                            <div
+                                              style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                marginBottom: 25,
+                                              }}
+                                            >
+                                              <b style={{marginRight: 7}}>RM</b>
+                                              <Field
+                                                type='number'
+                                                rows='1'
                                                 min={0}
                                                 className='form-control form-control-lg form-control-solid'
                                                 name={`quotations.${index}.amount`}
-                                                placeholder='Amount' />
-                                              {index >= 1 ?
-                                                <img style={{ cursor: 'pointer', position: 'absolute', right: 0, marginRight: '5%' }} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
-                                                : <></>}
+                                                placeholder='Amount'
+                                              />
+                                              {index >= 1 ? (
+                                                <img
+                                                  style={{
+                                                    cursor: 'pointer',
+                                                    position: 'absolute',
+                                                    right: 0,
+                                                    marginRight: '5%',
+                                                  }}
+                                                  onClick={() => arrayHelpers.remove(index)}
+                                                  src={toAbsoluteUrl(
+                                                    '/media/icons/duotune/general/trash.png'
+                                                  )}
+                                                ></img>
+                                              ) : (
+                                                <></>
+                                              )}
                                             </div>
-                                            <div className="divider mb-5">{index + 1}</div>
-
+                                            <div className='divider mb-5'>{index + 1}</div>
                                           </div>
-                                        );
-                                      }) : <></>}
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                      <button type='button' onClick={() => arrayHelpers.push({ desc: '', amount: 0 })}>Add more fields</button>
+                                        )
+                                      })
+                                    ) : (
+                                      <></>
+                                    )}
+                                    <div style={{display: 'flex', alignItems: 'center'}}>
+                                      <button
+                                        type='button'
+                                        onClick={() => arrayHelpers.push({desc: '', amount: 0})}
+                                      >
+                                        Add more fields
+                                      </button>
 
-                                      <p style={{ display: 'flex', margin: 'auto', alignItems: 'center', marginRight: 0, width: '30%' }}><b>Total RM: </b>
-                                        <span style={{ marginLeft: 10 }}>{formikProps.values.quotations!.reduce((sum, item: any) => sum + item.amount, 0)}</span></p>
+                                      <p
+                                        style={{
+                                          display: 'flex',
+                                          margin: 'auto',
+                                          alignItems: 'center',
+                                          marginRight: 0,
+                                          width: '30%',
+                                        }}
+                                      >
+                                        <b>Total RM: </b>
+                                        <span style={{marginLeft: 10}}>
+                                          {formikProps.values.quotations!.reduce(
+                                            (sum, item: any) => sum + item.amount,
+                                            0
+                                          )}
+                                        </span>
+                                      </p>
                                     </div>
                                   </div>
                                 )
@@ -652,52 +699,58 @@ const Main: FC = () => {
                           </div>
 
                           <div className='fv-row'>
-
-                            {formikProps.values.quotations ?
+                            {formikProps.values.quotations ? (
                               formikProps.values.quotations.map((quotations: any, index) => {
-
                                 return (
-
-                                  <div key={index}><div className='text-danger'>
-                                    <ErrorMessage name={`quotations.${index}.desc`} />
-                                  </div><div className='text-danger'>
+                                  <div key={index}>
+                                    <div className='text-danger'>
+                                      <ErrorMessage name={`quotations.${index}.desc`} />
+                                    </div>
+                                    <div className='text-danger'>
                                       <ErrorMessage name={`quotations.${index}.amount`} />
-                                    </div></div>
-
-                                );
-                              }) : <></>}
-
+                                    </div>
+                                  </div>
+                                )
+                              })
+                            ) : (
+                              <></>
+                            )}
                           </div>
-
-
                         </div>
                       </div>
 
                       {/* 4 */}
                       <div data-kt-stepper-element='content'>
                         <div className='w-100'>
-
                           <div className='fv-row'>
                             <label className='required fs-5 fw-bold mb-2'>Payment Schedule</label>
 
-                            <FieldArray name="payment_term">
+                            <FieldArray name='payment_term'>
                               {(arrayHelpers) => {
-
                                 return (
                                   <div>
-                                    {formikProps.values.payment_term ?
+                                    {formikProps.values.payment_term ? (
                                       formikProps.values.payment_term.map((value: any, index) => {
-
                                         return (
-                                          <div className='mb-10' key={index} style={{ alignItems: 'center' }}>
-                                            <div style={{ display: 'flex' }}>
-                                              <div style={{ width: '22%', display: 'flex', alignItems: 'center' }}>
-                                                <b style={{ marginRight: 7, marginLeft: 10 }}>%</b>
+                                          <div
+                                            className='mb-10'
+                                            key={index}
+                                            style={{alignItems: 'center'}}
+                                          >
+                                            <div style={{display: 'flex'}}>
+                                              <div
+                                                style={{
+                                                  width: '22%',
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                                }}
+                                              >
+                                                <b style={{marginRight: 7, marginLeft: 10}}>%</b>
                                                 <Field
-                                                  type="number"
+                                                  type='number'
                                                   min={0}
                                                   max={100}
-                                                  rows="1"
+                                                  rows='1'
                                                   className='form-control form-control-lg form-control-solid'
                                                   name={`payment_term.${index}.percentage`}
                                                   placeholder=''
@@ -705,34 +758,58 @@ const Main: FC = () => {
                                               </div>
 
                                               <Field
-                                                style={{ width: '78%', marginLeft: 20 }}
-                                                component="textarea" rows="1"
+                                                style={{width: '78%', marginLeft: 20}}
+                                                component='textarea'
+                                                rows='1'
                                                 className='form-control form-control-lg form-control-solid'
                                                 name={`payment_term.${index}.desc`}
                                                 placeholder='Description'
                                               />
-
                                             </div>
 
-                                            <div style={{ display: 'flex', marginTop: 20 }}>
-                                              <div style={{ width: '22%', margin: 'auto', marginRight: 0, display: 'flex', alignItems: 'center' }}>
-                                                <b style={{ marginRight: 7 }}>RM</b>
+                                            <div style={{display: 'flex', marginTop: 20}}>
+                                              <div
+                                                style={{
+                                                  width: '22%',
+                                                  margin: 'auto',
+                                                  marginRight: 0,
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                                }}
+                                              >
+                                                <b style={{marginRight: 7}}>RM</b>
                                                 <Field
-                                                  type="number"
+                                                  type='number'
                                                   min={0}
                                                   disabled
-                                                  style={{ paddingRight: 0 }}
+                                                  style={{paddingRight: 0}}
                                                   className='form-control form-control-lg form-control-solid'
                                                   name={`payment_term.${index}.amount`}
-                                                  value={value.amount = allTotal * (value.percentage / 100)}
+                                                  value={
+                                                    (value.amount =
+                                                      allTotal * (value.percentage / 100))
+                                                  }
                                                   placeholder='Amount'
                                                 />
-                                                {index >= 1 ?
-                                                  <img style={{ cursor: 'pointer', position: 'absolute', right: 0, marginRight: '5%' }} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
-                                                  : <></>}
+                                                {index >= 1 ? (
+                                                  <img
+                                                    style={{
+                                                      cursor: 'pointer',
+                                                      position: 'absolute',
+                                                      right: 0,
+                                                      marginRight: '5%',
+                                                    }}
+                                                    onClick={() => arrayHelpers.remove(index)}
+                                                    src={toAbsoluteUrl(
+                                                      '/media/icons/duotune/general/trash.png'
+                                                    )}
+                                                  ></img>
+                                                ) : (
+                                                  <></>
+                                                )}
                                               </div>
                                               <Field
-                                                style={{ width: '78%', marginLeft: 20 }}
+                                                style={{width: '78%', marginLeft: 20}}
                                                 type='date'
                                                 className='form-control form-control-lg form-control-solid'
                                                 name={`payment_term.${index}.date`}
@@ -740,16 +817,31 @@ const Main: FC = () => {
                                             </div>
                                             <></>
 
-                                            <div className="divider mt-5">{index + 1}</div>
-
+                                            <div className='divider mt-5'>{index + 1}</div>
                                           </div>
+                                        )
+                                      })
+                                    ) : (
+                                      <></>
+                                    )}
+                                    <div style={{display: 'flex', alignItems: 'center'}}>
+                                      <button
+                                        type='button'
+                                        onClick={() =>
+                                          arrayHelpers.push({
+                                            percentage: 0,
+                                            desc: '',
+                                            amount: 0,
+                                            date: '',
+                                          })
+                                        }
+                                      >
+                                        Add more fields
+                                      </button>
 
-                                        );
-                                      }) : <></>}
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                      <button type='button' onClick={() => arrayHelpers.push({ percentage: 0, desc: '', amount: 0, date: '' })}>Add more fields</button>
-
-                                      <b style={{ margin: 'auto', marginRight: 0, width: '30%' }}>Total RM: {allTotal} </b>
+                                      <b style={{margin: 'auto', marginRight: 0, width: '30%'}}>
+                                        Total RM: {allTotal}{' '}
+                                      </b>
                                     </div>
                                   </div>
                                 )
@@ -758,8 +850,7 @@ const Main: FC = () => {
                           </div>
 
                           <div className='fv-row mb-10'>
-
-                            {formikProps.values.payment_term ?
+                            {formikProps.values.payment_term ? (
                               formikProps.values.payment_term.map((value: any, index) => {
                                 return (
                                   <div key={index}>
@@ -776,10 +867,11 @@ const Main: FC = () => {
                                       <ErrorMessage name={`payment_term.${index}.date`} />
                                     </div>
                                   </div>
-
-                                );
-                              }) : <></>}
-
+                                )
+                              })
+                            ) : (
+                              <></>
+                            )}
                           </div>
                           <div className='fv-row mb-7'>
                             <label className='d-flex align-items-center fs-5 fw-bold mb-4'>
@@ -792,13 +884,13 @@ const Main: FC = () => {
                               ></i> */}
                             </label>
 
-                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                              <b style={{ marginRight: 7 }}>RM</b>
+                            <div style={{display: 'flex', alignItems: 'center'}}>
+                              <b style={{marginRight: 7}}>RM</b>
                               <Field
                                 type='number'
                                 className='form-control form-control-lg form-control-solid'
                                 name='balancePaid'
-                                min="0"
+                                min='0'
                                 placeholder='Balance paid'
                               />
                               <div className='text-danger'>
@@ -812,76 +904,106 @@ const Main: FC = () => {
                       {/* 5 */}
                       <div data-kt-stepper-element='content'>
                         <div className='w-100'>
-
                           <div className='fv-row mb-10'>
-                            <label className='required fs-5 fw-bold mb-2'>Proposed project schedule</label>
+                            <label className='required fs-5 fw-bold mb-2'>
+                              Proposed project schedule
+                            </label>
 
-
-                            <FieldArray name="projectSchedule">
+                            <FieldArray name='projectSchedule'>
                               {(arrayHelpers) => {
-
                                 return (
                                   <div>
-                                    {formikProps.values.projectSchedule ?
-                                      formikProps.values.projectSchedule.map((value: any, index) => {
-
-                                        return (
-                                          <div className='mb-10' key={index}>
-                                            <Field
-                                              style={{ width: '100%' }}
-                                              component="textarea" rows="3"
-                                              className='form-control form-control-lg form-control-solid mb-5'
-                                              name={`projectSchedule.${index}.desc`}
-                                              placeholder='Description'
-                                            />
-
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    {formikProps.values.projectSchedule ? (
+                                      formikProps.values.projectSchedule.map(
+                                        (value: any, index) => {
+                                          return (
+                                            <div className='mb-10' key={index}>
                                               <Field
-                                                style={{ width: '30%' }}
-                                                type="text"
-                                                className='form-control form-control-lg form-control-solid'
-                                                name={`projectSchedule.${index}.week`}
-                                                placeholder='Week'
+                                                style={{width: '100%'}}
+                                                component='textarea'
+                                                rows='3'
+                                                className='form-control form-control-lg form-control-solid mb-5'
+                                                name={`projectSchedule.${index}.desc`}
+                                                placeholder='Description'
                                               />
 
-                                              <div style={{ width: '60%', display: 'flex', alignItems: 'center' }}>
-
+                                              <div
+                                                style={{
+                                                  display: 'flex',
+                                                  justifyContent: 'space-between',
+                                                  alignItems: 'center',
+                                                }}
+                                              >
                                                 <Field
-                                                  component="textarea" rows="2"
+                                                  style={{width: '30%'}}
+                                                  type='text'
                                                   className='form-control form-control-lg form-control-solid'
-                                                  name={`projectSchedule.${index}.remark`}
-                                                  placeholder='Remark'
+                                                  name={`projectSchedule.${index}.week`}
+                                                  placeholder='Week'
                                                 />
 
-                                                {index >= 1 ?
-                                                  <img style={{ cursor: 'pointer', position: 'absolute', right: 0, marginRight: '5%' }} onClick={() => arrayHelpers.remove(index)} src={toAbsoluteUrl('/media/icons/duotune/general/trash.png')}></img>
-                                                  : <></>}
+                                                <div
+                                                  style={{
+                                                    width: '60%',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                  }}
+                                                >
+                                                  <Field
+                                                    component='textarea'
+                                                    rows='2'
+                                                    className='form-control form-control-lg form-control-solid'
+                                                    name={`projectSchedule.${index}.remark`}
+                                                    placeholder='Remark'
+                                                  />
+
+                                                  {index >= 1 ? (
+                                                    <img
+                                                      style={{
+                                                        cursor: 'pointer',
+                                                        position: 'absolute',
+                                                        right: 0,
+                                                        marginRight: '5%',
+                                                      }}
+                                                      onClick={() => arrayHelpers.remove(index)}
+                                                      src={toAbsoluteUrl(
+                                                        '/media/icons/duotune/general/trash.png'
+                                                      )}
+                                                    ></img>
+                                                  ) : (
+                                                    <></>
+                                                  )}
+                                                </div>
                                               </div>
 
+                                              <div className='divider mt-3'>{index + 1}</div>
+
+                                              <></>
                                             </div>
-
-                                            <div className="divider mt-3">{index + 1}</div>
-
-                                            <></>
-
-                                          </div>
-                                        );
-                                      }) : <></>}
-                                    <button type='button' onClick={() => arrayHelpers.push({ desc: '', week: '', remark: '' })}>Add more fields</button>
+                                          )
+                                        }
+                                      )
+                                    ) : (
+                                      <></>
+                                    )}
+                                    <button
+                                      type='button'
+                                      onClick={() =>
+                                        arrayHelpers.push({desc: '', week: '', remark: ''})
+                                      }
+                                    >
+                                      Add more fields
+                                    </button>
                                   </div>
-
                                 )
                               }}
                             </FieldArray>
                           </div>
 
                           <div className='fv-row'>
-
-                            {formikProps.values.projectSchedule ?
+                            {formikProps.values.projectSchedule ? (
                               formikProps.values.projectSchedule.map((value: any, index) => {
-
                                 return (
-
                                   <div key={index}>
                                     <div className='text-danger'>
                                       <ErrorMessage name={`projectSchedule.${index}.desc`} />
@@ -893,16 +1015,14 @@ const Main: FC = () => {
                                       <ErrorMessage name={`projectSchedule.${index}.remark`} />
                                     </div>
                                   </div>
-
-                                );
-                              }) : <></>}
-
+                                )
+                              })
+                            ) : (
+                              <></>
+                            )}
                           </div>
-
-
                         </div>
                       </div>
-
 
                       <div data-kt-stepper-element='content'>
                         <div className='w-100'>
@@ -943,23 +1063,26 @@ const Main: FC = () => {
                               name='address3'
                             />
                           </div>
-                          <div className='d-flex mb-3 fv-row' style={{ justifyContent: 'space-between' }}>
+                          <div
+                            className='d-flex mb-3 fv-row'
+                            style={{justifyContent: 'space-between'}}
+                          >
                             <Field
                               type='text'
                               onKeyPress={(event: any) => {
                                 if (!/[0-9]/.test(event.key)) {
-                                  event.preventDefault();
+                                  event.preventDefault()
                                 }
                               }}
                               maxLength={5}
-                              style={{ width: '30%' }}
+                              style={{width: '30%'}}
                               className='form-control form-control-solid'
                               placeholder='Zip'
                               name='zip'
                             />
                             <Field
                               type='text'
-                              style={{ width: '30%' }}
+                              style={{width: '30%'}}
                               className='form-control form-control-solid'
                               placeholder='City'
                               name='city'
@@ -967,7 +1090,7 @@ const Main: FC = () => {
 
                             <Field
                               as='select'
-                              style={{ width: '30%' }}
+                              style={{width: '30%'}}
                               className='form-select form-select-solid'
                               placeholder='State'
                               name='state'
@@ -988,23 +1111,23 @@ const Main: FC = () => {
                               <option value='Melaka'>Melaka</option>
                               <option value='Sarawak'>Sarawak</option>
                             </Field>
-
                           </div>
-                          <div className='d-flex mb-10 fv-row' style={{ justifyContent: 'space-between' }}>
-                            <div className='text-danger' style={{ width: '30%' }}>
+                          <div
+                            className='d-flex mb-10 fv-row'
+                            style={{justifyContent: 'space-between'}}
+                          >
+                            <div className='text-danger' style={{width: '30%'}}>
                               <ErrorMessage name='zip' />
                             </div>
-                            <div className='text-danger' style={{ width: '30%' }}>
+                            <div className='text-danger' style={{width: '30%'}}>
                               <ErrorMessage name='city' />
                             </div>
-                            <div className='text-danger' style={{ width: '30%' }}>
+                            <div className='text-danger' style={{width: '30%'}}>
                               <ErrorMessage name='state' />
                             </div>
                           </div>
                           <div className='d-flex flex-column mb-3 fv-row'>
-                            <label className='fs-6 fw-bold form-label mb-2'>
-                              Person in charge
-                            </label>
+                            <label className='fs-6 fw-bold form-label mb-2'>Person in charge</label>
 
                             <div className='position-relative'>
                               <Field
@@ -1033,11 +1156,12 @@ const Main: FC = () => {
                             </div>
                           </div>
 
-                          <div className='mb-7 fv-row' style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div style={{ width: '40%' }}>
-                              <label className='fs-6 fw-bold form-label mb-2'>
-                                E-mail
-                              </label>
+                          <div
+                            className='mb-7 fv-row'
+                            style={{display: 'flex', justifyContent: 'space-between'}}
+                          >
+                            <div style={{width: '40%'}}>
+                              <label className='fs-6 fw-bold form-label mb-2'>E-mail</label>
 
                               <div className='position-relative'>
                                 <Field
@@ -1046,13 +1170,10 @@ const Main: FC = () => {
                                   placeholder='E-mail'
                                   name='email'
                                 />
-
                               </div>
                             </div>
-                            <div style={{ width: '40%' }}>
-                              <label className='fs-6 fw-bold form-label mb-2'>
-                                Contact
-                              </label>
+                            <div style={{width: '40%'}}>
+                              <label className='fs-6 fw-bold form-label mb-2'>Contact</label>
 
                               <div className='position-relative'>
                                 <Field
@@ -1061,7 +1182,6 @@ const Main: FC = () => {
                                   placeholder='Contact'
                                   name='contact'
                                 />
-
                               </div>
                             </div>
                           </div>
@@ -1075,18 +1195,16 @@ const Main: FC = () => {
                           <div className='text-muted fw-bold fs-3 mb-5'>
                             Review the generated pdf.
                           </div>
-                          <PDFViewer style={{ height: 500, width: 500, marginBottom: 10 }}>
+                          <PDFViewer style={{height: 500, width: 500, marginBottom: 10}}>
                             <MyDocument formikProps={formikProps} />
-
                           </PDFViewer>
 
                           <div className='d-flex flex-column mb-7 fv-row'>
-                            <label className='fs-6 fw-bold form-label mb-2'>
-                              Additional note
-                            </label>
+                            <label className='fs-6 fw-bold form-label mb-2'>Additional note</label>
                             <div className='position-relative'>
                               <Field
-                                component="textarea" rows="4"
+                                component='textarea'
+                                rows='4'
                                 className='form-control form-control-lg form-control-solid'
                                 placeholder='Note'
                                 name='note'
@@ -1099,7 +1217,7 @@ const Main: FC = () => {
                             </label>
                             <div className='position-relative'>
                               <Field
-                                type="file"
+                                type='file'
                                 name='files'
                                 multiple
                                 onChange={(e: any) => {
@@ -1108,7 +1226,6 @@ const Main: FC = () => {
                               />
                             </div>
                           </div>
-
                         </div>
                       </div>
                       <div className='d-flex flex-stack pt-10'>
@@ -1128,7 +1245,7 @@ const Main: FC = () => {
                         </div>
 
                         <div>
-                          {stepper.current?.currentStepIndex !== 7 &&
+                          {stepper.current?.currentStepIndex !== 7 && (
                             <button type='submit' className='btn btn-lg btn-primary me-3'>
                               <span className='indicator-label'>
                                 Continue
@@ -1137,9 +1254,15 @@ const Main: FC = () => {
                                   className='svg-icon-3 ms-2 me-0'
                                 />
                               </span>
-                            </button>}
-                          {stepper.current?.currentStepIndex === 7 &&
-                            <button disabled={formikProps.isSubmitting} type='submit' data-bs-dismiss='modal' className='btn btn-lg btn-primary me-3'>
+                            </button>
+                          )}
+                          {stepper.current?.currentStepIndex === 7 && (
+                            <button
+                              disabled={formikProps.isSubmitting}
+                              type='submit'
+                              data-bs-dismiss='modal'
+                              className='btn btn-lg btn-primary me-3'
+                            >
                               <span className='indicator-label'>
                                 Submit
                                 <KTSVG
@@ -1147,8 +1270,8 @@ const Main: FC = () => {
                                   className='svg-icon-3 ms-2 me-0'
                                 />
                               </span>
-                            </button>}
-
+                            </button>
+                          )}
                         </div>
                       </div>
                     </Form>
@@ -1166,152 +1289,345 @@ const Main: FC = () => {
 const Proposed = (fee: any) => {
   var totalProposed = 0
 
-  return fee.props.formikProps.values.quotations ?
+  return fee.props.formikProps.values.quotations ? (
     fee.props.formikProps.values.quotations.map((value: any, index: number) => {
-
       totalProposed += Number(value.amount)
 
       allTotal = totalProposed
       return (
-        <div key={index}><View style={[styles.row]}>
-          <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
-          <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.desc}</Text>
-          <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.amount}</Text>
-        </View>
+        <div key={index}>
           <View style={[styles.row]}>
-            {fee.props.formikProps.values.quotations?.length === index + 1 &&
+            <Text style={[styles.cell, {width: '5%', borderRight: 0, borderBottom: 0}]}>
+              {index + 1}
+            </Text>
+            <Text
+              style={[
+                styles.cell,
+                {
+                  width: '70%',
+                  borderRight: 0,
+                  textAlign: 'left',
+                  paddingLeft: 10,
+                  paddingBottom: 10,
+                  borderBottom: 0,
+                },
+              ]}
+            >
+              {value.desc}
+            </Text>
+            <Text style={[styles.cell, {width: '25%', borderBottom: 0}]}>{value.amount}</Text>
+          </View>
+          <View style={[styles.row]}>
+            {fee.props.formikProps.values.quotations?.length === index + 1 && (
               <>
-                <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 2}</Text>
-                <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>Total</Text>
-                <Text style={[styles.cell, { width: '25%', fontWeight: 'bold' }]}>{totalProposed}</Text></>
-            }
-          </View></div>
-      );
-    }) : <></>
+                <Text style={[styles.cell, {width: '5%', borderRight: 0}]}>{index + 2}</Text>
+                <Text
+                  style={[
+                    styles.cell,
+                    {
+                      width: '70%',
+                      borderRight: 0,
+                      textAlign: 'left',
+                      paddingLeft: 10,
+                      paddingBottom: 10,
+                    },
+                  ]}
+                >
+                  Total
+                </Text>
+                <Text style={[styles.cell, {width: '25%', fontWeight: 'bold'}]}>
+                  {totalProposed}
+                </Text>
+              </>
+            )}
+          </View>
+        </div>
+      )
+    })
+  ) : (
+    <></>
+  )
 }
 
 const Term = (term: any) => {
   var totalTerm = 0
 
-  return term.props.formikProps.values.payment_term ?
+  return term.props.formikProps.values.payment_term ? (
     term.props.formikProps.values.payment_term.map((value: any, index: number) => {
       totalTerm += Number(value.amount)
       return (
-        <div key={index}><View style={[styles.row]}>
-          <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
-          <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.percentage}% {value.desc}</Text>
-          <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.amount}</Text>
-        </View>
+        <div key={index}>
           <View style={[styles.row]}>
-            {term.props.formikProps.values.payment_term?.length === index + 1 &&
+            <Text style={[styles.cell, {width: '5%', borderRight: 0, borderBottom: 0}]}>
+              {index + 1}
+            </Text>
+            <Text
+              style={[
+                styles.cell,
+                {
+                  width: '70%',
+                  borderRight: 0,
+                  textAlign: 'left',
+                  paddingLeft: 10,
+                  paddingBottom: 10,
+                  borderBottom: 0,
+                },
+              ]}
+            >
+              {value.percentage}% {value.desc}
+            </Text>
+            <Text style={[styles.cell, {width: '25%', borderBottom: 0}]}>{value.amount}</Text>
+          </View>
+          <View style={[styles.row]}>
+            {term.props.formikProps.values.payment_term?.length === index + 1 && (
               <>
-                <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 2}</Text>
-                <Text style={[styles.cell, { width: '70%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>Total</Text>
-                <Text style={[styles.cell, { width: '25%', fontWeight: 'bold' }]}>{totalTerm}</Text></>
-            }
+                <Text style={[styles.cell, {width: '5%', borderRight: 0}]}>{index + 2}</Text>
+                <Text
+                  style={[
+                    styles.cell,
+                    {
+                      width: '70%',
+                      borderRight: 0,
+                      textAlign: 'left',
+                      paddingLeft: 10,
+                      paddingBottom: 10,
+                    },
+                  ]}
+                >
+                  Total
+                </Text>
+                <Text style={[styles.cell, {width: '25%', fontWeight: 'bold'}]}>{totalTerm}</Text>
+              </>
+            )}
           </View>
         </div>
-      );
-    }) : <></>
+      )
+    })
+  ) : (
+    <></>
+  )
 }
 
 const MyDocument = (props: any) => (
   <Document>
-    <Page style={styles.page} size="A4">
+    <Page style={styles.page} size='A4'>
       <View style={styles.table}>
-        <Text style={{ fontSize: 11, fontWeight: 1000, marginBottom: 15 }}>Table 1.0: Proposed Fee for Preparing the {props.formikProps.values.workType}</Text>
+        <Text style={{fontSize: 11, fontWeight: 1000, marginBottom: 15}}>
+          Table 1.0: Proposed Fee for Preparing the {props.formikProps.values.workType}
+        </Text>
         <View style={[styles.row]}>
-          <Text style={[styles.headerText, styles.cell, { width: '5%', borderRight: 0, borderBottom: 0 }]}>#</Text>
-          <Text style={[styles.headerText, styles.cell, { width: '70%', borderRight: 0, borderBottom: 0, paddingLeft: "7%" }]}>Description</Text>
-          <Text style={[styles.headerText, styles.cell, { width: '25%', borderBottom: 0 }]}>Amount (RM)</Text>
+          <Text
+            style={[styles.headerText, styles.cell, {width: '5%', borderRight: 0, borderBottom: 0}]}
+          >
+            #
+          </Text>
+          <Text
+            style={[
+              styles.headerText,
+              styles.cell,
+              {width: '70%', borderRight: 0, borderBottom: 0, paddingLeft: '7%'},
+            ]}
+          >
+            Description
+          </Text>
+          <Text style={[styles.headerText, styles.cell, {width: '25%', borderBottom: 0}]}>
+            Amount (RM)
+          </Text>
         </View>
         <Proposed props={props} />
 
-        <Text style={{ fontSize: 11, fontWeight: 1000, marginBottom: 15, marginTop: 50 }}>Table 2.0: Schedule of Payment for Preparing the {props.formikProps.values.workType}</Text>
+        <Text style={{fontSize: 11, fontWeight: 1000, marginBottom: 15, marginTop: 50}}>
+          Table 2.0: Schedule of Payment for Preparing the {props.formikProps.values.workType}
+        </Text>
         <View style={[styles.row]}>
-          <Text style={[styles.headerText, styles.cell, { width: '5%', borderRight: 0, borderBottom: 0 }]}>#</Text>
-          <Text style={[styles.headerText, styles.cell, { width: '70%', borderRight: 0, borderBottom: 0, paddingLeft: "7%" }]}>Term of Payment</Text>
-          <Text style={[styles.headerText, styles.cell, { width: '25%', borderBottom: 0 }]}>Amount (RM)</Text>
+          <Text
+            style={[styles.headerText, styles.cell, {width: '5%', borderRight: 0, borderBottom: 0}]}
+          >
+            #
+          </Text>
+          <Text
+            style={[
+              styles.headerText,
+              styles.cell,
+              {width: '70%', borderRight: 0, borderBottom: 0, paddingLeft: '7%'},
+            ]}
+          >
+            Term of Payment
+          </Text>
+          <Text style={[styles.headerText, styles.cell, {width: '25%', borderBottom: 0}]}>
+            Amount (RM)
+          </Text>
         </View>
         <Term props={props} />
 
-        <View style={{ display: 'flex', flexDirection: 'row', fontSize: 9, marginTop: 5, textAlign: 'left', lineHeight: 1.5, paddingRight: 30 }}>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            fontSize: 9,
+            marginTop: 5,
+            textAlign: 'left',
+            lineHeight: 1.5,
+            paddingRight: 30,
+          }}
+        >
           <Text>Note: </Text>
           <Text> - </Text>
-          <Text> Make all cheque payable to TROPICAL GROWTH (M) SDN BHD or kindly bank in to TROPICAL GROWTH (M) SDN BHD (Maybank Account no: 553038601340)</Text>
-
+          <Text>
+            {' '}
+            Make all cheque payable to TROPICAL GROWTH (M) SDN BHD or kindly bank in to TROPICAL
+            GROWTH (M) SDN BHD (Maybank Account no: 553038601340)
+          </Text>
         </View>
       </View>
     </Page>
 
-    <Page style={styles.page} size="A4">
+    <Page style={styles.page} size='A4'>
       <View style={styles.table}>
-        <Text style={{ fontSize: 11, fontWeight: 1000, marginBottom: 15 }}>Table 3.0: Proposed Project Schedule</Text>
+        <Text style={{fontSize: 11, fontWeight: 1000, marginBottom: 15}}>
+          Table 3.0: Proposed Project Schedule
+        </Text>
         <View style={[styles.row]}>
-          <Text style={[styles.headerText, styles.cell, { width: '5%', borderRight: 0, borderBottom: 0 }]}>#</Text>
-          <Text style={[styles.headerText, styles.cell, { width: '55%', borderRight: 0, borderBottom: 0 }]}>Description</Text>
-          <Text style={[styles.headerText, styles.cell, { width: '15%', borderRight: 0, borderBottom: 0 }]}>Week No</Text>
-          <Text style={[styles.headerText, styles.cell, { width: '25%', borderBottom: 0 }]}>Remarks</Text>
+          <Text
+            style={[styles.headerText, styles.cell, {width: '5%', borderRight: 0, borderBottom: 0}]}
+          >
+            #
+          </Text>
+          <Text
+            style={[
+              styles.headerText,
+              styles.cell,
+              {width: '55%', borderRight: 0, borderBottom: 0},
+            ]}
+          >
+            Description
+          </Text>
+          <Text
+            style={[
+              styles.headerText,
+              styles.cell,
+              {width: '15%', borderRight: 0, borderBottom: 0},
+            ]}
+          >
+            Week No
+          </Text>
+          <Text style={[styles.headerText, styles.cell, {width: '25%', borderBottom: 0}]}>
+            Remarks
+          </Text>
         </View>
-        {props.formikProps.values.projectSchedule ?
+        {props.formikProps.values.projectSchedule ? (
           props.formikProps.values.projectSchedule.map((value: any, index: number) => {
             return (
-              <div key={index}><View style={[styles.row]}>
-                {props.formikProps.values.projectSchedule?.length !== index + 1 ? <>
-
-                  <Text style={[styles.cell, { width: '5%', borderRight: 0, borderBottom: 0, }]}>{index + 1}</Text>
-                  <Text style={[styles.cell, { width: '55%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10, borderBottom: 0, }]}>{value.desc}</Text>
-                  <Text style={[styles.cell, { width: '15%', borderBottom: 0, borderRight: 0, }]}>{value.week}</Text>
-                  <Text style={[styles.cell, { width: '25%', borderBottom: 0, }]}>{value.remark}</Text></> :
-                  <>
-                    <Text style={[styles.cell, { width: '5%', borderRight: 0 }]}>{index + 1}</Text>
-                    <Text style={[styles.cell, { width: '55%', borderRight: 0, textAlign: 'left', paddingLeft: 10, paddingBottom: 10 }]}>{value.desc}</Text>
-                    <Text style={[styles.cell, { width: '15%', borderRight: 0, }]}>{value.week}</Text>
-                    <Text style={[styles.cell, { width: '25%' }]}>{value.remark}</Text></>
-                }
-
-              </View>
-
+              <div key={index}>
+                <View style={[styles.row]}>
+                  {props.formikProps.values.projectSchedule?.length !== index + 1 ? (
+                    <>
+                      <Text style={[styles.cell, {width: '5%', borderRight: 0, borderBottom: 0}]}>
+                        {index + 1}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.cell,
+                          {
+                            width: '55%',
+                            borderRight: 0,
+                            textAlign: 'left',
+                            paddingLeft: 10,
+                            paddingBottom: 10,
+                            borderBottom: 0,
+                          },
+                        ]}
+                      >
+                        {value.desc}
+                      </Text>
+                      <Text style={[styles.cell, {width: '15%', borderBottom: 0, borderRight: 0}]}>
+                        {value.week}
+                      </Text>
+                      <Text style={[styles.cell, {width: '25%', borderBottom: 0}]}>
+                        {value.remark}
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text style={[styles.cell, {width: '5%', borderRight: 0}]}>{index + 1}</Text>
+                      <Text
+                        style={[
+                          styles.cell,
+                          {
+                            width: '55%',
+                            borderRight: 0,
+                            textAlign: 'left',
+                            paddingLeft: 10,
+                            paddingBottom: 10,
+                          },
+                        ]}
+                      >
+                        {value.desc}
+                      </Text>
+                      <Text style={[styles.cell, {width: '15%', borderRight: 0}]}>
+                        {value.week}
+                      </Text>
+                      <Text style={[styles.cell, {width: '25%'}]}>{value.remark}</Text>
+                    </>
+                  )}
+                </View>
               </div>
-            );
-          }) : <></>}
-        <View style={{ display: 'flex', flexDirection: 'row', fontSize: 9, marginTop: 5, textAlign: 'left', lineHeight: 1.5, paddingRight: 30 }}>
+            )
+          })
+        ) : (
+          <></>
+        )}
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            fontSize: 9,
+            marginTop: 5,
+            textAlign: 'left',
+            lineHeight: 1.5,
+            paddingRight: 30,
+          }}
+        >
           <Text>Note: </Text>
           <Text> - </Text>
-          <Text> This proposed schedule however, will be very much depending on delivery of requested information, payment made by project proponent on every stage of claim. Any delay may affect the overall schedule of {props.formikProps.values.workType} preparation and submission.</Text>
+          <Text>
+            {' '}
+            This proposed schedule however, will be very much depending on delivery of requested
+            information, payment made by project proponent on every stage of claim. Any delay may
+            affect the overall schedule of {props.formikProps.values.workType} preparation and
+            submission.
+          </Text>
         </View>
       </View>
     </Page>
   </Document>
-);
+)
 
 const styles = StyleSheet.create({
-  page: { flexDirection: "column", padding: 25, textAlign: 'center', marginTop: 30 },
+  page: {flexDirection: 'column', padding: 25, textAlign: 'center', marginTop: 30},
   table: {
     fontSize: 10,
     // alignItems: 'stretch'
   },
   row: {
-    display: "flex",
-    flexDirection: "row",
+    display: 'flex',
+    flexDirection: 'row',
     width: '100%',
   },
   cell: {
-    borderStyle: "solid",
+    borderStyle: 'solid',
     borderWidth: 1.5,
     paddingTop: 9,
     // flexShrink: 1,
     // flexGrow: 1,
     // alignSelf: "stretch"
-
-
   },
   headerText: {
     fontSize: 11,
     justifyContent: 'center',
     fontWeight: 'bold',
-    paddingBottom: 5
-  }
-});
+    paddingBottom: 5,
+  },
+})
 
-export { Main, MyDocument }
+export {Main, MyDocument}

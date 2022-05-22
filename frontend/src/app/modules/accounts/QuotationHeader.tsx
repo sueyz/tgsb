@@ -110,6 +110,7 @@ const QuotationHeader: React.FC = () => {
     initialValues: {
       ...location.state.original,
     },
+    enableReinitialize: true,
     validationSchema: editBalanceSchema,
     onSubmit: async (values, {setSubmitting}) => {
       setSubmitting(true)
@@ -123,6 +124,7 @@ const QuotationHeader: React.FC = () => {
           const results = await uploadAttachements(fd)
 
           Array.from(results).forEach((element: any) => {
+            console.log(results)
             values.attachments?.push(`quotations/${element.filename}`)
           })
         }

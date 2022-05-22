@@ -1,27 +1,25 @@
-import { Route, Routes, Outlet, Navigate } from 'react-router-dom'
-import { PageLink, PageTitle } from '../../../_metronic/layout/core'
-import { QuotationHeader } from '../accounts/QuotationHeader'
-import { Overview } from '../accounts/components/Overview'
-import { Settings } from '../accounts/components/settings/Settings'
-import { QuotationsListWrapper } from './quotations-list/QuotationsList'
-import { createContext, Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
-
+import {Route, Routes, Outlet, Navigate} from 'react-router-dom'
+import {PageLink, PageTitle} from '../../../_metronic/layout/core'
+import {QuotationHeader} from '../accounts/QuotationHeader'
+import {Overview} from '../accounts/components/Overview'
+import {Settings} from '../accounts/components/settings/Settings'
+import {QuotationsListWrapper} from './quotations-list/QuotationsList'
+import {createContext, Dispatch, SetStateAction, useContext, useMemo, useState} from 'react'
 
 export interface HistoryType {
-  history?: number;
-  setHistory: (value: number) => void;
+  history?: number
+  setHistory: (value: number) => void
 }
 
-export const HistoryContext = createContext<HistoryType | undefined>(undefined);
+export const HistoryContext = createContext<HistoryType | undefined>(undefined)
 
 export const useHistoryState = () => {
-  const context = useContext(HistoryContext);
+  const context = useContext(HistoryContext)
   if (context === undefined) {
-    throw new Error('useHistoryState error');
+    throw new Error('useHistoryState error')
   }
-  return context;
-};
-
+  return context
+}
 
 const quotationsBreadcrumbs: Array<PageLink> = [
   {
@@ -39,59 +37,59 @@ const quotationsBreadcrumbs: Array<PageLink> = [
 ]
 
 const QuotationsPage = () => {
-  const [history, setHistory] = useState<number | undefined>();
+  const [history, setHistory] = useState<number | undefined>()
 
   const value = useMemo(() => {
-    return { history, setHistory };
-  }, [history]);
+    return {history, setHistory}
+  }, [history])
 
-  return <Routes>
-    <Route
-      path='list'
-      element={
-        <>
-          {/* <PageTitle breadcrumbs={accountBreadCrumbs}>Overview</PageTitle> */}
-          <QuotationsListWrapper />
-        </>
-      }
-    />
-    <Route
-      element={
-        <>
-          <HistoryContext.Provider value={value}>
-
-            <QuotationHeader />
-            <Outlet />
-          </HistoryContext.Provider >
-
-        </>
-      }
-    >
+  return (
+    <Routes>
       <Route
-        path='overview'
+        path='list'
         element={
           <>
-            {/* <PageTitle breadcrumbs={accountBreadCrumbs}>Settings</PageTitle> */}
-            <Overview />
-
-            {/* <Settings /> */}
+            {/* <PageTitle breadcrumbs={accountBreadCrumbs}>Overview</PageTitle> */}
+            <QuotationsListWrapper />
           </>
         }
       />
       <Route
-        path='settings'
         element={
           <>
-            {/* <PageTitle breadcrumbs={accountBreadCrumbs}>Settings</PageTitle> */}
-            {/* <Overview /> */}
-
-            <Settings />
+            <HistoryContext.Provider value={value}>
+              <QuotationHeader />
+              <Outlet />
+            </HistoryContext.Provider>
           </>
         }
-      />
-    </Route>
-    <Route index element={<Navigate to='/quotations/list' />} />
-  </Routes>
+      >
+        <Route
+          path='overview'
+          element={
+            <>
+              {/* <PageTitle breadcrumbs={accountBreadCrumbs}>Settings</PageTitle> */}
+              <Overview />
+
+              {/* <Settings /> */}
+            </>
+          }
+        />
+        <Route
+          path='settings'
+          element={
+            <>
+              {/* <PageTitle breadcrumbs={accountBreadCrumbs}>Settings</PageTitle> */}
+              {/* <Overview /> */}
+
+              <Settings />
+            </>
+          }
+        />
+      </Route>
+      <Route index element={<Navigate to='/quotations/list' />} />
+    </Routes>
+  )
 }
 
 export default QuotationsPage
