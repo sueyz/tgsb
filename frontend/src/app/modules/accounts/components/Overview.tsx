@@ -1,55 +1,52 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { KTSVG, toAbsoluteUrl } from '../../../../_metronic/helpers'
-import { useLocation } from 'react-router'
-import { shallowEqual, useSelector } from 'react-redux'
-import { RootState } from '../../../../setup'
-import { useHistoryState } from '../../quotations/QuotationsPage'
-import { Document, Page } from 'react-pdf/dist/esm/entry.webpack'
-import { SizeMe } from 'react-sizeme'
+import React, {useState} from 'react'
+import {Link} from 'react-router-dom'
+import {KTSVG, toAbsoluteUrl} from '../../../../_metronic/helpers'
+import {useLocation} from 'react-router'
+import {shallowEqual, useSelector} from 'react-redux'
+import {RootState} from '../../../../setup'
+import {useHistoryState} from '../../quotations/QuotationsPage'
+import {Document, Page} from 'react-pdf/dist/esm/entry.webpack'
+import {SizeMe} from 'react-sizeme'
 
-import { FileIcon, defaultStyles } from 'react-file-icon'
-import { useMutation } from 'react-query'
-import { deleteQuotation, deletePdf } from '../../quotations/quotations-list/core/_requests'
-import { confirm } from "react-confirm-box";
-import { useNavigate } from 'react-router'
-import { ToastContainer, toast } from 'react-toastify'
+import {FileIcon, defaultStyles} from 'react-file-icon'
+import {useMutation} from 'react-query'
+import {deleteQuotation, deletePdf} from '../../quotations/quotations-list/core/_requests'
+import {confirm} from 'react-confirm-box'
+import {useNavigate} from 'react-router'
+import {ToastContainer, toast} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { PDFViewer } from '@react-pdf/renderer'
-import { MyDocument } from '../../../../_metronic/partials'
-
+import {PDFViewer} from '@react-pdf/renderer'
+import {MyDocument} from '../../../../_metronic/partials'
 
 export function Overview() {
-  const isAdmin = useSelector<RootState>(({ auth }) => auth.user?.role, shallowEqual)
+  const isAdmin = useSelector<RootState>(({auth}) => auth.user?.role, shallowEqual)
 
   const location: any = useLocation()
   const navigate = useNavigate()
 
-
   // console.log(location.state.original)
 
+  const {history} = useHistoryState()
 
-  const { history } = useHistoryState()
+  const [numPages, setNumPages] = useState(null)
+  const [pageNumber, setPageNumber] = useState(1)
 
-  const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
-
-  function onDocumentLoadSuccess({ numPages }: any) {
-    setNumPages(numPages);
-    setPageNumber(1);
+  function onDocumentLoadSuccess({numPages}: any) {
+    setNumPages(numPages)
+    setPageNumber(1)
   }
 
   function changePage(offset: number) {
-    setPageNumber(prevPageNumber => prevPageNumber + offset);
+    setPageNumber((prevPageNumber) => prevPageNumber + offset)
   }
 
   function previousPage() {
-    changePage(-1);
+    changePage(-1)
   }
 
   function nextPage() {
-    changePage(1);
+    changePage(1)
   }
 
   const deleteItem = useMutation(() => deleteQuotation(location.state.original.id), {
@@ -62,27 +59,28 @@ export function Overview() {
     },
   })
 
-  const deletePdfItem = useMutation((element: { path: any; attachments: any; }) => deletePdf(location.state.original.id, element), {
-    // 💡 response of the mutation is passed to onSuccess
+  const deletePdfItem = useMutation(
+    (element: {path: any; attachments: any}) => deletePdf(location.state.original.id, element),
+    {
+      // 💡 response of the mutation is passed to onSuccess
 
-    onSuccess: (response: any) => {
-      // ✅ update detail view directly
-      // setLoading(false);
+      onSuccess: (response: any) => {
+        // ✅ update detail view directly
+        // setLoading(false);
 
-      // console.log(response)
-      location.state.original = response // nak antar  ni ke overview
+        // console.log(response)
+        location.state.original = response // nak antar  ni ke overview
 
-      // setHistory(60)
-
-    },
-  })
-
+        // setHistory(60)
+      },
+    }
+  )
 
   const match = location.state.original.attachments.find((element: any) => {
-    if (element.includes("_Quotations_summary")) {
-      return true;
+    if (element.includes('_Quotations_summary')) {
+      return true
     }
-  });
+  })
 
   return (
     <>
@@ -91,31 +89,46 @@ export function Overview() {
           <div className='card-title m-0'>
             <h3 className='fw-bolder m-0'>Quotation Details</h3>
           </div>
-          {(location.state.original.lock === false) ? <button
-            style={{ margin: 'auto', marginRight: 20, padding: 7 }}
-            type='button'
-            className='btn btn-danger'
-            onClick={async () => {
-              const result = await confirm("Are you sure?");
-              if (result) {
-                // setLoading(true)
-                await deleteItem.mutateAsync()
-                return;
-              }
-            }
-            }
-          >
-            Delete Quotation
-          </button> : <></>}
-          {(location.state.original.lock === false) ? <button style={{ padding: 7 }} className='btn btn-primary align-self-center' onClick={() => {
-            navigate('/quotations/settings', { state: { original: location.state.original, company_info: location.state.company_info } })
-          }}>
-            Edit Quotation
-          </button> : <></>}
+          {location.state.original.lock === false ? (
+            <button
+              style={{margin: 'auto', marginRight: 20, padding: 7}}
+              type='button'
+              className='btn btn-danger'
+              onClick={async () => {
+                const result = await confirm('Are you sure?')
+                if (result) {
+                  // setLoading(true)
+                  await deleteItem.mutateAsync()
+                  return
+                }
+              }}
+            >
+              Delete Quotation
+            </button>
+          ) : (
+            <></>
+          )}
+          {location.state.original.lock === false ? (
+            <button
+              style={{padding: 7}}
+              className='btn btn-primary align-self-center'
+              onClick={() => {
+                navigate('/quotations/settings', {
+                  state: {
+                    original: location.state.original,
+                    company_info: location.state.company_info,
+                  },
+                })
+              }}
+            >
+              Edit Quotation
+            </button>
+          ) : (
+            <></>
+          )}
         </div>
 
         <div className='card-body p-9'>
-
           <div className='row mb-7'>
             <label className='col-lg-4 fw-bold text-muted'>Invoice No</label>
 
@@ -160,7 +173,13 @@ export function Overview() {
             <label className='col-lg-4 fw-bold text-muted'>Address</label>
 
             <div className='col-lg-8 fv-row'>
-              <span className='fw-bolder fs-6'>{location.state.original.address1}, {location.state.original.address2 ? location.state.original.address2 + ',' : ''} {location.state.original.address3 ? location.state.original.address3 + ',' : ''} {location.state.original.zip}, {location.state.original.city}, {location.state.original.state}</span>
+              <span className='fw-bolder fs-6'>
+                {location.state.original.address1},{' '}
+                {location.state.original.address2 ? location.state.original.address2 + ',' : ''}{' '}
+                {location.state.original.address3 ? location.state.original.address3 + ',' : ''}{' '}
+                {location.state.original.zip}, {location.state.original.city},{' '}
+                {location.state.original.state}
+              </span>
             </div>
           </div>
 
@@ -168,7 +187,9 @@ export function Overview() {
             <label className='col-lg-4 fw-bold text-muted'>Person In Charge</label>
 
             <div className='col-lg-8'>
-              <span className='fw-bolder fs-6 text-dark'>{location.state.original.poc ? location.state.original.poc : "-"}</span>
+              <span className='fw-bolder fs-6 text-dark'>
+                {location.state.original.poc ? location.state.original.poc : '-'}
+              </span>
             </div>
           </div>
 
@@ -176,7 +197,9 @@ export function Overview() {
             <label className='col-lg-4 fw-bold text-muted'>Phone</label>
 
             <div className='col-lg-8'>
-              <span className='fw-bolder fs-6 text-dark'>{location.state.original.contact ? location.state.original.contact : "-"}</span>
+              <span className='fw-bolder fs-6 text-dark'>
+                {location.state.original.contact ? location.state.original.contact : '-'}
+              </span>
             </div>
           </div>
 
@@ -184,7 +207,9 @@ export function Overview() {
             <label className='col-lg-4 fw-bold text-muted'>Email</label>
 
             <div className='col-lg-8'>
-              <span className='fw-bolder fs-6 text-dark'>{location.state.original.email ? location.state.original.email : "-"}</span>
+              <span className='fw-bolder fs-6 text-dark'>
+                {location.state.original.email ? location.state.original.email : '-'}
+              </span>
             </div>
           </div>
 
@@ -192,7 +217,9 @@ export function Overview() {
             <label className='col-lg-4 fw-bold text-muted'>Note</label>
 
             <div className='col-lg-8 fv-row'>
-              <span className='fw-bolder fs-6'>{location.state.original.note ? location.state.original.note : "-"}</span>
+              <span className='fw-bolder fs-6'>
+                {location.state.original.note ? location.state.original.note : '-'}
+              </span>
             </div>
           </div>
 
@@ -200,7 +227,7 @@ export function Overview() {
             <label className='col-lg-4 fw-bold text-muted'>Lock</label>
 
             <div className='col-lg-8'>
-              <span className='fw-bold fs-6'>{(location.state.original.lock).toString()}</span>
+              <span className='fw-bold fs-6'>{location.state.original.lock.toString()}</span>
             </div>
           </div>
 
@@ -210,33 +237,48 @@ export function Overview() {
             <div className='col-lg-8'>
               {location.state.original.attachments.map((element: any, i: number) => {
                 var str = element.replace('quotations/', '')
-                var last: any = str.substring(str.lastIndexOf(".") + 1)
+                var last: any = str.substring(str.lastIndexOf('.') + 1)
 
+                return (
+                  <div key={i} style={{marginBottom: 7, display: 'flex', alignItems: 'center'}}>
+                    {str.substring(str.indexOf('_') + 1).includes('Quotations_summary') ||
+                    location.state.original.lock === true ? (
+                      <></>
+                    ) : (
+                      <span
+                        onClick={async () => {
+                          var placeholder = {
+                            path: element,
+                            attachments: location.state.original.attachments,
+                          }
 
-                return <div key={i} style={{ marginBottom: 7, display: 'flex', alignItems: 'center' }}>
+                          await deletePdfItem.mutateAsync(placeholder)
+                        }}
+                        style={{
+                          marginRight: 15,
+                          fontSize: 25,
+                          fontWeight: 'bold',
+                          color: '#000',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        &times;
+                      </span>
+                    )}
 
-                  {((str.substring(str.indexOf("_") + 1)).includes('Quotations_summary') || location.state.original.lock === true) ? <></> :
-                    <span onClick={async () => {
-
-                      var placeholder = {
-                        path: element,
-                        attachments: location.state.original.attachments
-                      }
-
-                      await deletePdfItem.mutateAsync(placeholder)
-
-                    }} style={{ marginRight: 15, fontSize: 25, fontWeight: 'bold', color: '#000', cursor: 'pointer' }}>&times;</span>
-                  }
-
-                  <div style={{ width: 20, marginRight: 15 }}>
-                    <FileIcon extension={last} {...(defaultStyles as any)[last]} />
+                    <div style={{width: 20, marginRight: 15}}>
+                      <FileIcon extension={last} {...(defaultStyles as any)[last]} />
+                    </div>
+                    <Link
+                      to={toAbsoluteUrl(`/documents/${element}`)}
+                      target='_blank'
+                      download={str.substring(str.indexOf('_') + 1)}
+                    >
+                      {str.substring(str.indexOf('_') + 1)}
+                    </Link>
                   </div>
-                  <Link to={toAbsoluteUrl(`/documents/${element}`)} target="_blank" download={str.substring(str.indexOf("_") + 1)}>{str.substring(str.indexOf("_") + 1)}</Link>
-
-                </div>
+                )
               })}
-
-
             </div>
           </div>
         </div>
@@ -275,9 +317,8 @@ export function Overview() {
             </Document>
           )}
         </SizeMe> */}
-        <PDFViewer showToolbar={false} width='100%' height='700px' >
-          <MyDocument formikProps={{ values: location.state.original }} />
-
+        <PDFViewer showToolbar={false} width='100%' height='700px'>
+          <MyDocument formikProps={{values: location.state.original}} />
         </PDFViewer>
 
         {/* <ChartsWidget1 className='card-xxl-stretch mb-5 mb-xl-10' /> */}
