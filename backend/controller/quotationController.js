@@ -11,7 +11,7 @@ const Quotation = require('../model/quotationModel')
 
 const getAllUnlockQuotation= asyncHandler (async (req, res) => {
 
-    const quotation = await Quotation.find({lock: false})
+    const quotation = await Quotation.find({lock: false}).sort({type: 1})
 
     res.status(200).json({
         data: quotation

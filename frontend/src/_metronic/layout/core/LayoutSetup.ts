@@ -184,9 +184,10 @@ export class LayoutSetup {
   }
 
   private static initContent(config: IContent): void {
-    LayoutSetup.classes.contentContainer.push(
-      config.width === 'fluid' ? 'container-fluid' : 'container'
-    )
+    LayoutSetup.classes.contentContainer.push('container-fluid')
+    // LayoutSetup.classes.contentContainer.push(
+    //   config.width === 'fluid' ? 'container-fluid' : 'container'
+    // )
     // if (Theme::getOption('layout', 'content/container-class')) {
     // 	Theme::addHtmlClass('content-container', Theme::getOption('layout', 'content/container-class'));
     // }
