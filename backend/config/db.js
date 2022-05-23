@@ -14,24 +14,22 @@ const connectDB = async() => {
 
     
     try {
-        // const conn = await mongoose.connect(process.env.DATABASE_URL, {
-        //     useNewUrlParser: true,
-        //     useUnifiedTopology: true,
-        //     ssl: true,
-        //     sslValidate: true,
-        //     sslCA: caCertificatePath,
-        //    })
-
-
-        const conn =  await new mongodb.MongoClient(process.env.DATABASE_URL, {
+        const conn = await mongoose.connect(process.env.DATABASE_URL, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            ssl: true,
+            sslValidate: true,
             sslCA: caCertificatePath,
-        });
+           })
 
-        console.log(conn)
+
+        // const conn =  await new mongodb.MongoClient(process.env.DATABASE_URL, {
+        //     sslCA: caCertificatePath,
+        // });
 
         
 
-        console.log(`MongoDB Connected: ${conn}`.cyan.underline)
+        console.log(`MongoDB Connected: ${conn.connection.host}`.cyan.underline)
     } catch (error) {
         console.log(error)
         process.exit(1)
