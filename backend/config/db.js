@@ -8,8 +8,13 @@ const connectDB = async() => {
     let caCertificatePath = ""
     if (process.env.CA_CERT) {
         caCertificatePath = path.resolve("./ca-certificate.crt")
+
+        console.log(caCertificatePath)
+
         fs.writeFileSync(caCertificatePath, process.env.CA_CERT);
+
     }
+
 
 
     
