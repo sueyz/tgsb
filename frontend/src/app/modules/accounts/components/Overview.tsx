@@ -321,9 +321,12 @@ export function Overview() {
             </Document>
           )}
         </SizeMe> */}
-        <PDFViewer showToolbar={false} width='100%' height='700px'>
-          <MyDocument formikProps={{values: location.state.original}} />
-        </PDFViewer>
+
+        {location.state.original.type === 'Regular' && (
+          <PDFViewer showToolbar={false} width='100%' height='700px'>
+            <MyDocument formikProps={{values: location.state.original}} />
+          </PDFViewer>
+        )}
 
         {/* <ChartsWidget1 className='card-xxl-stretch mb-5 mb-xl-10' /> */}
       </div>

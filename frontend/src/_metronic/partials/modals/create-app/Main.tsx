@@ -87,7 +87,7 @@ const createQuotationSchema = [
     quotations: Yup.array()
       .of(
         Yup.object({
-          desc: Yup.string().required().label('Description'),
+          desc: Yup.string().notRequired().label('Description'),
           amount: Yup.number().required().label('Amount'),
         })
       )
@@ -110,8 +110,8 @@ const createQuotationSchema = [
     projectSchedule: Yup.array()
       .of(
         Yup.object({
-          desc: Yup.string().required().label('Description'),
-          week: Yup.string().required().label('Week'),
+          desc: Yup.string().notRequired().label('Description'),
+          week: Yup.string().notRequired().label('Week'),
         })
       )
       .min(1, 'Project schedule'),
@@ -145,7 +145,7 @@ const Main: FC = () => {
     stepper.current = StepperComponent.createInsance(stepperRef.current as HTMLDivElement)
   }
 
-  const prevStep = () => {
+  const prevStep = (values: Quotations) => {
     if (!stepper.current) {
       return
     }
@@ -165,7 +165,7 @@ const Main: FC = () => {
     // console.log(stepper.current)
 
     if (stepper.current.currentStepIndex === 1) {
-      // values.company = ""
+      values.company = undefined
       await checkInvoice(values.invoiceNo ? values.invoiceNo : '').then(async (response) => {
         if (response.data === null) {
           var {data} = await getCompanies(values.type ? values.type : '')
@@ -176,11 +176,12 @@ const Main: FC = () => {
         }
       })
     }
+
     if (stepper.current.currentStepIndex !== stepper.current.totatStepsNumber) {
       stepper.current.goNext()
 
       if (refCompany.current === undefined) {
-        prevStep()
+        prevStep(values)
       }
     } else {
       values.attachments?.splice(0, values.attachments.length)
@@ -197,15 +198,17 @@ const Main: FC = () => {
         })
       }
 
-      let fd2 = new FormData()
-      const newFormat = {
-        values: values,
+      if (values.type !== 'Sub-consultant') {
+        let fd2 = new FormData()
+        const newFormat = {
+          values: values,
+        }
+
+        fd2.append('pdf', await ReactPDF.pdf(<MyDocument formikProps={newFormat} />).toBlob())
+
+        const result2 = await uploadPdf(fd2)
+        values.attachments?.push(`quotations/${result2}`)
       }
-
-      fd2.append('pdf', await ReactPDF.pdf(<MyDocument formikProps={newFormat} />).toBlob())
-
-      const result2 = await uploadPdf(fd2)
-      values.attachments?.push(`quotations/${result2}`)
 
       await createQuotations(values)
 
@@ -604,7 +607,11 @@ const Main: FC = () => {
                           </div>
 
                           <div className='fv-row mb-10'>
-                            <label className='required fs-5 fw-bold mb-2'>Proposed Fee</label>
+                            <label className='required fs-5 fw-bold mb-2'>
+                              {formikProps.values.type === 'Sub-consultant'
+                                ? 'Total Proposed Fee'
+                                : 'Proposed Fee'}
+                            </label>
 
                             <FieldArray name='quotations'>
                               {(arrayHelpers) => {
@@ -612,20 +619,31 @@ const Main: FC = () => {
                                   <div>
                                     {formikProps.values.quotations ? (
                                       formikProps.values.quotations.map((value: any, index) => {
+                                        if (formikProps.values.type === 'Sub-consultant') {
+                                        }
+
                                         return (
                                           <div key={index}>
-                                            <div
-                                              className='mb-10'
-                                              style={{display: 'flex', alignItems: 'center'}}
-                                            >
+                                            {formikProps.values.type === 'Sub-consultant' ? (
                                               <Field
-                                                component='textarea'
-                                                rows='3'
-                                                className='form-control form-control-lg form-control-solid'
+                                                style={{display: 'none'}}
                                                 name={`quotations.${index}.desc`}
-                                                placeholder='Description'
-                                              />
-                                            </div>
+                                                value={'-'}
+                                              ></Field>
+                                            ) : (
+                                              <div
+                                                className='mb-10'
+                                                style={{display: 'flex', alignItems: 'center'}}
+                                              >
+                                                <Field
+                                                  component='textarea'
+                                                  rows='3'
+                                                  className='form-control form-control-lg form-control-solid'
+                                                  name={`quotations.${index}.desc`}
+                                                  placeholder='Description'
+                                                />
+                                              </div>
+                                            )}
                                             <div
                                               style={{
                                                 display: 'flex',
@@ -667,12 +685,14 @@ const Main: FC = () => {
                                       <></>
                                     )}
                                     <div style={{display: 'flex', alignItems: 'center'}}>
-                                      <button
-                                        type='button'
-                                        onClick={() => arrayHelpers.push({desc: '', amount: 0})}
-                                      >
-                                        Add more fields
-                                      </button>
+                                      {formikProps.values.type !== 'Sub-consultant' && (
+                                        <button
+                                          type='button'
+                                          onClick={() => arrayHelpers.push({desc: '', amount: 0})}
+                                        >
+                                          Add more fields
+                                        </button>
+                                      )}
 
                                       <p
                                         style={{
@@ -1192,12 +1212,27 @@ const Main: FC = () => {
                         <div className='w-100'>
                           <h1 className='fw-bolder text-dark mb-3'>Review!</h1>
 
-                          <div className='text-muted fw-bold fs-3 mb-5'>
-                            Review the generated pdf.
-                          </div>
-                          <PDFViewer style={{height: 500, width: 500, marginBottom: 10}}>
-                            <MyDocument formikProps={formikProps} />
-                          </PDFViewer>
+                          {formikProps.values.type === 'Sub-consultant' ? (
+                            <>
+                              <div className='text-muted fw-bold fs-3 mb-15'>
+                                Please review if needed before submission.
+                              </div>
+                              <PDFViewer
+                                style={{display: 'none', height: 500, width: 500, marginBottom: 10}}
+                              >
+                                <MyDocument formikProps={formikProps} />
+                              </PDFViewer>
+                            </>
+                          ) : (
+                            <>
+                              <div className='text-muted fw-bold fs-3 mb-5'>
+                                Review the generated pdf.
+                              </div>
+                              <PDFViewer style={{height: 500, width: 500, marginBottom: 10}}>
+                                <MyDocument formikProps={formikProps} />
+                              </PDFViewer>
+                            </>
+                          )}
 
                           <div className='d-flex flex-column mb-7 fv-row'>
                             <label className='fs-6 fw-bold form-label mb-2'>Additional note</label>
@@ -1231,7 +1266,7 @@ const Main: FC = () => {
                       <div className='d-flex flex-stack pt-10'>
                         <div className='me-2'>
                           <button
-                            onClick={prevStep}
+                            onClick={() => prevStep(formikProps.values)}
                             type='button'
                             className='btn btn-lg btn-light-primary me-3'
                             data-kt-stepper-action='previous'

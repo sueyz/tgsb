@@ -171,6 +171,10 @@ const DashboardPage: FC = () => {
 
             return (
               <div key={i} className='card' style={{width: '18rem', marginBottom: 25}}>
+                <div className='card-body pb-0 '>
+                  <h5 className='card-title'>{element.type}</h5>
+                </div>
+
                 <div style={{padding: 20}}>
                   <AnimatedProgressProvider valueStart={0} valueEnd={percent}>
                     {(value: number) => (
