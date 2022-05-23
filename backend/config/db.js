@@ -9,10 +9,7 @@ const connectDB = async() => {
     if (process.env.CA_CERT) {
         caCertificatePath = path.resolve("./ca-certificate.crt")
         fs.writeFileSync(caCertificatePath, process.env.CA_CERT);
-
-
     }
-    console.log("caCertificatePath")
 
 
     
@@ -25,9 +22,13 @@ const connectDB = async() => {
         //     sslCA: caCertificatePath,
         //    })
 
-        const conn = new mongodb.MongoClient(process.env.DATABASE_URL, {
+
+        const conn =  await new mongodb.MongoClient(process.env.DATABASE_URL, {
             sslCA: caCertificatePath,
         });
+
+        console.log(conn)
+
         
 
         console.log(`MongoDB Connected: ${conn}`.cyan.underline)
