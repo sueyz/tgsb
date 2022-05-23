@@ -75,10 +75,15 @@ const app = new digitalocean.App("app", {
               // a secure connection between API service and database.
               envs: [
                   {
-                      key: "MONGO_URI",
+                      key: "DATABASE_URL",
                       scope: "RUN_AND_BUILD_TIME",
-                      value: "${db.MONGO_URI}",
-                  }
+                      value: "${db.DATABASE_URL}",
+                  },
+                  {
+                      key: "CA_CERT",
+                      scope: "RUN_AND_BUILD_TIME",
+                      value: "${db.CA_CERT}",
+                  },
               ],
           },
       ],
@@ -98,7 +103,7 @@ const app = new digitalocean.App("app", {
               clusterName: cluster.name,
 
               // The engine value must be uppercase, so we transform it with JS.
-              engine: cluster.engine.apply(engine => engine.toUpperCase()),
+              engine: cluster.engine.apply((engine: string) => engine.toUpperCase()),
           }
       ]
   },
