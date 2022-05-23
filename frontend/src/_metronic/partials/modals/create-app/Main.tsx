@@ -19,6 +19,7 @@ import {
 import {useQueryResponse} from '../../../../app/modules/quotations/quotations-list/core/QueryResponseProvider'
 import {ToastContainer, toast} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import {useHistoryState} from '../../../layout/MasterLayout'
 
 const API_URL = process.env.REACT_APP_THEME_API_URL
 const QUOTATIONS_URL = `${API_URL}/quotations/register`
@@ -133,6 +134,7 @@ const Main: FC = () => {
   const [company, setCompany, refCompany] = useState<Companies[]>()
   const [initValues] = useState<Quotations>(initialQuotations)
   const {refetch} = useQueryResponse()
+  const {setHistory} = useHistoryState()
 
   const [file, setFile] = useState<File[]>()
 
@@ -215,6 +217,8 @@ const Main: FC = () => {
       stepper.current.goto(1)
       actions.resetForm()
       refetch()
+
+      setHistory(23)
     }
   }
 

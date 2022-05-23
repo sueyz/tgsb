@@ -12,6 +12,7 @@ import {ID, Response} from '../../../_metronic/helpers'
 import {Companies} from '../../modules/companies/companies-list/core/_models'
 import axios, {AxiosResponse} from 'axios'
 import {useNavigate} from 'react-router-dom'
+import {useHistoryState} from '../../../_metronic/layout/MasterLayout'
 
 const DashboardLoading = () => {
   const styles = {
@@ -51,6 +52,7 @@ const DashboardPage: FC = () => {
   const [company, setCompany] = useState<Array<Companies>>([])
   const [isOpen, setIsOpen] = useState(false)
   const [file, setFile] = useState<File[]>()
+  const {history} = useHistoryState()
 
   const openModal = () => setIsOpen(true)
   const closeModal = () => {
@@ -80,7 +82,6 @@ const DashboardPage: FC = () => {
       setLoading(true)
       var test = await getCurrent.mutateAsync()
       setQuote(test.data)
-      // console.log(refQuote.current)
 
       var array: Array<Companies> = []
 
@@ -95,7 +96,7 @@ const DashboardPage: FC = () => {
       setCompany(array)
     }
     getAll()
-  }, [])
+  }, [history])
 
   return (
     <>

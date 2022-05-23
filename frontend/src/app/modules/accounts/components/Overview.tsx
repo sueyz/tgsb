@@ -5,7 +5,6 @@ import {KTSVG, toAbsoluteUrl} from '../../../../_metronic/helpers'
 import {useLocation} from 'react-router'
 import {shallowEqual, useSelector} from 'react-redux'
 import {RootState} from '../../../../setup'
-import {useHistoryState} from '../../quotations/QuotationsPage'
 import {Document, Page} from 'react-pdf/dist/esm/entry.webpack'
 import {SizeMe} from 'react-sizeme'
 
@@ -24,10 +23,6 @@ export function Overview() {
 
   const location: any = useLocation()
   const navigate = useNavigate()
-
-  // console.log(location.state.original)
-
-  const {setHistory} = useHistoryState()
 
   const [numPages, setNumPages] = useState(null)
   const [pageNumber, setPageNumber] = useState(1)

@@ -16,7 +16,6 @@ import {
 
 import {confirm} from 'react-confirm-box'
 import {UsersListLoading} from '../quotations/quotations-list/components/loading/QuotationsListLoading'
-import {useHistoryState} from '../quotations/QuotationsPage'
 import {useNavigate} from 'react-router'
 import {Button, Modal} from 'react-bootstrap'
 import {useFormik} from 'formik'
@@ -42,9 +41,6 @@ const QuotationHeader: React.FC = () => {
     setIsOpen(false)
   }
 
-  // const {history} = useHistoryState()
-  const {setHistory} = useHistoryState()
-
   var stepPositions: Array<number> = []
   var total = 0
 
@@ -54,7 +50,6 @@ const QuotationHeader: React.FC = () => {
       // ✅ update detail view directly
       setLoading(false)
       location.state.original.lock = true
-      setHistory(30)
     },
   })
 
@@ -64,8 +59,6 @@ const QuotationHeader: React.FC = () => {
       // ✅ update detail view directly
       setLoading(false)
       location.state.original.lock = false // nak antar  ni ke overview
-
-      setHistory(60)
     },
   })
 
@@ -138,7 +131,6 @@ const QuotationHeader: React.FC = () => {
             closeModal()
 
             location.state.original = values // ni hantar alik atas je
-            setHistory(Math.floor(Math.random() * 1000)) // ni hantar ke overview just random change something for history
           })
           .catch((e) => {
             console.log(e)
