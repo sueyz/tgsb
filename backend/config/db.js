@@ -15,6 +15,10 @@ const connectDB = async() => {
 
     }
 
+    console.log(process.env.DATABASE_URL)
+    console.log(process.env.CA_CERT)
+
+
 
 
     
