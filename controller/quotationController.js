@@ -365,7 +365,7 @@ const updateQuotation = asyncHandler(async (req, res) => {
             console.log(__dirname)
 
             try {
-                const oldPath = path.join(__dirname, '../../frontend/public/documents/', oldPdf);
+                const oldPath = path.join(__dirname, '../../tgsb-frontend/public/documents/', oldPdf);
 
                 if (fs.existsSync(oldPath)) {
                     fs.unlink(oldPath, (err) => {
@@ -414,7 +414,7 @@ const deletePdf = asyncHandler(async (req, res) => {
         console.log(__dirname)
 
         try {
-            const oldPath = path.join(__dirname, '../../frontend/public/documents/', oldPdf);
+            const oldPath = path.join(__dirname, '../../tgsb-frontend/public/documents/', oldPdf);
 
             if (fs.existsSync(oldPath)) {
                 fs.unlink(oldPath, (err) => {
@@ -478,7 +478,7 @@ const deleteQuotation = asyncHandler(async (req, res) => {
             console.log(__dirname)
 
             try {
-                const oldPath = path.join(__dirname, '../../frontend/public/documents/', old);
+                const oldPath = path.join(__dirname, '../../tgsb-frontend/public/documents/', old);
 
                 if (fs.existsSync(oldPath)) {
                     fs.unlink(oldPath, (err) => {

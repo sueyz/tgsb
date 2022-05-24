@@ -307,7 +307,7 @@ const updateUser = asyncHandler (async (req, res) => {
         console.log(__dirname)
 
         try {
-            const oldPath = path.join(__dirname, '../../frontend/public/media/', oldPhoto);
+            const oldPath = path.join(__dirname, '../../tgsb-frontend/public/media/', oldPhoto);
 
             if (fs.existsSync(oldPath)) {
                 fs.unlink(oldPath, (err) => {
@@ -346,7 +346,7 @@ const deleteUser = asyncHandler (async (req, res) => {
         console.log(__dirname)
 
         try {
-            const oldPath = path.join(__dirname, '../../frontend/public/media/', oldPhoto);
+            const oldPath = path.join(__dirname, '../../tgsb-frontend/public/media/', oldPhoto);
 
             if (fs.existsSync(oldPath)) {
                 fs.unlink(oldPath, (err) => {

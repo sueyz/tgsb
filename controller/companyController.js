@@ -193,6 +193,7 @@ const queryCompany = asyncHandler( async (req, res) => {
 // @rout GET /api/company/:id
 // @access Public
 const getCompanyById = asyncHandler (async (req, res) => {
+
     const company = await Company.findById(req.params.id)
 
     res.status(200).json({
@@ -232,7 +233,7 @@ const updateCompany = asyncHandler (async (req, res) => {
         console.log(__dirname)
 
         try {
-            const oldPath = path.join(__dirname, '../../frontend/public/media/', oldPhoto);
+            const oldPath = path.join(__dirname, '../../tgsb-frontend/public/media/', oldPhoto);
 
             if (fs.existsSync(oldPath)) {
                 fs.unlink(oldPath, (err) => {
@@ -271,7 +272,7 @@ const deleteCompany = asyncHandler (async (req, res) => {
         console.log(__dirname)
 
         try {
-            const oldPath = path.join(__dirname, '../../frontend/public/media/', oldPhoto);
+            const oldPath = path.join(__dirname, '../../tgsb-frontend/public/media/', oldPhoto);
 
             if (fs.existsSync(oldPath)) {
                 fs.unlink(oldPath, (err) => {
