@@ -7,7 +7,7 @@ const { protect } = require('../middleware/authMiddleware')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const destination = path.join(__dirname, '../../tgsb-frontend/public/documents/quotations');
+        const destination = path.join(__dirname, '../public/documents/quotations');
 
         cb(null, destination)
     },
@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
 
 const storagePdf = multer.diskStorage({
     destination: (req, file, cb) => {
-        const destination = path.join(__dirname, '../../tgsb-frontend/public/documents/quotations');
+        const destination = path.join(__dirname, '../public/documents/quotations');
 
         cb(null, destination)
     },
