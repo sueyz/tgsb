@@ -7,7 +7,8 @@ const path = require('path')
 
 const storage = multer.diskStorage({
     destination: (req,file, cb) => {
-        const destination = path.join(__dirname, '../../tgsb-frontend/public/media/companies');
+        const destination = path.join(__dirname, '../public/media/companies');
+        console.log(__dirname)
 
         cb(null, destination)
     },
