@@ -1,5 +1,0 @@
-config:
-  digitalocean:token:
-    secure: AAABAEFWV0kWrAhucKtpmvX+0GdhQfCdI6tTHdBL+r/yQU11VtB1V972gxDBbxZVhQI/72BnH7iiNU3lXokpmWgE4covHyMM4ZedNYEPSAdBxz4YwCx9IzNNuN7w3pjsJkBFvuwCOA==
-  tgsb:branch: main
-  tgsb:repo: sueyz/tgsb
