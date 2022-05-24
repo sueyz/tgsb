@@ -33,7 +33,7 @@ const app = express()
 
 
 const corsOptions = {
-    origin: 'http://localhost:3011',
+    origin: 'http://192.168.1.6:3000/auth',
     credentials: true,            //access-control-allow-credentials:true
     optionSuccessStatus: 200
 }
