@@ -19,11 +19,11 @@ const getAllUnlockQuotation= asyncHandler (async (req, res) => {
 })
 
 const registerQuotation = asyncHandler(async (req, res) => {
-    const { company, type, name, invoiceNo, address1, address2, address3, zip, city, state, email, quotations, balancePaid,
+    const { company, companyName, type, name, invoiceNo, address1, address2, address3, zip, city, state, email, quotations, balancePaid,
         payment_term, projectSchedule, note, poc, contact, attachments, workType, lock } = req.body
 
 
-    if (!company || !type || !name || !address1 || !invoiceNo || !quotations || !zip || !city || !state) {
+    if (!company || !companyName || !type || !name || !address1 || !invoiceNo || !quotations || !zip || !city || !state) {
         res.status(400)
         throw new Error('Please add all required fields')
     }
@@ -40,6 +40,7 @@ const registerQuotation = asyncHandler(async (req, res) => {
     //Create Quotation
     const quotation = await Quotation.create({
         company,
+        companyName,
         type,
         name,
         invoiceNo,
@@ -66,6 +67,7 @@ const registerQuotation = asyncHandler(async (req, res) => {
         res.status(201).json({
             _id: quotation.id,
             company: quotation.company,
+            companyName: quotation.companyName,
             type: quotation.type,
             name: quotation.name,
             invoiceNo: quotation.invoiceNo,
@@ -194,6 +196,7 @@ const queryQuotation = asyncHandler(async (req, res) => {
             id: '$_id',
             type: 1,
             company: 1,
+            companyName: 1,
             name: 1,
             invoiceNo: 1,
             address1: 1,

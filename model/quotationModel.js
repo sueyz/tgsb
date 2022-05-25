@@ -4,7 +4,10 @@ const quotationsSchema = mongoose.Schema({
     company: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref:'Company'
+    },
+    companyName: {
+        type: String,
+        required: true,
     },
     type: {
         type: String,
@@ -101,6 +104,7 @@ quotationsSchema.methods.toJSON = function () {
     return {
       id: this._id,
       company: this.company,
+      companyName: this.companyName,
       type: this.type,
       name: this.name,
       address1: this.address1,
