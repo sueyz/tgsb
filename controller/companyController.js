@@ -308,6 +308,15 @@ const uploadAvatar =(req, res) => {
 }
 
 
+const fetchAvatar =(req, res) => {
+
+        let file = req.params.id;
+
+        let fileLocation = path.join(__dirname, '../public/media/companies', file);
+        res.sendFile(`${fileLocation}`)
+}
+
+
 module.exports = {
     registerCompany,
     getCompanyById,
@@ -315,5 +324,6 @@ module.exports = {
     updateCompany,
     deleteCompany,
     uploadAvatar,
-    getAllCompany
+    getAllCompany,
+    fetchAvatar
 }
