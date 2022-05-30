@@ -107,6 +107,14 @@ const uploadAttachments = (req, res) => {
     })
 }
 
+const fetchAttachment =(req, res) => {
+
+    let file = req.params.id;
+
+    let fileLocation = path.join(__dirname, '../public/documents/quotations', file);
+    res.sendFile(`${fileLocation}`)
+}
+
 const uploadPdf = (req, res) => {
 
     if (!req.file) {
@@ -514,5 +522,6 @@ module.exports = {
     deletePdf,
     updateLock,
     unlockLock,
-    getQuotationByInvoice
+    getQuotationByInvoice,
+    fetchAttachment
 }
