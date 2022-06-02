@@ -412,6 +412,14 @@ const generateRefreshToken = (id) => {
     })
 }
 
+const fetchAvatar =(req, res) => {
+
+    let file = req.params.id;
+
+    let fileLocation = path.join(__dirname, '../public/media/profile', file);
+    res.sendFile(`${fileLocation}`)
+}
+
 module.exports = {
     registerUser,
     loginUser,
@@ -422,5 +430,6 @@ module.exports = {
     updateUser,
     getUserById,
     deleteUser,
-    uploadAvatar
+    uploadAvatar,
+    fetchAvatar
 }
