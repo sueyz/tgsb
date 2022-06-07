@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs')
 
 const Quotation = require('../model/quotationModel')
+const ObjectId = require('mongoose').Types.ObjectId
 
 // @ desc Register Company
 // @rout Post /api/registerCompany
@@ -11,7 +12,7 @@ const Quotation = require('../model/quotationModel')
 
 const getAllUnlockQuotation= asyncHandler (async (req, res) => {
 
-    const quotation = await Quotation.find({lock: false}).sort({type: 1})
+    const quotation = await Quotation.find({lock: false})
 
     res.status(200).json({
         data: quotation
@@ -19,11 +20,11 @@ const getAllUnlockQuotation= asyncHandler (async (req, res) => {
 })
 
 const registerQuotation = asyncHandler(async (req, res) => {
-    const { company, companyName, type, name, invoiceNo, address1, address2, address3, zip, city, state, email, quotations, balancePaid,
+    const { company, companyName, sub_cons, name, invoiceNo, address1, address2, address3, zip, city, state, email, quotations, balancePaid,
         payment_term, projectSchedule, note, poc, contact, attachments, workType, lock } = req.body
 
 
-    if (!company || !companyName || !type || !name || !address1 || !invoiceNo || !quotations || !zip || !city || !state) {
+    if (!company || !companyName || !name || !address1 || !invoiceNo || !quotations || !zip || !city || !state) {
         res.status(400)
         throw new Error('Please add all required fields')
     }
@@ -41,7 +42,7 @@ const registerQuotation = asyncHandler(async (req, res) => {
     const quotation = await Quotation.create({
         company,
         companyName,
-        type,
+        sub_cons,
         name,
         invoiceNo,
         address1,
@@ -68,7 +69,7 @@ const registerQuotation = asyncHandler(async (req, res) => {
             _id: quotation.id,
             company: quotation.company,
             companyName: quotation.companyName,
-            type: quotation.type,
+            sub_cons: quotation.sub_cons,
             name: quotation.name,
             invoiceNo: quotation.invoiceNo,
             address1: quotation.address1,
@@ -202,7 +203,7 @@ const queryQuotation = asyncHandler(async (req, res) => {
         .sort({ [sort]: order })
         .project({
             id: '$_id',
-            type: 1,
+            sub_cons: 1,
             company: 1,
             companyName: 1,
             name: 1,
@@ -228,6 +229,7 @@ const queryQuotation = asyncHandler(async (req, res) => {
         })
         .collation({ locale: "en" })
         .match(queryMatch)
+        .match({company: ObjectId(req.params.id)})
         .skip(startIndex)
         .limit(limit)
         .exec(function (err, quotation) {
@@ -235,7 +237,7 @@ const queryQuotation = asyncHandler(async (req, res) => {
 
             Quotation.aggregate()
                 .project({
-                    name: 1, type: 1, workType: 1, lock: 1
+                    name: 1, workType: 1, lock: 1
                 }) //for filter + search
                 .match(queryMatch)
                 .count('finalCount')

@@ -9,10 +9,10 @@ const quotationsSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    type: {
-        type: String,
-        required: [true, 'PLease add quotation type']
-    },
+    // type: {
+    //     type: String,
+    //     required: [true, 'PLease add quotation type']
+    // },
     name: {
         type: String,
         required: [true, 'PLease add project name']
@@ -61,9 +61,15 @@ const quotationsSchema = mongoose.Schema({
         required: false
     },
     //ex: 40,40,20 
+    //in
     payment_term: {
         type: Array,
         default : [{percentage: 0, desc: 'ex', amount: 0, date: Date}],
+        required: false
+    },
+    sub_cons: {
+        type: Array,
+        default : [],
         required: false
     },
     projectSchedule: {
@@ -105,7 +111,7 @@ quotationsSchema.methods.toJSON = function () {
       id: this._id,
       company: this.company,
       companyName: this.companyName,
-      type: this.type,
+    //   type: this.type,
       name: this.name,
       address1: this.address1,
       address2: this.address2,

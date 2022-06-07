@@ -37,7 +37,7 @@ const upload_pdf = multer({ storage: storagePdf })
 
 
 router.post('/register', protect, registerQuotation)
-router.get('/query?', protect, queryQuotation)
+router.get('/query/:id?', protect, queryQuotation)
 router.get('/current', protect, getAllUnlockQuotation)
 router.get('/check/?', protect, getQuotationByInvoice)
 router.get('/:id', protect, getQuotationById)

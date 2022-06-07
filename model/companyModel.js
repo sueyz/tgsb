@@ -1,10 +1,11 @@
 const mongoose = require('mongoose')
+const { required } = require('nodemon/lib/config')
 
 const companySchema = mongoose.Schema({
-    type: {
-        type: String,
-        required: [true, 'Please add a type']
-    },
+    // type: {
+    //     type: String,
+    //     required: [true, 'Please add a type']
+    // },
     name: {
         type: String,
         required: [true, 'Please add a name']
@@ -42,7 +43,7 @@ const companySchema = mongoose.Schema({
 companySchema.methods.toJSON = function () {
     return {
       id: this._id,
-      type: this.type,
+    //   type: this.type,
       name: this.name,
       address: this.address,
       email: this.email,

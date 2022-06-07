@@ -6,25 +6,24 @@ const fs = require('fs')
 // @ desc Register Company
 // @rout Post /api/registerCompany
 // @access Public
-const registerCompany = asyncHandler( async (req, res) => {
-    const {type, name, address, email, phone, poc, accountNo, bank, avatar } = req.body
+const registerCompany = asyncHandler(async (req, res) => {
+    const { name, address, email, phone, poc, accountNo, bank, avatar, quotations } = req.body
 
-    if(!name || !address || !email){
+    if (!name || !address || !email) {
         res.status(400)
         throw new Error('Please add all required fields')
     }
 
     //Check if Company exist
-    const companyExists = await Company.findOne({email}) // need to double check in case same email
+    const companyExists = await Company.findOne({ email }) // need to double check in case same email
 
-    if(companyExists){
+    if (companyExists) {
         res.status(400)
         throw new Error('Company already exists!')
     }
 
     //Create Company
     const company = await Company.create({
-        type,
         name,
         address,
         email,
@@ -35,19 +34,18 @@ const registerCompany = asyncHandler( async (req, res) => {
         avatar
     })
 
-    if(company){
+    if (company) {
         res.status(201).json({
             _id: company.id,
-            type: company.type,
             name: company.name,
-            address:company.address,
-            email:company.email,
-            phone:company.phone,
-            poc:company.poc,
+            address: company.address,
+            email: company.email,
+            phone: company.phone,
+            poc: company.poc,
             accountNo: company.accountNo,
-            bank: company.bank,
+            bank: company.bank
         })
-    } else{
+    } else {
         res.status(400)
         throw new Error('Invalid company data')
     }
@@ -56,22 +54,22 @@ const registerCompany = asyncHandler( async (req, res) => {
 // @desc get  Company 
 // @rout GEt /api/user/query
 // @access Private
-const queryCompany = asyncHandler( async (req, res) => {
+const queryCompany = asyncHandler(async (req, res) => {
 
 
-    var userQuery = req.query.search; 
+    var userQuery = req.query.search;
     var searchString = new RegExp(userQuery, 'ig');
 
     const page = parseInt(req.query.page)
     var filter = req.query.filter_type
     var queryMatch = {}
 
-    if(filter === undefined){
+    if (filter === undefined) {
         filter = null
-        queryMatch = { name: searchString}
-    }else{
+        queryMatch = { name: searchString }
+    } else {
         filter = filter.charAt(0).toUpperCase() + filter.slice(1)
-        queryMatch = { name: searchString, type: filter}
+        queryMatch = { name: searchString, type: filter }
     }
 
     const limit = 9
@@ -81,118 +79,119 @@ const queryCompany = asyncHandler( async (req, res) => {
 
     const link = []
 
-        
+
     Company.aggregate()
-    .project({
-        id: '$_id',
-        name: 1,
-        address: 1,
-        type: 1,
-        email: 1,
-        avatar: 1,
-        phone: 1
-    })
-    .collation({locale: "en" })
-    .sort({'name': 1} )
-    .match(queryMatch)
-    .skip(startIndex) 
-    .limit(limit)
-    .exec(function (err, companies) {
-        if (err) throw err;
-
-
-        Company.aggregate()
-        .project({name: 1, type: 1}) //for filter + search
+        .project({
+            id: '$_id',
+            name: 1,
+            address: 1,
+            email: 1,
+            avatar: 1,
+            phone: 1
+        })
+        .collation({ locale: "en" })
+        .sort({ 'name': 1 })
         .match(queryMatch)
-        .count('finalCount')
-        .exec((count_error, valueCount) => {
+        .skip(startIndex)
+        .limit(limit)
+        .exec(function (err, companies) {
+            if (err) throw err;
 
-            var count = 0
 
-            if(valueCount.length >= 1){
-                count = valueCount[0].finalCount
-            }
+            Company.aggregate()
+                .project({ name: 1 }) //for filter + search
+                .match(queryMatch)
+                .count('finalCount')
+                .exec((count_error, valueCount) => {
 
-            const lastPage = Math.ceil(count / limit)
-            const fromValue = (limit * page) - (limit -1)
-            const toValue = page === lastPage ? count : (limit * page)
+                    var count = 0
 
-            if (err) {
-                return res.json(count_error);
-            }
+                    if (valueCount.length >= 1) {
+                        count = valueCount[0].finalCount
+                    }
 
-            if (startIndex > 0) {
-                link.push({
-                    url: `/?page=${page - 1}`,
-                    label: "&laquo; Previous",
-                    active: false,
-                    page: page - 1
-                })
-            }
+                    const lastPage = Math.ceil(count / limit)
+                    const fromValue = (limit * page) - (limit - 1)
+                    const toValue = page === lastPage ? count : (limit * page)
 
-            var startPage, endPage;
-            if (lastPage <= 10) {
-            // less than 10 total pages so show all
-                startPage = 1;
-                endPage = lastPage;
-            } else {
-            // more than 10 total pages so calculate start and end pages
-                if (page <= 6) {
-                    startPage = 1;
-                    endPage = 10;
-                } else if (page + 4 >= lastPage) {
-                    startPage = lastPage - 9;
-                    endPage = lastPage;
-                } else {
-                    startPage = page - 5;
-                    endPage = page + 4;
-                }
-            }
+                    if (err) {
+                        return res.json(count_error);
+                    }
 
-            for (let index = startPage; index <= endPage; index++) {
-                    link.push({
-                        url: `/?page=${index}`,
-                        label: `${index}`,
-                        active: true,
-                        page: index
-                    }) 
-            }
-            
+                    if (startIndex > 0) {
+                        link.push({
+                            url: `/?page=${page - 1}`,
+                            label: "&laquo; Previous",
+                            active: false,
+                            page: page - 1
+                        })
+                    }
 
-            if (endIndex < count) {
-                link.push({
-                    url: `/?page=${page + 1}`,
-                    label: "Next &raquo;",
-                    active: false,
-                    page: page + 1
-                })
-            }  
+                    var startPage, endPage;
+                    if (lastPage <= 10) {
+                        // less than 10 total pages so show all
+                        startPage = 1;
+                        endPage = lastPage;
+                    } else {
+                        // more than 10 total pages so calculate start and end pages
+                        if (page <= 6) {
+                            startPage = 1;
+                            endPage = 10;
+                        } else if (page + 4 >= lastPage) {
+                            startPage = lastPage - 9;
+                            endPage = lastPage;
+                        } else {
+                            startPage = page - 5;
+                            endPage = page + 4;
+                        }
+                    }
 
-            res.status(200).json({
-                data: companies,
-                payload: {pagination: {
-                    page: page,
-                    items_per_page: limit,
-                    first_page_url: '/?page=1',
-                    from: fromValue,
-                    last_page: lastPage,
-                    links: link,
-                    next_page_url: page + 1 > lastPage? null :`/?page=${page + 1}`,
-                    items_per_page: limit,
-                    prev_page_url: page - 1 === 0 ? null :` /?page=${page - 1}`,
-                    to: toValue,
-                    total: count
-                }}
-            })
+                    for (let index = startPage; index <= endPage; index++) {
+                        link.push({
+                            url: `/?page=${index}`,
+                            label: `${index}`,
+                            active: true,
+                            page: index
+                        })
+                    }
+
+
+                    if (endIndex < count) {
+                        link.push({
+                            url: `/?page=${page + 1}`,
+                            label: "Next &raquo;",
+                            active: false,
+                            page: page + 1
+                        })
+                    }
+
+                    res.status(200).json({
+                        data: companies,
+                        payload: {
+                            pagination: {
+                                page: page,
+                                items_per_page: limit,
+                                first_page_url: '/?page=1',
+                                from: fromValue,
+                                last_page: lastPage,
+                                links: link,
+                                next_page_url: page + 1 > lastPage ? null : `/?page=${page + 1}`,
+                                items_per_page: limit,
+                                prev_page_url: page - 1 === 0 ? null : ` /?page=${page - 1}`,
+                                to: toValue,
+                                total: count
+                            }
+                        }
+                    })
+                });
         });
-    });
 })
 
 
 // @ desc Get Company
 // @rout GET /api/company/:id
 // @access Public
-const getCompanyById = asyncHandler (async (req, res) => {
+const getCompanyById = asyncHandler(async (req, res) => {
 
     const company = await Company.findById(req.params.id)
 
@@ -205,9 +204,9 @@ const getCompanyById = asyncHandler (async (req, res) => {
 // @ desc Get Company
 // @rout GET /api/company/:id
 // @access Public
-const getAllCompany = asyncHandler (async (req, res) => {
+const getAllCompany = asyncHandler(async (req, res) => {
 
-    const company = await Company.find({type: Object.keys(req.query)[0]})
+    const company = await Company.find({ type: Object.keys(req.query)[0] })
 
     res.status(200).json({
         data: company
@@ -217,11 +216,11 @@ const getAllCompany = asyncHandler (async (req, res) => {
 
 // @ desc Update something
 // @rout PUT /api/dashboard/:id
-const updateCompany = asyncHandler (async (req, res) => {
+const updateCompany = asyncHandler(async (req, res) => {
 
     const company = await Company.findById(req.params.id)
 
-    if(!company){
+    if (!company) {
         res.status(400)
         throw new Error('Company not found')
     }
@@ -240,8 +239,8 @@ const updateCompany = asyncHandler (async (req, res) => {
             if (fs.existsSync(oldPath)) {
                 fs.unlink(oldPath, (err) => {
                     if (err) {
-                    console.error(err);
-                    return;
+                        console.error(err);
+                        return;
                     }
                 });
             }
@@ -251,18 +250,18 @@ const updateCompany = asyncHandler (async (req, res) => {
     }
 
 
-    const updatedCompany = await Company.findByIdAndUpdate(req.params.id, req.body, {new: true})
+    const updatedCompany = await Company.findByIdAndUpdate(req.params.id, req.body, { new: true })
     res.status(200).json(updatedCompany)
 
 })
 
 // @ desc Delete something
 // @rout DELETE /api/dashboard
-const deleteCompany = asyncHandler (async (req, res) => {
+const deleteCompany = asyncHandler(async (req, res) => {
 
     const company = await Company.findById(req.params.id)
 
-    if(!company){
+    if (!company) {
         res.status(400)
         throw new Error('Company not found')
     }
@@ -270,7 +269,7 @@ const deleteCompany = asyncHandler (async (req, res) => {
     const oldPhoto = company.avatar
 
     //  Remove old photo
-    if (oldPhoto !== 'avatars/blank.png' && oldPhoto !== undefined) {
+    if (oldPhoto !== 'companies/blank.png' && oldPhoto !== undefined) {
         console.log(__dirname)
 
         try {
@@ -279,8 +278,8 @@ const deleteCompany = asyncHandler (async (req, res) => {
             if (fs.existsSync(oldPath)) {
                 fs.unlink(oldPath, (err) => {
                     if (err) {
-                    console.error(err);
-                    return;
+                        console.error(err);
+                        return;
                     }
                 });
             }
@@ -295,9 +294,9 @@ const deleteCompany = asyncHandler (async (req, res) => {
 
 })
 
-const uploadAvatar =(req, res) => {
+const uploadAvatar = (req, res) => {
 
-    if(!req.file ){
+    if (!req.file) {
         res.status(400)
         throw new Error('Please choose an image')
     }
@@ -308,12 +307,12 @@ const uploadAvatar =(req, res) => {
 }
 
 
-const fetchAvatar =(req, res) => {
+const fetchAvatar = (req, res) => {
 
-        let file = req.params.id;
+    let file = req.params.id;
 
-        let fileLocation = path.join(__dirname, '../public/media/companies', file);
-        res.sendFile(`${fileLocation}`)
+    let fileLocation = path.join(__dirname, '../public/media/companies', file);
+    res.sendFile(`${fileLocation}`)
 }
 
 
